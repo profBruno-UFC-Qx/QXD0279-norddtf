@@ -1,9 +1,14 @@
 import express, { type Express } from 'express';
 import { routes } from './routes/index.js';
 import session from 'express-session';
+import cors from 'cors';
 
 const app: Express = express();
 
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+}));
 app.use(express.json());
 app.use(session({
     secret: process.env.SESSION_SECRET!,
