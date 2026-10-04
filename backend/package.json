@@ -1,0 +1,34 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "pnpm build && node dist/shared/infra/http/server.js",
+    "dev": "tsx watch src/shared/infra/http/server.ts",
+    "contract:emit": "prisma contract emit",
+    "docker-compose": "infisical run --env=dev -- docker compose"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.16.1",
+  "dependencies": {
+    "@prisma/orm-postgres": "8.0.0-rc.11",
+    "dotenv": "^18.0.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "googleapis": "^182.0.0"
+  },
+  "devDependencies": {
+    "@prisma/cli-engine": "0.4.0",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/node": "^26.6.2",
+    "prisma": "8.0.0-rc.15",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

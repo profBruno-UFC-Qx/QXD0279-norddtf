@@ -1,0 +1,199 @@
+// use prisma-8
+
+enum TipoPerfil {
+  ADMIN
+  USER
+}
+
+enum StatusPedido {
+  RECEBIDO
+  CONFIRMADO
+  IMPRESSAO
+  PRONTO
+  ENVIADO
+  ENTREGUE
+  CANCELADO
+}
+
+enum TipoProduto {
+  PERSONALIZAVEL
+  VENDA_DIRETA
+}
+
+enum TamanhoRoupa {
+  PP
+  P
+  M
+  G
+  GG
+  XG
+}
+
+enum TipoMaterial {
+  DTF
+  DTF_UV
+}
+
+enum TipoItem {
+  PRODUTO
+  MATERIAL
+}
+
+enum PosicaoEstampa {
+  FRENTE
+  COSTAS
+}
+
+model User {
+  id        Uuid     @id @default(uuid())
+  sub       String?   @unique
+  nome      String
+  email     String   @unique
+  cpf       String?  @unique
+  telefone  String?
+  senha     String?
+  enderecoId Uuid?
+  endereco  Endereco? @relation(fields: [enderecoId], references: [id])
+  tipoPerfil TipoPerfil @default(USER)
+  pedidos   Pedido[]
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model Endereco {
+  id        Uuid     @id @default(uuid())
+  userId    Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  cep       String
+  logradouro String
+  numero    String
+  complemento String?
+  bairro    String
+  cidade    String
+  estado    String
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model Categoria {
+  id        Uuid     @id @default(uuid())
+  nome      String
+  descricao String?
+  produtos  Produto[]
+  estampas  Estampa[]
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model Produto {
+  id          Uuid     @id @default(uuid())
+  nome        String
+  descricao   String?
+  precoBase   Decimal
+  imagemUrl   String?
+  tipo        TipoProduto @default(PERSONALIZAVEL)
+  temTamanho  Boolean  @default(true)
+  categoriaId Uuid?
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  tamanhos    ProdutoTamanho[]
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model ProdutoTamanho {
+  id        Uuid     @id @default(uuid())
+  produtoId Uuid
+  produto   Produto  @relation(fields: [produtoId], references: [id])
+  tamanho   TamanhoRoupa?
+  cores     ProdutoCor[]
+
+  @@unique([produtoId, tamanho])
+}
+
+model ProdutoCor {
+  id                         Uuid     @id @default(uuid())
+  produtoTamanhoId           Uuid
+  produtoTamanho             ProdutoTamanho @relation(fields: [produtoTamanhoId], references: [id])
+  nome                       String
+  preco                      Decimal?
+  estoque                    Int      @default(0)
+  imagemApresentacaoFrente   String
+  imagemApresentacaoCostas   String
+  imagemPersonalizacaoFrente String?
+  imagemPersonalizacaoCostas String?
+  itens                      Item[]
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model Estampa {
+  id          Uuid     @id @default(uuid())
+  nome        String
+  categoriaId Uuid?
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  imagemUrl   String
+  larguraCm   Decimal
+  alturaCm    Decimal
+  ativo       Boolean  @default(true)
+  itensEstampa ItemEstampa[]
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model Material {
+  id             Uuid     @id @default(uuid())
+  tipo           TipoMaterial @unique
+  precoPorMetro  Decimal
+  larguraFolhaCm Decimal  @default(57)
+  itens          Item[]
+}
+
+model Pedido {
+  id        Uuid     @id @default(uuid())
+  userId    Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  status    StatusPedido @default(RECEBIDO)
+  valorTotal Decimal
+  itens     Item[]
+  historicoStatus PedidoStatusHistorico[]
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model PedidoStatusHistorico {
+  id       Uuid     @id @default(uuid())
+  pedidoId Uuid
+  pedido   Pedido   @relation(fields: [pedidoId], references: [id])
+  status   StatusPedido
+  criadoEm TimestamptzString @default(now())
+}
+
+model Item {
+  id             Uuid     @id @default(uuid())
+  pedidoId       Uuid
+  pedido         Pedido   @relation(fields: [pedidoId], references: [id])
+  tipo           TipoItem
+  produtoCorId   Uuid?
+  produtoCor     ProdutoCor? @relation(fields: [produtoCorId], references: [id])
+  quantidade     Int?
+  materialId     Uuid?
+  material       Material? @relation(fields: [materialId], references: [id])
+  comprimentoCm  Decimal?
+  precoUnitario  Decimal
+  estampas       ItemEstampa[]
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+}
+
+model ItemEstampa {
+  id             Uuid     @id @default(uuid())
+  itemId         Uuid
+  item           Item     @relation(fields: [itemId], references: [id])
+  estampaId      Uuid?
+  estampa        Estampa? @relation(fields: [estampaId], references: [id])
+  arteClienteUrl String?
+  posicao        PosicaoEstampa?
+  quantidade     Int      @default(1)
+  larguraCm      Decimal
+  alturaCm       Decimal
+}
