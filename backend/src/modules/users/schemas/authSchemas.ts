@@ -25,6 +25,10 @@ export const signupSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().min(1),
-  senha: z.string().min(1),
+  email: z
+    .string({ error: 'Informe o e-mail.' })
+    .trim()
+    .toLowerCase()
+    .min(1, { error: 'Informe o e-mail.' }),
+  senha: z.string({ error: 'Informe a senha.' }).min(1, { error: 'Informe a senha.' }),
 });

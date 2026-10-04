@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import argon2 from 'argon2';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { hashPassword, verifyPassword } from '../src/shared/utils/password.js';
 
 describe('hashPassword', () => {
@@ -28,5 +29,28 @@ describe('verifyPassword', () => {
     const hash = await hashPassword('senha1234');
 
     expect(await verifyPassword(hash, 'senha1235')).toBe(false);
+  });
+});
+
+describe('verifyPasswordWithoutAccount', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('executa uma verificação argon2 real e retorna false', async () => {
+    const { verifyPasswordWithoutAccount } = await import('../src/shared/utils/password.js');
+    const verificacao = vi.spyOn(argon2, 'verify');
+
+    expect(await verifyPasswordWithoutAccount('qualquer')).toBe(false);
+    expect(verificacao).toHaveBeenCalledTimes(1);
+  });
+
+  it('tenta gerar o hash fictício de novo depois de uma falha', async () => {
+    vi.resetModules();
+    const { verifyPasswordWithoutAccount } = await import('../src/shared/utils/password.js');
+    vi.spyOn(argon2, 'hash').mockRejectedValueOnce(new Error('falha de memória'));
+
+    await expect(verifyPasswordWithoutAccount('qualquer')).rejects.toThrow('falha de memória');
+    await expect(verifyPasswordWithoutAccount('qualquer')).resolves.toBe(false);
   });
 });
