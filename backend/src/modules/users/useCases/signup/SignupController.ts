@@ -1,25 +1,13 @@
 import type { Request, Response } from 'express';
-import type { z } from 'zod';
 import { signupSchema } from '../../schemas/authSchemas.js';
 import { EmailJaCadastradoError } from '../../errors/EmailJaCadastradoError.js';
 import { toSafeUser } from '../../toSafeUser.js';
 import { regenerateSession, saveSession } from '../../../../shared/infra/http/session.js';
+import { toFieldErrors } from '../../../../shared/infra/http/fieldErrors.js';
 import type { SignupService } from './SignupService.js';
 
 const MENSAGEM_CONTA_EXISTENTE =
   'Já existe uma conta com este e-mail. Tente entrar com e-mail e senha ou com o Google.';
-
-function toFieldErrors(error: z.ZodError) {
-  const errors: Record<string, string> = {};
-  for (const issue of error.issues) {
-    const [campo] = issue.path;
-    if (typeof campo !== 'string') {
-      continue;
-    }
-    errors[campo] ??= issue.message;
-  }
-  return errors;
-}
 
 export class SignupController {
   constructor(private readonly signupService: SignupService) {}
