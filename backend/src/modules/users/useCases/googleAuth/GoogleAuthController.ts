@@ -1,18 +1,7 @@
 import type { Request, Response } from "express";
 import type { GoogleAuthService } from "./GoogleAuthService";
 import type { UsersRepository } from "../../repositories/UsersRepository";
-
-function saveSession(session: Request["session"]): Promise<void> {
-    return new Promise((resolve, reject) => {
-        session.save((err) => (err ? reject(err) : resolve()));
-    });
-}
-
-function regenerateSession(session: Request["session"]): Promise<void> {
-    return new Promise((resolve, reject) => {
-        session.regenerate((err) => (err ? reject(err) : resolve()));
-    });
-}
+import { regenerateSession, saveSession } from "../../../../shared/infra/http/session.js";
 
 class GoogleAuthController {
     constructor(

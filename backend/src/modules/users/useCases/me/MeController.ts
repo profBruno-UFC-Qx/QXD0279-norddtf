@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import type { UsersRepository } from "../../repositories/UsersRepository";
+import { toSafeUser } from "../../toSafeUser.js";
 
 class MeController {
     constructor(private readonly usersRepository: UsersRepository) {}
@@ -12,8 +13,7 @@ class MeController {
             return;
         }
 
-        const { senha: _senha, ...safeUser } = user;
-        response.status(200).json(safeUser);
+        response.status(200).json(toSafeUser(user));
     }
 }
 
