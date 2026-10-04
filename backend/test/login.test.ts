@@ -154,6 +154,15 @@ describe('POST /auth/login', () => {
     expect(resposta.body.errors.senha).toBe('Informe a senha.');
   });
 
+  it('responde 400 para e-mail com mais de 254 caracteres', async () => {
+    const email = `${'a'.repeat(250)}@x.com`;
+
+    const resposta = await request(app).post('/auth/login').send({ email, senha: SENHA });
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.errors.email).toBe('O e-mail pode ter até 254 caracteres.');
+  });
+
   it('não valida formato de e-mail, então e-mail malformado recebe o 401 genérico', async () => {
     const resposta = await request(app).post('/auth/login').send({ email: 'nao-e-email', senha: SENHA });
 

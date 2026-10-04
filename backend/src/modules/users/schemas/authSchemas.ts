@@ -29,6 +29,7 @@ export const loginSchema = z.object({
     .string({ error: 'Informe o e-mail.' })
     .trim()
     .toLowerCase()
-    .min(1, { error: 'Informe o e-mail.' }),
+    .min(1, { error: 'Informe o e-mail.' })
+    .max(254, { error: 'O e-mail pode ter até 254 caracteres.' }),
   senha: z.string({ error: 'Informe a senha.' }).min(1, { error: 'Informe a senha.' }),
 });
