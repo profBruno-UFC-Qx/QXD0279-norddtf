@@ -144,7 +144,7 @@ model Material {
   id             Uuid     @id @default(uuid())
   tipo           TipoMaterial @unique
   precoPorMetro  Decimal
-  larguraFolhaCm Decimal  @default(57)
+  larguraFolhaCm Decimal  @default("57")
   itens          Item[]
 }
 
