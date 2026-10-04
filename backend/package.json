@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "test": "vitest run",
     "start": "pnpm build && node dist/shared/infra/http/server.js",
     "dev": "tsx watch src/shared/infra/http/server.ts",
     "contract:emit": "prisma contract emit",
@@ -27,8 +28,13 @@
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",
     "@types/node": "^26.6.2",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "pg": "^8.23.1",
     "prisma": "8.0.0-rc.15",
+    "supertest": "^7.3.1",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
   }
 }
