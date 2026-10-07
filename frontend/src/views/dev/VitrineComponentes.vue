@@ -9,9 +9,14 @@ import BaseAreaTexto from '@/components/base/BaseAreaTexto.vue'
 import BaseBotao from '@/components/base/BaseBotao.vue'
 import BaseCaixaSelecao from '@/components/base/BaseCaixaSelecao.vue'
 import BaseCampoTexto from '@/components/base/BaseCampoTexto.vue'
+import BaseCarregando from '@/components/base/BaseCarregando.vue'
+import BaseEstadoVazio from '@/components/base/BaseEstadoVazio.vue'
+import BaseModalConfirmacao from '@/components/base/BaseModalConfirmacao.vue'
 import BaseSelecao from '@/components/base/BaseSelecao.vue'
+import BaseTrilha from '@/components/base/BaseTrilha.vue'
 import IconeSenha from '@/components/icones/IconeSenha.vue'
 import IconeSms from '@/components/icones/IconeSms.vue'
+import { useAvisos } from '@/stores/avisos'
 import {
   formatarCep,
   formatarData,
@@ -128,6 +133,37 @@ const exemplosDeFormatacao = [
   },
   { chamada: 'mascararCep("639000001")', resultado: mascararCep('639000001') },
 ]
+
+const modalAberto = ref(false)
+const confirmado = ref(false)
+
+function confirmarModal() {
+  modalAberto.value = false
+  confirmado.value = true
+}
+
+const modalDeRequisicaoAberto = ref(false)
+const requisitando = ref(false)
+const resultadoDaRequisicao = ref('')
+
+async function confirmarRequisicao() {
+  requisitando.value = true
+  try {
+    await api.get('/health')
+    resultadoDaRequisicao.value = 'Requisição concluída'
+  } catch {
+    resultadoDaRequisicao.value = MENSAGEM_GERAL
+  } finally {
+    requisitando.value = false
+    modalDeRequisicaoAberto.value = false
+  }
+}
+
+const avisos = useAvisos()
+
+const areaCarregando = ref(false)
+
+const itensDaTrilha = [{ rotulo: 'Início', para: '/' }, { rotulo: 'Componentes' }]
 </script>
 
 <template>
@@ -247,6 +283,99 @@ const exemplosDeFormatacao = [
           </tr>
         </tbody>
       </table>
+    </section>
+
+    <section aria-labelledby="titulo-modal" class="flex flex-col gap-5">
+      <h2 id="titulo-modal" class="text-24 font-semibold">Modal</h2>
+      <div class="flex flex-wrap items-center gap-5">
+        <BaseModalConfirmacao
+          v-model:open="modalAberto"
+          titulo="Tem certeza que deseja cancelar esse pedido?"
+          descricao="Ao cancelar esse pedido, não será possível realizar nenhuma outra alteração de status. Caso queira reverter esse processo, terá que confirmar o recebimento do item novamente"
+          texto-confirmar="Sim, cancelar pedido"
+          texto-cancelar="Não"
+          @confirmar="confirmarModal"
+        >
+          <template #gatilho>
+            <BaseBotao variante="secundario" tamanho="compacto">Abrir modal de risco</BaseBotao>
+          </template>
+        </BaseModalConfirmacao>
+        <BaseModalConfirmacao
+          v-model:open="modalDeRequisicaoAberto"
+          titulo="Deseja sair da edição do personalizável?"
+          descricao="As alterações serão descartadas, e você será redirecionado para a tela inicial do módulo"
+          texto-confirmar="Sair"
+          variante="primario"
+          :carregando="requisitando"
+          @confirmar="confirmarRequisicao"
+        >
+          <template #gatilho>
+            <BaseBotao variante="secundario" tamanho="compacto">
+              Abrir modal com requisição
+            </BaseBotao>
+          </template>
+        </BaseModalConfirmacao>
+      </div>
+      <p v-if="confirmado">Confirmado</p>
+      <p v-if="resultadoDaRequisicao">{{ resultadoDaRequisicao }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-avisos" class="flex flex-col gap-5">
+      <h2 id="titulo-avisos" class="text-24 font-semibold">Avisos</h2>
+      <div class="flex flex-wrap items-center gap-5">
+        <BaseBotao
+          variante="secundario"
+          tamanho="compacto"
+          @click="avisos.sucesso('Pedido adicionado à sacola com sucesso!')"
+        >
+          Aviso de sucesso
+        </BaseBotao>
+        <BaseBotao variante="secundario" tamanho="compacto" @click="avisos.erro(MENSAGEM_GERAL)">
+          Aviso de erro
+        </BaseBotao>
+      </div>
+    </section>
+
+    <section aria-labelledby="titulo-carregamento" class="flex flex-col gap-5">
+      <h2 id="titulo-carregamento" class="text-24 font-semibold">Carregamento</h2>
+      <BaseBotao
+        variante="secundario"
+        tamanho="compacto"
+        :aria-pressed="areaCarregando"
+        class="w-fit"
+        @click="areaCarregando = !areaCarregando"
+      >
+        Alternar carregamento
+      </BaseBotao>
+      <div
+        class="flex h-25 w-100 items-center justify-center rounded-padrao border border-cinza-claro"
+      >
+        <BaseCarregando v-if="areaCarregando" />
+        <p v-else>Conteúdo da área</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="titulo-estado-vazio" class="flex flex-col gap-5">
+      <h2 id="titulo-estado-vazio" class="text-24 font-semibold">Estado vazio</h2>
+      <div class="flex w-100 flex-col gap-5">
+        <BaseEstadoVazio
+          titulo="Ainda não tem pedidos?"
+          descricao="Que tal criar algo incrível agora mesmo?"
+        >
+          <template #acao>
+            <BaseBotao tamanho="compacto" class="w-48">Personalizar agora</BaseBotao>
+          </template>
+        </BaseEstadoVazio>
+        <BaseEstadoVazio
+          titulo="Nenhum resultado"
+          descricao="Não temos estampas com esse nome ou estilo. Tente buscar algo diferente"
+        />
+      </div>
+    </section>
+
+    <section aria-labelledby="titulo-trilha" class="flex flex-col gap-5">
+      <h2 id="titulo-trilha" class="text-24 font-semibold">Trilha</h2>
+      <BaseTrilha :itens="itensDaTrilha" />
     </section>
   </main>
 </template>
