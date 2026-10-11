@@ -1,0 +1,68 @@
+import { computed, ref } from 'vue'
+import { defineStore } from 'pinia'
+
+import { ErroApi, MENSAGEM_GERAL } from '@/api/ErroApi'
+import { api } from '@/api/http'
+import { useAvisos } from '@/stores/avisos'
+import type { Perfil, TipoPerfil, UsuarioSessao } from '@/types/usuario'
+
+const perfilPorTipo: Record<TipoPerfil, Perfil> = { USER: 'cliente', ADMIN: 'admin' }
+
+export const useSessao = defineStore('sessao', () => {
+  const usuario = ref<UsuarioSessao | null>(null)
+  const mensagemLogin = ref<string | null>(null)
+  let carga: Promise<void> | undefined
+
+  const perfil = computed<Perfil>(() =>
+    usuario.value ? perfilPorTipo[usuario.value.tipoPerfil] : 'visitante',
+  )
+
+  const destinoPadrao = computed(() => (perfil.value === 'admin' ? '/admin/pedidos' : '/'))
+
+  async function buscarUsuario() {
+    try {
+      const { id, nome, email, tipoPerfil } = await api.get<UsuarioSessao>('/me')
+      usuario.value = { id, nome, email, tipoPerfil }
+    } catch (erro) {
+      usuario.value = null
+      if (erro instanceof ErroApi && (erro.status === 401 || erro.status === 404)) return
+      useAvisos().erro(MENSAGEM_GERAL)
+    }
+  }
+
+  function carregar(): Promise<void> {
+    carga ??= buscarUsuario()
+    return carga
+  }
+
+  function definirUsuario(novoUsuario: UsuarioSessao) {
+    usuario.value = novoUsuario
+  }
+
+  function limpar() {
+    usuario.value = null
+  }
+
+  function expirar() {
+    limpar()
+    mensagemLogin.value = 'Sua sessão expirou. Entre novamente.'
+  }
+
+  function consumirMensagemLogin(): string | null {
+    const mensagem = mensagemLogin.value
+    mensagemLogin.value = null
+    return mensagem
+  }
+
+  return {
+    usuario,
+    mensagemLogin,
+    perfil,
+    destinoPadrao,
+    carregar,
+    definirUsuario,
+    limpar,
+    expirar,
+    consumirMensagemLogin,
+  }
+})
