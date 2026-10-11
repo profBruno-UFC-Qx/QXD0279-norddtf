@@ -17,6 +17,7 @@ import BaseTrilha from '@/components/base/BaseTrilha.vue'
 import IconeSenha from '@/components/icones/IconeSenha.vue'
 import IconeSms from '@/components/icones/IconeSms.vue'
 import { useAvisos } from '@/stores/avisos'
+import { useSessao } from '@/stores/sessao'
 import {
   formatarCep,
   formatarData,
@@ -164,6 +165,19 @@ const avisos = useAvisos()
 const areaCarregando = ref(false)
 
 const itensDaTrilha = [{ rotulo: 'Início', para: '/' }, { rotulo: 'Componentes' }]
+
+const sessao = useSessao()
+const resultadoDaSessao = ref('')
+
+async function chamarApiDaSessao() {
+  resultadoDaSessao.value = ''
+  try {
+    await api.get('/me')
+    resultadoDaSessao.value = 'OK'
+  } catch {
+    resultadoDaSessao.value = MENSAGEM_GERAL
+  }
+}
 </script>
 
 <template>
@@ -376,6 +390,13 @@ const itensDaTrilha = [{ rotulo: 'Início', para: '/' }, { rotulo: 'Componentes'
     <section aria-labelledby="titulo-trilha" class="flex flex-col gap-5">
       <h2 id="titulo-trilha" class="text-24 font-semibold">Trilha</h2>
       <BaseTrilha :itens="itensDaTrilha" />
+    </section>
+
+    <section aria-labelledby="titulo-sessao" class="flex flex-col items-start gap-5">
+      <h2 id="titulo-sessao" class="text-24 font-semibold">Sessão</h2>
+      <p :data-perfil="sessao.perfil">Perfil: {{ sessao.perfil }}</p>
+      <BaseBotao tamanho="compacto" @click="chamarApiDaSessao">Chamar a API</BaseBotao>
+      <p v-if="resultadoDaSessao">{{ resultadoDaSessao }}</p>
     </section>
   </main>
 </template>

@@ -15,6 +15,18 @@ if (import.meta.env.DEV) {
     component: () => import('@/views/dev/VitrineComponentes.vue'),
     meta: { acesso: 'publico', titulo: 'Vitrine de componentes' },
   })
+  router.addRoute({
+    path: '/_dev/restrita',
+    component: () => import('@/layouts/LayoutLoja.vue'),
+    children: [
+      {
+        path: '',
+        name: 'dev-restrita',
+        component: () => import('@/views/dev/PaginaRestritaTeste.vue'),
+        meta: { acesso: 'cliente', titulo: 'Página restrita' },
+      },
+    ],
+  })
 }
 
 router.beforeEach(guardaDeAcesso)
