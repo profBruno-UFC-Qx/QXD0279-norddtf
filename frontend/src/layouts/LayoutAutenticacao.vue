@@ -1,31 +1,121 @@
 <script setup lang="ts">
-import ilustracao from '@/assets/ilustracao-autenticacao.webp'
+import { computed, provide, readonly, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+import ilustracaoLogin from '@/assets/ilustracao-autenticacao.webp'
 import logoBranco from '@/assets/logo-branco.webp'
+
+import { CHAVE_PAINEL_AUTENTICACAO, ID_PARTE_EMAIL } from './painelAutenticacao'
+
+interface Variante {
+  ilustracao: string
+  rotuloAlca: string
+  classesBloco: string
+  classesIlustracao: string
+}
+
+const varianteLogin: Variante = {
+  ilustracao: ilustracaoLogin,
+  rotuloAlca: 'Entrar com e-mail',
+  classesBloco: 'lg:order-2',
+  classesIlustracao: 'lg:top-[6.71%] lg:left-[-18.81%] lg:w-[105.35%] lg:translate-x-0',
+}
+
+const variantePorRota: Record<string, Variante> = {
+  login: varianteLogin,
+}
+
+const classesPorEstado = {
+  recolhido: {
+    bloco: 'max-md:flex-[1_1_0px]',
+    ilustracao:
+      'max-md:bottom-0 max-md:h-(--altura-ilustracao) [@container(height<300px)]:h-[calc(100cqh-20px)]',
+    logo: 'max-md:bottom-(--altura-ilustracao) max-md:h-(--altura-logo) [@container(height<300px)]:hidden',
+    painel: 'max-md:pt-13.5 max-md:pb-11.75',
+    alca: 'top-[17.5px]',
+  },
+  aberto: {
+    bloco: 'max-md:flex-[0_0_300px]',
+    ilustracao: 'max-md:-bottom-21.25 max-md:h-96.25',
+    logo: 'max-md:bottom-[216.57px] max-md:h-[83.43px]',
+    painel: 'max-md:pt-15 max-md:pb-10',
+    alca: 'top-2',
+  },
+}
+
+const route = useRoute()
+const variante = computed(() => variantePorRota[String(route.name)] ?? varianteLogin)
+
+const aberto = ref(false)
+const classes = computed(() => classesPorEstado[aberto.value ? 'aberto' : 'recolhido'])
+
+function abrir() {
+  aberto.value = true
+}
+
+function alternar() {
+  aberto.value = !aberto.value
+}
+
+provide(CHAVE_PAINEL_AUTENTICACAO, { aberto: readonly(aberto), abrir, alternar })
+
+const ARRASTO_MINIMO = 20
+let inicioDoToque: number | null = null
+
+function aoRolar(evento: WheelEvent) {
+  if (evento.deltaY > 0) abrir()
+}
+
+function aoTocar(evento: TouchEvent) {
+  inicioDoToque = evento.touches[0]?.clientY ?? null
+}
+
+function aoArrastar(evento: TouchEvent) {
+  const atual = evento.touches[0]?.clientY
+  if (inicioDoToque === null || atual === undefined) return
+  if (inicioDoToque - atual > ARRASTO_MINIMO) abrir()
+}
 </script>
 
 <template>
-  <div class="flex min-h-dvh flex-col md:flex-row md:gap-2.5 md:p-12.5">
+  <div
+    class="flex min-h-svh flex-col md:gap-7.5 md:p-7.5 lg:flex-row lg:gap-2.5 lg:p-12.5"
+    @wheel.passive="aoRolar"
+  >
     <div
-      class="relative h-159.25 shrink-0 bg-amarelo-dtf md:order-2 md:h-auto md:w-[45.33%] md:rounded-painel"
+      class="relative bg-amarelo-dtf [--altura-ilustracao:min(385px,calc((100cqh-20px)*385/499.43))] [--altura-logo:min(114.43px,calc((100cqh-20px)*114.43/499.43))] max-md:max-h-159.25 max-md:min-h-50 max-md:overflow-hidden max-md:transition-[flex] max-md:duration-300 max-md:[container-type:size] max-md:motion-reduce:transition-none md:rounded-painel md:max-lg:h-105 lg:w-[45.33%]"
+      :class="[variante.classesBloco, classes.bloco]"
     >
       <img
-        :src="ilustracao"
+        :src="variante.ilustracao"
         alt=""
-        class="absolute top-63 left-1/2 w-77 -translate-x-1/2 md:top-[6.71%] md:left-[-18.81%] md:w-[105.35%] md:max-w-none md:translate-x-0"
+        class="absolute left-1/2 w-auto max-w-none -translate-x-1/2 max-md:transition-[height,bottom] max-md:duration-300 max-md:motion-reduce:transition-none md:max-lg:top-5 md:max-lg:h-83.5"
+        :class="[variante.classesIlustracao, classes.ilustracao]"
       />
       <img
         :src="logoBranco"
         alt="NorDTF"
-        class="absolute top-34.5 left-1/2 w-65.75 -translate-x-1/2 md:top-auto md:bottom-1.5 md:w-32.25"
+        class="absolute left-1/2 w-auto max-w-none -translate-x-1/2 max-md:transition-[height,bottom] max-md:duration-300 max-md:motion-reduce:transition-none md:max-lg:top-89 md:max-lg:h-14 lg:bottom-1.5 lg:h-14"
+        :class="classes.logo"
       />
     </div>
     <main
-      class="relative -mt-7.5 flex flex-1 flex-col items-center gap-3.75 rounded-t-[30px] bg-branco-dtf px-2.5 pt-13.5 pb-7.5 md:order-1 md:mt-0 md:justify-center md:rounded-none md:bg-transparent md:p-2.5"
+      class="relative flex flex-col items-center bg-branco-dtf max-md:-mt-7.5 max-md:rounded-t-[30px] max-md:px-2.5 lg:flex-1 lg:justify-center lg:p-2.5"
+      :class="classes.painel"
+      @touchstart.passive="aoTocar"
+      @touchmove.passive="aoArrastar"
     >
-      <span
-        aria-hidden="true"
-        class="absolute top-9.5 left-1/2 h-0.75 w-25 -translate-x-1/2 bg-preto-dtf md:hidden"
-      ></span>
+      <button
+        type="button"
+        class="absolute left-1/2 grid h-11 w-25 -translate-x-1/2 place-items-center md:hidden"
+        :class="classes.alca"
+        :aria-label="variante.rotuloAlca"
+        :aria-expanded="aberto"
+        :aria-controls="ID_PARTE_EMAIL"
+        @click="alternar"
+      >
+        <span class="block h-0.75 w-25 bg-preto-dtf"></span>
+      </button>
       <RouterView />
     </main>
   </div>
