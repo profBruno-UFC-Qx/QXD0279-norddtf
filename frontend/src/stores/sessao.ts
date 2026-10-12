@@ -54,6 +54,10 @@ export const useSessao = defineStore('sessao', () => {
     definirUsuario(await api.post<UsuarioSessao>('/auth/login', { email, senha }))
   }
 
+  async function cadastrar(nome: string, email: string, senha: string) {
+    definirUsuario(await api.post<UsuarioSessao>('/auth/signup', { nome, email, senha }))
+  }
+
   async function sair(): Promise<string> {
     const destino = destinoDepoisDeSairPorPerfil[perfil.value]
     await api.post('/auth/logout')
@@ -81,6 +85,7 @@ export const useSessao = defineStore('sessao', () => {
     definirUsuario,
     limpar,
     entrar,
+    cadastrar,
     sair,
     expirar,
     consumirMensagemLogin,

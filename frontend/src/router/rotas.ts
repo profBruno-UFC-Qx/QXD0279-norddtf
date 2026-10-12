@@ -25,7 +25,7 @@ export const rotas: RouteRecordRaw[] = [
       {
         path: '',
         name: 'cadastro',
-        component: PaginaProvisoria,
+        component: () => import('@/views/PaginaCadastro.vue'),
         meta: { acesso: 'visitante', titulo: 'Cadastre-se' },
       },
     ],
