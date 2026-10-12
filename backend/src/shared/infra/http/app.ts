@@ -14,6 +14,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: true,
+    rolling: true,
     cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
