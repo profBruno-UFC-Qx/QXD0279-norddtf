@@ -302,7 +302,7 @@ describe('regressão do que já existia', () => {
       vi.restoreAllMocks();
     });
 
-    it('cria a sessão, redireciona para o frontend e GET /me retorna o usuário Google', async () => {
+    it('cria a sessão, redireciona para o login do frontend e GET /me retorna o usuário Google', async () => {
       const email = emailUnico();
       const getToken = vi.spyOn(GoogleAuthService.prototype, 'getToken').mockResolvedValue({ id_token: 'token-falso' });
       vi.spyOn(GoogleAuthService.prototype, 'verifyIdToken').mockResolvedValue({
@@ -320,7 +320,7 @@ describe('regressão do que já existia', () => {
 
       expect(getToken).toHaveBeenCalledWith('abc', expect.any(String));
       expect(callback.status).toBe(302);
-      expect(callback.headers['location']).toBe(FRONTEND);
+      expect(callback.headers['location']).toBe(`${FRONTEND}/login`);
       expect(me.status).toBe(200);
       expect(me.body.email).toBe(email);
     });

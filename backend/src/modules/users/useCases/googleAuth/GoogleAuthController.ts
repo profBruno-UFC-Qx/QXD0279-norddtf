@@ -65,7 +65,7 @@ class GoogleAuthController {
             request.session.userId = user.id;
             await saveSession(request.session);
 
-            response.redirect(frontendUrl);
+            response.redirect(`${frontendUrl}/login`);
         } catch {
             response.redirect(`${frontendUrl}/login?error=internal_error`);
         }
