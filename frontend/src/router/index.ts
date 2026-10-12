@@ -29,6 +29,6 @@ if (import.meta.env.DEV) {
   })
 }
 
-router.beforeEach(guardaDeAcesso)
+router.beforeEach((to) => guardaDeAcesso(to, router))
 
 export default router

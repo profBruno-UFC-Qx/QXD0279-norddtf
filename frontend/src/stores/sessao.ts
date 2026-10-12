@@ -5,6 +5,7 @@ import { ErroApi, MENSAGEM_GERAL } from '@/api/ErroApi'
 import { api } from '@/api/http'
 import { useAvisos } from '@/stores/avisos'
 import type { Perfil, TipoPerfil, UsuarioSessao } from '@/types/usuario'
+import { destinoPadraoPorPerfil } from '@/utils/destino'
 
 const perfilPorTipo: Record<TipoPerfil, Perfil> = { USER: 'cliente', ADMIN: 'admin' }
 
@@ -17,7 +18,7 @@ export const useSessao = defineStore('sessao', () => {
     usuario.value ? perfilPorTipo[usuario.value.tipoPerfil] : 'visitante',
   )
 
-  const destinoPadrao = computed(() => (perfil.value === 'admin' ? '/admin/pedidos' : '/'))
+  const destinoPadrao = computed(() => destinoPadraoPorPerfil[perfil.value])
 
   async function buscarUsuario() {
     try {
@@ -35,8 +36,8 @@ export const useSessao = defineStore('sessao', () => {
     return carga
   }
 
-  function definirUsuario(novoUsuario: UsuarioSessao) {
-    usuario.value = novoUsuario
+  function definirUsuario({ id, nome, email, tipoPerfil }: UsuarioSessao) {
+    usuario.value = { id, nome, email, tipoPerfil }
   }
 
   function limpar() {
