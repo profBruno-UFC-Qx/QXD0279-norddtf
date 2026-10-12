@@ -3,6 +3,7 @@ import { computed, provide, readonly, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ilustracaoLogin from '@/assets/ilustracao-autenticacao.webp'
+import ilustracaoCadastro from '@/assets/ilustracao-cadastro.webp'
 import logoBranco from '@/assets/logo-branco.webp'
 
 import { CHAVE_PAINEL_AUTENTICACAO, ID_PARTE_EMAIL } from './painelAutenticacao'
@@ -12,6 +13,7 @@ interface Variante {
   rotuloAlca: string
   classesBloco: string
   classesIlustracao: string
+  classesIlustracaoAberta: string
 }
 
 const varianteLogin: Variante = {
@@ -19,10 +21,18 @@ const varianteLogin: Variante = {
   rotuloAlca: 'Entrar com e-mail',
   classesBloco: 'lg:order-2',
   classesIlustracao: 'lg:top-[6.71%] lg:left-[-18.81%] lg:w-[105.35%] lg:translate-x-0',
+  classesIlustracaoAberta: 'max-md:-bottom-21.25 max-md:h-96.25',
 }
 
 const variantePorRota: Record<string, Variante> = {
   login: varianteLogin,
+  cadastro: {
+    ilustracao: ilustracaoCadastro,
+    rotuloAlca: 'Cadastrar com e-mail',
+    classesBloco: '',
+    classesIlustracao: 'lg:top-[6.71%] lg:left-[8.07%] lg:w-[105.35%] lg:translate-x-0',
+    classesIlustracaoAberta: 'max-md:-bottom-17.75 max-md:h-95',
+  },
 }
 
 const classesPorEstado = {
@@ -36,7 +46,6 @@ const classesPorEstado = {
   },
   aberto: {
     bloco: 'max-md:flex-[0_0_300px]',
-    ilustracao: 'max-md:-bottom-21.25 max-md:h-96.25',
     logo: 'max-md:bottom-[216.57px] max-md:h-[83.43px]',
     painel: 'max-md:pt-15 max-md:pb-10',
     alca: 'top-2',
@@ -48,6 +57,9 @@ const variante = computed(() => variantePorRota[String(route.name)] ?? varianteL
 
 const aberto = ref(false)
 const classes = computed(() => classesPorEstado[aberto.value ? 'aberto' : 'recolhido'])
+const classesDaIlustracao = computed(() =>
+  aberto.value ? variante.value.classesIlustracaoAberta : classesPorEstado.recolhido.ilustracao,
+)
 
 function abrir() {
   aberto.value = true
@@ -90,7 +102,7 @@ function aoArrastar(evento: TouchEvent) {
         :src="variante.ilustracao"
         alt=""
         class="absolute left-1/2 w-auto max-w-none -translate-x-1/2 max-md:transition-[height,bottom] max-md:duration-300 max-md:motion-reduce:transition-none md:max-lg:top-5 md:max-lg:h-83.5"
-        :class="[variante.classesIlustracao, classes.ilustracao]"
+        :class="[variante.classesIlustracao, classesDaIlustracao]"
       />
       <img
         :src="logoBranco"
@@ -100,7 +112,7 @@ function aoArrastar(evento: TouchEvent) {
       />
     </div>
     <main
-      class="relative flex flex-col items-center bg-branco-dtf max-md:-mt-7.5 max-md:rounded-t-[30px] max-md:px-2.5 lg:flex-1 lg:justify-center lg:p-2.5"
+      class="relative flex flex-col items-center bg-branco-dtf max-md:-mt-7.5 max-md:rounded-t-[30px] max-md:px-2.5 md:bg-transparent lg:flex-1 lg:justify-center lg:p-2.5"
       :class="classes.painel"
       @touchstart.passive="aoTocar"
       @touchmove.passive="aoArrastar"
