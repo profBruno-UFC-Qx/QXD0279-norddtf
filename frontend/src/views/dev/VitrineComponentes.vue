@@ -72,6 +72,22 @@ onMounted(() => {
   formularioDeEstados.value?.setErrors(errosForcados)
 })
 
+const formularioDeAutenticacao = useTemplateRef<InstanceType<typeof Form>>(
+  'formularioDeAutenticacao',
+)
+
+const DICA_SENHA = 'Mínimo de 8 caracteres, com pelo menos uma letra e um número.'
+
+const errosDeAutenticacao = { senhaComErro: 'A senha precisa ter pelo menos 8 caracteres.' }
+
+const esquemaDeAutenticacao = schemaZod(
+  z.object({ senhaComErro: z.never({ error: errosDeAutenticacao.senhaComErro }) }),
+)
+
+onMounted(() => {
+  formularioDeAutenticacao.value?.setErrors(errosDeAutenticacao)
+})
+
 const MENSAGEM_TELEFONE = 'Informe um telefone com DDD e 11 dígitos.'
 
 const esquemaDoExemplo = z.object({
@@ -254,6 +270,40 @@ async function chamarApiDaSessao() {
           nome="caixaDesabilitada"
           rotulo="Caixa de seleção desabilitada"
           desabilitado
+        />
+      </Form>
+    </section>
+
+    <section aria-labelledby="titulo-autenticacao" class="flex flex-col gap-5">
+      <h2 id="titulo-autenticacao" class="text-24 font-semibold">Autenticação</h2>
+      <Form
+        ref="formularioDeAutenticacao"
+        :validation-schema="esquemaDeAutenticacao"
+        class="flex w-100.25 flex-col gap-5"
+      >
+        <BaseCampoTexto
+          nome="senhaComDica"
+          rotulo="Senha com dica"
+          tipo="password"
+          :icone="IconeSenha"
+          placeholder="Insira sua senha"
+          :dica="DICA_SENHA"
+        />
+        <BaseCampoTexto
+          nome="senhaComErro"
+          rotulo="Senha com dica e erro"
+          tipo="password"
+          :icone="IconeSenha"
+          placeholder="Insira sua senha"
+          :dica="DICA_SENHA"
+        />
+        <BaseCampoTexto
+          nome="emailRotuloOculto"
+          rotulo="E-mail com rótulo oculto"
+          tipo="email"
+          :icone="IconeSms"
+          placeholder="Insira seu email"
+          rotulo-oculto
         />
       </Form>
     </section>

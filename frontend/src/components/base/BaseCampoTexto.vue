@@ -19,8 +19,10 @@ const props = withDefaults(
     placeholder?: string
     autocomplete?: string
     desabilitado?: boolean
+    dica?: string
+    rotuloOculto?: boolean
   }>(),
-  { tipo: 'text', desabilitado: false },
+  { tipo: 'text', desabilitado: false, rotuloOculto: false },
 )
 
 const mascaras: Record<Mascara, (valor: string) => string> = {
@@ -30,12 +32,19 @@ const mascaras: Record<Mascara, (valor: string) => string> = {
 
 const id = useId()
 const idErro = `${id}-erro`
+const idDica = `${id}-dica`
 
 const { value, errorMessage, handleBlur, handleChange } = useField<string>(
   () => props.nome,
   undefined,
   { validateOnValueUpdate: false },
 )
+
+const idDescricao = computed(() => {
+  if (errorMessage.value) return idErro
+  if (props.dica) return idDica
+  return undefined
+})
 
 const senhaVisivel = ref(false)
 const ehSenha = computed(() => props.tipo === 'password')
@@ -61,7 +70,9 @@ function aoDigitar(evento: Event) {
 
 <template>
   <div class="flex flex-col gap-1.25" :class="{ 'text-cinza-escuro': desabilitado }">
-    <label :for="id" class="text-14 font-medium">{{ rotulo }}</label>
+    <label :for="id" class="text-14 font-medium" :class="{ 'sr-only': rotuloOculto }">
+      {{ rotulo }}
+    </label>
     <div class="relative">
       <component
         :is="icone"
@@ -77,7 +88,7 @@ function aoDigitar(evento: Event) {
         :autocomplete="autocomplete"
         :disabled="desabilitado"
         :aria-invalid="!!errorMessage || undefined"
-        :aria-describedby="errorMessage ? idErro : undefined"
+        :aria-describedby="idDescricao"
         class="h-9.5 w-full rounded-padrao bg-cinza-claro px-2.5 text-12 placeholder:text-cinza-dtf disabled:cursor-not-allowed disabled:placeholder:text-cinza-escuro aria-invalid:ring-2 aria-invalid:ring-erro aria-invalid:ring-inset"
         :class="{ 'pl-11': icone, 'pr-8': ehSenha }"
         @input="aoDigitar"
@@ -97,5 +108,6 @@ function aoDigitar(evento: Event) {
       </button>
     </div>
     <p v-if="errorMessage" :id="idErro" class="text-12 text-erro">{{ errorMessage }}</p>
+    <p v-else-if="dica" :id="idDica" class="text-12 text-cinza-dtf">{{ dica }}</p>
   </div>
 </template>
