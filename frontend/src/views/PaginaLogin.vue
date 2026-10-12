@@ -13,8 +13,8 @@ import IconeSenha from '@/components/icones/IconeSenha.vue'
 import IconeSms from '@/components/icones/IconeSms.vue'
 import { CHAVE_PAINEL_AUTENTICACAO, ID_PARTE_EMAIL } from '@/layouts/painelAutenticacao'
 import { useSessao } from '@/stores/sessao'
-import { destinoDepoisDeEntrar, voltarInterno } from '@/utils/destino'
-import { mensagemDeEspera } from '@/utils/mensagensAutenticacao'
+import { consumirDestinoGoogle, destinoDepoisDeEntrar, voltarInterno } from '@/utils/destino'
+import { mensagemDeEspera, mensagemDoGoogle } from '@/utils/mensagensAutenticacao'
 import { aplicarErrosDaApi, schemaZod } from '@/utils/validacao'
 
 const esquemaLogin = z.object({
@@ -34,7 +34,15 @@ const router = useRouter()
 const sessao = useSessao()
 const voltar = computed(() => voltarInterno(route.query.voltar) ?? undefined)
 
-const mensagem = sessao.consumirMensagemLogin()
+const destinoGoogle = consumirDestinoGoogle()
+const mensagemDaSessao = sessao.consumirMensagemLogin()
+const erroDoGoogle = route.query.error
+const mensagem =
+  erroDoGoogle === undefined ? mensagemDaSessao : mensagemDoGoogle(String(erroDoGoogle))
+
+if (erroDoGoogle !== undefined) {
+  router.replace({ query: destinoGoogle ? { voltar: destinoGoogle } : {} })
+}
 
 const { handleSubmit, isSubmitting, setErrors } = useForm({
   validationSchema: schemaZod(esquemaLogin),
