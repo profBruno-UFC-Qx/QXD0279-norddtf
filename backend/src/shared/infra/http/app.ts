@@ -8,6 +8,7 @@ const app: Express = express();
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
+    exposedHeaders: ['Retry-After'],
 }));
 app.use(express.json());
 app.use(session({
