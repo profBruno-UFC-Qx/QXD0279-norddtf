@@ -30,4 +30,4 @@ O app sobe em `http://localhost:5173`. A porta é fixa: se ela estiver ocupada, 
 | `pnpm lint` | oxlint e ESLint, corrigindo o que for automático |
 | `pnpm format` | Prettier em `src/` |
 | `pnpm build` | Checagem de tipos e build de produção em `dist/` |
-| `pnpm preview` | Serve o build de produção |
+| `pnpm preview` | Serve o build de produção na porta 4173. Para falar com o backend, rode `pnpm preview --port 5173 --strictPort` |
