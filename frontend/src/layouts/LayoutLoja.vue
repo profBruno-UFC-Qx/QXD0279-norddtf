@@ -61,7 +61,7 @@ const acesso = computed(() => acessoDoUsuario[sessao.perfil])
         <button
           v-if="sessao.perfil !== 'visitante'"
           type="button"
-          class="hidden h-10 font-destaque text-14 font-black lg:block"
+          class="hidden h-10 pl-2.5 font-destaque text-14 font-black lg:block"
         >
           Sair
         </button>
