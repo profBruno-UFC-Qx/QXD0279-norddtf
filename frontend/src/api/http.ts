@@ -6,7 +6,7 @@ type OpcoesRequisicao = { metodo?: Metodo; corpo?: unknown; sinal?: AbortSignal 
 
 type GanchosDeSessao = { aoNaoAutorizado: () => void; aoAcessoNegado: () => void }
 
-const URL_API = import.meta.env.VITE_API_URL
+export const URL_API = import.meta.env.VITE_API_URL
 
 if (!URL_API) {
   throw new Error('VITE_API_URL não está definida no .env do frontend.')

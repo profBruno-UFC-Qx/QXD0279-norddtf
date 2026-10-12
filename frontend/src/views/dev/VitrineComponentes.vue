@@ -11,9 +11,11 @@ import BaseCaixaSelecao from '@/components/base/BaseCaixaSelecao.vue'
 import BaseCampoTexto from '@/components/base/BaseCampoTexto.vue'
 import BaseCarregando from '@/components/base/BaseCarregando.vue'
 import BaseEstadoVazio from '@/components/base/BaseEstadoVazio.vue'
+import BaseMensagem from '@/components/base/BaseMensagem.vue'
 import BaseModalConfirmacao from '@/components/base/BaseModalConfirmacao.vue'
 import BaseSelecao from '@/components/base/BaseSelecao.vue'
 import BaseTrilha from '@/components/base/BaseTrilha.vue'
+import BotaoGoogle from '@/components/autenticacao/BotaoGoogle.vue'
 import IconeSenha from '@/components/icones/IconeSenha.vue'
 import IconeSms from '@/components/icones/IconeSms.vue'
 import { useAvisos } from '@/stores/avisos'
@@ -306,6 +308,17 @@ async function chamarApiDaSessao() {
           rotulo-oculto
         />
       </Form>
+      <div class="flex flex-wrap items-center gap-5">
+        <BotaoGoogle />
+        <BotaoGoogle voltar="/pedidos" />
+      </div>
+      <div class="flex w-100.25 flex-col gap-5">
+        <BaseMensagem>E-mail ou senha incorretos.</BaseMensagem>
+        <BaseMensagem>
+          Já existe uma conta com este e-mail. Tente entrar com e-mail e senha ou com o Google.
+          <RouterLink to="/login" class="underline">Entrar</RouterLink>
+        </BaseMensagem>
+      </div>
     </section>
 
     <section aria-labelledby="titulo-exemplo" class="flex flex-col gap-5">
