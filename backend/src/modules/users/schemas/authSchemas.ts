@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-const email = z
+export const email = z
   .string({ error: 'Informe o e-mail.' })
   .trim()
   .toLowerCase()
   .max(254, { error: 'O e-mail pode ter até 254 caracteres.' })
   .pipe(z.email({ error: 'Informe um e-mail válido.' }));
 
-const senhaComPolitica = z
+export const senhaComPolitica = z
   .string({ error: 'Informe a senha.' })
   .min(8, { error: 'A senha precisa ter pelo menos 8 caracteres.' })
   .max(128, { error: 'A senha pode ter no máximo 128 caracteres.' })

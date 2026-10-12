@@ -10,13 +10,14 @@ interface GoogleProfile {
     nome: string;
 }
 
+type UserRow = Scalars<Models.public_User>;
+
 interface NewUserWithPassword {
     nome: string;
     email: string;
     senhaHash: string;
+    tipoPerfil?: UserRow["tipoPerfil"];
 }
-
-type UserRow = Scalars<Models.public_User>;
 
 const EMAIL_UNIQUE_CONSTRAINT = "user_email_key";
 
@@ -55,9 +56,9 @@ class UsersRepository {
         return db.orm.public.User.where({ email }).first();
     }
 
-    async createWithPassword({ nome, email, senhaHash }: NewUserWithPassword): Promise<UserRow> {
+    async createWithPassword({ nome, email, senhaHash, tipoPerfil }: NewUserWithPassword): Promise<UserRow> {
         try {
-            return await db.orm.public.User.create({ nome, email, senha: senhaHash });
+            return await db.orm.public.User.create({ nome, email, senha: senhaHash, ...(tipoPerfil ? { tipoPerfil } : {}) });
         } catch (error) {
             if (isEmailUniqueViolation(error)) {
                 throw new EmailJaCadastradoError();

@@ -9,6 +9,7 @@
     "test": "vitest run",
     "start": "pnpm build && node dist/shared/infra/http/server.js",
     "dev": "tsx watch src/shared/infra/http/server.ts",
+    "seed": "tsx src/shared/infra/prisma/seed.ts",
     "contract:emit": "prisma contract emit",
     "docker-compose": "infisical run --env=dev -- docker compose"
   },
