@@ -3,6 +3,8 @@ import type { RouteRecordRaw } from 'vue-router'
 const LayoutAutenticacao = () => import('@/layouts/LayoutAutenticacao.vue')
 const PaginaProvisoria = () => import('@/views/PaginaProvisoria.vue')
 
+const trilhaProdutos = { rotulo: 'Produtos', para: { name: 'loja-produtos' } }
+
 export const rotas: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -42,61 +44,97 @@ export const rotas: RouteRecordRaw[] = [
         path: 'produtos/:id',
         name: 'loja-produto',
         component: PaginaProvisoria,
-        meta: { acesso: 'publico', titulo: 'Produto' },
+        meta: {
+          acesso: 'publico',
+          titulo: 'Produto',
+          trilha: [trilhaProdutos, { rotulo: 'Produto' }],
+        },
       },
       {
         path: 'estampas',
         name: 'loja-estampas',
         component: PaginaProvisoria,
-        meta: { acesso: 'publico', titulo: 'Estampas' },
+        meta: { acesso: 'publico', titulo: 'Estampas', trilha: [{ rotulo: 'Estampas' }] },
       },
       {
         path: 'estampas/:id',
         name: 'loja-estampa',
         component: PaginaProvisoria,
-        meta: { acesso: 'publico', titulo: 'Estampa' },
+        meta: {
+          acesso: 'publico',
+          titulo: 'Estampa',
+          trilha: [{ rotulo: 'Estampas', para: { name: 'loja-estampas' } }, { rotulo: 'Estampa' }],
+        },
       },
       {
         path: 'produtos/:id/personalizar',
         name: 'loja-personalizar',
         component: PaginaProvisoria,
-        meta: { acesso: 'cliente', titulo: 'Personalizar' },
+        meta: {
+          acesso: 'cliente',
+          titulo: 'Personalizar',
+          trilha: [trilhaProdutos, { rotulo: 'Personalizar' }],
+        },
       },
       {
         path: 'folha',
         name: 'loja-folha',
         component: PaginaProvisoria,
-        meta: { acesso: 'cliente', titulo: 'Montar folha' },
+        meta: {
+          acesso: 'cliente',
+          titulo: 'Montar folha',
+          trilha: [trilhaProdutos, { rotulo: 'Montar folha' }],
+        },
       },
       {
         path: 'sacola',
         name: 'loja-sacola',
         component: PaginaProvisoria,
-        meta: { acesso: 'cliente', titulo: 'Sacola' },
+        meta: {
+          acesso: 'cliente',
+          titulo: 'Sacola',
+          trilha: [trilhaProdutos, { rotulo: 'Sacola' }],
+        },
       },
       {
         path: 'checkout',
         name: 'loja-checkout',
         component: PaginaProvisoria,
-        meta: { acesso: 'cliente', titulo: 'Finalizar pagamento' },
+        meta: {
+          acesso: 'cliente',
+          titulo: 'Finalizar pagamento',
+          trilha: [trilhaProdutos, { rotulo: 'Finalizar pagamento' }],
+        },
       },
       {
         path: 'pedidos',
         name: 'loja-pedidos',
         component: PaginaProvisoria,
-        meta: { acesso: 'cliente', titulo: 'Meus pedidos' },
+        meta: {
+          acesso: 'cliente',
+          titulo: 'Meus pedidos',
+          trilha: [trilhaProdutos, { rotulo: 'Meus pedidos' }],
+        },
       },
       {
         path: 'pedidos/:numero',
         name: 'loja-pedido',
         component: PaginaProvisoria,
-        meta: { acesso: 'cliente', titulo: 'Pedido' },
+        meta: {
+          acesso: 'cliente',
+          titulo: 'Pedido',
+          trilha: [trilhaProdutos, { rotulo: 'Pedido' }],
+        },
       },
       {
         path: 'perfil',
         name: 'loja-perfil',
         component: PaginaProvisoria,
-        meta: { acesso: 'cliente', titulo: 'Meu perfil' },
+        meta: {
+          acesso: 'cliente',
+          titulo: 'Meu perfil',
+          trilha: [trilhaProdutos, { rotulo: 'Meu perfil' }],
+        },
       },
       {
         path: ':caminho(.*)*',
