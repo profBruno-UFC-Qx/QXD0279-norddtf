@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, inject, onBeforeUnmount, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { z } from 'zod'
 
+import { ErroApi, MENSAGEM_GERAL } from '@/api/ErroApi'
 import BotaoGoogle from '@/components/autenticacao/BotaoGoogle.vue'
 import BaseBotao from '@/components/base/BaseBotao.vue'
 import BaseCampoTexto from '@/components/base/BaseCampoTexto.vue'
@@ -12,8 +13,9 @@ import IconeSenha from '@/components/icones/IconeSenha.vue'
 import IconeSms from '@/components/icones/IconeSms.vue'
 import { CHAVE_PAINEL_AUTENTICACAO, ID_PARTE_EMAIL } from '@/layouts/painelAutenticacao'
 import { useSessao } from '@/stores/sessao'
-import { voltarInterno } from '@/utils/destino'
-import { schemaZod } from '@/utils/validacao'
+import { destinoDepoisDeEntrar, voltarInterno } from '@/utils/destino'
+import { mensagemDeEspera } from '@/utils/mensagensAutenticacao'
+import { aplicarErrosDaApi, schemaZod } from '@/utils/validacao'
 
 const esquemaLogin = z.object({
   email: z
@@ -28,15 +30,62 @@ const esquemaLogin = z.object({
 
 const { aberto } = inject(CHAVE_PAINEL_AUTENTICACAO)!
 const route = useRoute()
+const router = useRouter()
+const sessao = useSessao()
 const voltar = computed(() => voltarInterno(route.query.voltar) ?? undefined)
-const mensagem = useSessao().consumirMensagemLogin()
 
-const { handleSubmit } = useForm({
+const mensagem = sessao.consumirMensagemLogin()
+
+const { handleSubmit, isSubmitting, setErrors } = useForm({
   validationSchema: schemaZod(esquemaLogin),
   initialValues: { email: '', senha: '' },
 })
 
-const entrar = handleSubmit(() => {})
+const mensagemDoEnvio = ref<string | null>(null)
+const esperando = ref(false)
+let timerDaEspera: ReturnType<typeof setTimeout> | undefined
+
+function esperar(segundos: number) {
+  mensagemDoEnvio.value = mensagemDeEspera(segundos)
+  esperando.value = true
+  clearTimeout(timerDaEspera)
+  timerDaEspera = setTimeout(() => {
+    esperando.value = false
+    mensagemDoEnvio.value = null
+  }, segundos * 1000)
+}
+
+onBeforeUnmount(() => clearTimeout(timerDaEspera))
+
+function tratarErro(erro: unknown) {
+  if (aplicarErrosDaApi(erro, setErrors)) return
+  if (!(erro instanceof ErroApi)) {
+    mensagemDoEnvio.value = MENSAGEM_GERAL
+    return
+  }
+  if (erro.status === 429 && erro.segundosParaTentar !== undefined) {
+    esperar(erro.segundosParaTentar)
+    return
+  }
+  mensagemDoEnvio.value = erro.mensagem
+}
+
+const entrar = handleSubmit(
+  async ({ email, senha }) => {
+    mensagemDoEnvio.value = null
+    try {
+      await sessao.entrar(email, senha)
+    } catch (erro) {
+      tratarErro(erro)
+      return
+    }
+    const destino = destinoDepoisDeEntrar(router, sessao.perfil, voltarInterno(route.query.voltar))
+    await router.replace(destino)
+  },
+  () => {
+    mensagemDoEnvio.value = null
+  },
+)
 </script>
 
 <template>
@@ -78,7 +127,15 @@ const entrar = handleSubmit(() => {})
           autocomplete="current-password"
           rotulo-oculto
         />
-        <BaseBotao tipo="submit" class="w-full">Entrar</BaseBotao>
+        <BaseMensagem v-if="mensagemDoEnvio">{{ mensagemDoEnvio }}</BaseMensagem>
+        <BaseBotao
+          tipo="submit"
+          class="w-full"
+          :carregando="isSubmitting"
+          :desabilitado="esperando"
+        >
+          Entrar
+        </BaseBotao>
       </form>
     </div>
     <p class="text-16 font-semibold">
