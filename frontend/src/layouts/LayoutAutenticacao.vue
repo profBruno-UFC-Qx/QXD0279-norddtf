@@ -20,7 +20,7 @@ const varianteLogin: Variante = {
   ilustracao: ilustracaoLogin,
   rotuloAlca: 'Entrar com e-mail',
   classesBloco: 'lg:order-2',
-  classesIlustracao: 'lg:top-[6.71%] lg:left-[-18.81%] lg:w-[105.35%] lg:translate-x-0',
+  classesIlustracao: 'lg:top-[6.71%] lg:left-[33.87%] lg:max-h-[86.58%] lg:max-w-[105.35%]',
   classesIlustracaoAberta: 'max-md:-bottom-21.25 max-md:h-96.25',
 }
 
@@ -30,7 +30,7 @@ const variantePorRota: Record<string, Variante> = {
     ilustracao: ilustracaoCadastro,
     rotuloAlca: 'Cadastrar com e-mail',
     classesBloco: '',
-    classesIlustracao: 'lg:top-[6.71%] lg:left-[8.07%] lg:w-[105.35%] lg:translate-x-0',
+    classesIlustracao: 'lg:top-[6.71%] lg:left-[60.74%] lg:max-h-[86.58%] lg:max-w-[105.35%]',
     classesIlustracaoAberta: 'max-md:-bottom-17.75 max-md:h-95',
   },
 }
