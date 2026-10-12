@@ -6,7 +6,12 @@ Descreva os pré-requisitos (linguagem/SDK e versão, ferramentas necessárias) 
 
 ## :key: Credenciais de acesso para teste
 
-Informe login e senha (ou instrução equivalente) para cada papel de usuário da aplicação. Se o projeto não possui autenticação, indique explicitamente "Não se aplica" e explique por quê.
+| Papel | E-mail | Senha |
+| --- | --- | --- |
+| Administrador | admin@nordtf.com | admin1234 |
+| Cliente | cliente@nordtf.com | cliente1234 |
+
+As duas contas são criadas pelo seed. Em `backend/`, com as variáveis `SEED_*` do `.env.example` copiadas para o `.env`, execute `pnpm seed`. O seed não altera conta que já existe.
 
 ## :robot: Uso de ferramentas de Inteligência Artificial
 
