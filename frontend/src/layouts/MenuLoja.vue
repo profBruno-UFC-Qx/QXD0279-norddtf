@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useRoute, type RouteLocationRaw } from 'vue-router'
+import { useRoute } from 'vue-router'
 import {
   DialogContent,
   DialogOverlay,
@@ -12,23 +12,7 @@ import {
 
 import IconeMenu from '@/components/icones/IconeMenu.vue'
 import { useSessao } from '@/stores/sessao'
-import type { Perfil } from '@/types/usuario'
-
-type ItemDoMenu = { rotulo: string; para: RouteLocationRaw }
-
-const produtos: ItemDoMenu = { rotulo: 'Produtos', para: { name: 'loja-produtos' } }
-const estampas: ItemDoMenu = { rotulo: 'Estampas', para: { name: 'loja-estampas' } }
-
-const itensPorPerfil: Record<Perfil, ItemDoMenu[]> = {
-  visitante: [produtos, estampas, { rotulo: 'Entrar', para: { name: 'login' } }],
-  cliente: [
-    produtos,
-    estampas,
-    { rotulo: 'Meus pedidos', para: { name: 'loja-pedidos' } },
-    { rotulo: 'Meu perfil', para: { name: 'loja-perfil' } },
-  ],
-  admin: [produtos, estampas, { rotulo: 'Painel', para: { name: 'admin-pedidos' } }],
-}
+import { itensPorPerfil } from './itensMenuLoja'
 
 const sessao = useSessao()
 const route = useRoute()
@@ -44,14 +28,14 @@ watch(
 
 <template>
   <DialogRoot v-model:open="aberto">
-    <DialogTrigger aria-label="Abrir menu" class="shrink-0">
+    <DialogTrigger aria-label="Abrir menu" class="shrink-0 lg:hidden">
       <IconeMenu class="size-7.5" />
     </DialogTrigger>
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-preto-dtf/50" />
       <DialogContent
         :aria-describedby="undefined"
-        class="fixed inset-y-0 left-[max(0px,calc((100%-440px)/2))] z-50 flex w-75 max-w-[85%] flex-col gap-7.5 overflow-y-auto bg-branco-dtf px-5 py-7.5 text-preto-dtf outline-none"
+        class="fixed inset-y-0 left-[max(0px,calc((100%-440px)/2))] z-50 flex w-75 max-w-[85%] flex-col gap-7.5 overflow-y-auto bg-branco-dtf px-5 py-7.5 text-preto-dtf outline-none md:left-0"
       >
         <DialogTitle class="font-destaque text-24 font-extrabold">Menu</DialogTitle>
         <nav aria-label="Menu da loja">
