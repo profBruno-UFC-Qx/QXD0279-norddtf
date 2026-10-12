@@ -30,8 +30,16 @@ function lerJson(texto: string): unknown {
   }
 }
 
-function converterErro(status: number, corpo: unknown): ErroApi {
-  if (!ehObjeto(corpo)) return new ErroApi(status, MENSAGEM_GERAL)
+function lerSegundosParaTentar(cabecalhos: Headers): number | undefined {
+  const valor = cabecalhos.get('Retry-After')?.trim()
+  if (!valor || !/^\d+$/.test(valor)) return undefined
+  return Number(valor)
+}
+
+function converterErro(status: number, corpo: unknown, segundosParaTentar?: number): ErroApi {
+  if (!ehObjeto(corpo)) {
+    return new ErroApi(status, MENSAGEM_GERAL, undefined, undefined, segundosParaTentar)
+  }
 
   const codigo = typeof corpo.code === 'string' ? corpo.code : undefined
 
@@ -40,10 +48,10 @@ function converterErro(status: number, corpo: unknown): ErroApi {
   }
 
   if (status >= 400 && status < 500 && codigo && typeof corpo.message === 'string') {
-    return new ErroApi(status, corpo.message, codigo)
+    return new ErroApi(status, corpo.message, codigo, undefined, segundosParaTentar)
   }
 
-  return new ErroApi(status, MENSAGEM_GERAL, codigo)
+  return new ErroApi(status, MENSAGEM_GERAL, codigo, undefined, segundosParaTentar)
 }
 
 export async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = {}): Promise<T> {
@@ -78,7 +86,9 @@ export async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = 
     }
   }
 
-  const erro = converterErro(resposta.status, lerJson(texto))
+  const segundosParaTentar =
+    resposta.status === 429 ? lerSegundosParaTentar(resposta.headers) : undefined
+  const erro = converterErro(resposta.status, lerJson(texto), segundosParaTentar)
 
   if (erro.status === 401) ganchosDeSessao?.aoNaoAutorizado()
   if (erro.status === 403) ganchosDeSessao?.aoAcessoNegado()

@@ -6,6 +6,7 @@ export class ErroApi extends Error {
     readonly mensagem: string,
     readonly codigo?: string,
     readonly erros?: Record<string, string>,
+    readonly segundosParaTentar?: number,
   ) {
     super(mensagem)
   }
