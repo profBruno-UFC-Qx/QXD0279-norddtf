@@ -9,6 +9,12 @@ import { destinoPadraoPorPerfil } from '@/utils/destino'
 
 const perfilPorTipo: Record<TipoPerfil, Perfil> = { USER: 'cliente', ADMIN: 'admin' }
 
+const destinoDepoisDeSairPorPerfil: Record<Perfil, string> = {
+  visitante: '/',
+  cliente: '/',
+  admin: '/login',
+}
+
 export const useSessao = defineStore('sessao', () => {
   const usuario = ref<UsuarioSessao | null>(null)
   const mensagemLogin = ref<string | null>(null)
@@ -44,6 +50,13 @@ export const useSessao = defineStore('sessao', () => {
     usuario.value = null
   }
 
+  async function sair(): Promise<string> {
+    const destino = destinoDepoisDeSairPorPerfil[perfil.value]
+    await api.post('/auth/logout')
+    limpar()
+    return destino
+  }
+
   function expirar() {
     limpar()
     mensagemLogin.value = 'Sua sessão expirou. Entre novamente.'
@@ -63,6 +76,7 @@ export const useSessao = defineStore('sessao', () => {
     carregar,
     definirUsuario,
     limpar,
+    sair,
     expirar,
     consumirMensagemLogin,
   }

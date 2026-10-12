@@ -13,13 +13,15 @@ import {
 import IconeMenu from '@/components/icones/IconeMenu.vue'
 import { useSessao } from '@/stores/sessao'
 import { itensPorPerfil } from './itensMenuLoja'
+import { useSair } from './useSair'
 
 const sessao = useSessao()
 const route = useRoute()
 const aberto = ref(false)
+const { saindo, sair } = useSair()
 
 watch(
-  () => route.fullPath,
+  [() => route.fullPath, () => sessao.perfil],
   () => {
     aberto.value = false
   },
@@ -53,7 +55,10 @@ watch(
             <li v-if="sessao.perfil !== 'visitante'">
               <button
                 type="button"
-                class="flex h-12.5 w-full items-center rounded-padrao px-2.5 font-destaque text-14 font-black"
+                class="flex h-12.5 w-full items-center rounded-padrao px-2.5 font-destaque text-14 font-black disabled:cursor-not-allowed"
+                :disabled="saindo"
+                :aria-busy="saindo || undefined"
+                @click="sair"
               >
                 Sair
               </button>

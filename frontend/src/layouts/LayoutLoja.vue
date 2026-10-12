@@ -10,6 +10,7 @@ import { useSessao } from '@/stores/sessao'
 import type { Perfil } from '@/types/usuario'
 import { itensDoTopoPorPerfil } from './itensMenuLoja'
 import MenuLoja from './MenuLoja.vue'
+import { useSair } from './useSair'
 
 const acessoDoUsuario: Record<Perfil, { rotulo: string; para: RouteLocationRaw }> = {
   visitante: { rotulo: 'Entrar', para: { name: 'login' } },
@@ -19,6 +20,7 @@ const acessoDoUsuario: Record<Perfil, { rotulo: string; para: RouteLocationRaw }
 
 const sessao = useSessao()
 const route = useRoute()
+const { saindo, sair } = useSair()
 
 const acesso = computed(() => acessoDoUsuario[sessao.perfil])
 </script>
@@ -61,7 +63,10 @@ const acesso = computed(() => acessoDoUsuario[sessao.perfil])
         <button
           v-if="sessao.perfil !== 'visitante'"
           type="button"
-          class="hidden h-10 pl-2.5 font-destaque text-14 font-black lg:block"
+          class="hidden h-10 pl-2.5 font-destaque text-14 font-black disabled:cursor-not-allowed lg:block"
+          :disabled="saindo"
+          :aria-busy="saindo || undefined"
+          @click="sair"
         >
           Sair
         </button>

@@ -8,6 +8,7 @@ import IconeConteudo from '@/components/icones/IconeConteudo.vue'
 import IconeEstampa from '@/components/icones/IconeEstampa.vue'
 import IconePedidos from '@/components/icones/IconePedidos.vue'
 import IconeSair from '@/components/icones/IconeSair.vue'
+import { useSair } from './useSair'
 
 const itens: { rotulo: string; para: RouteLocationRaw; icone: Component }[] = [
   { rotulo: 'Produtos', para: { name: 'admin-produtos' }, icone: IconeCabide },
@@ -18,6 +19,7 @@ const itens: { rotulo: string; para: RouteLocationRaw; icone: Component }[] = [
 
 const router = useRouter()
 const route = useRoute()
+const { saindo, sair } = useSair()
 
 // /admin/produtos/novo é rota irmã de /admin/produtos, e a classe ativa do RouterLink não a marca.
 function estaAtivo(para: RouteLocationRaw) {
@@ -50,7 +52,10 @@ function estaAtivo(para: RouteLocationRaw) {
       </div>
       <button
         type="button"
-        class="flex h-12.5 items-center gap-5 font-destaque text-14 font-black text-preto-dtf"
+        class="flex h-12.5 items-center gap-5 font-destaque text-14 font-black text-preto-dtf disabled:cursor-not-allowed"
+        :disabled="saindo"
+        :aria-busy="saindo || undefined"
+        @click="sair"
       >
         <IconeSair class="size-6" />
         Sair
