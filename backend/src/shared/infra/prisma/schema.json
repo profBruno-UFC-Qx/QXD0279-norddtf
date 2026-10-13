@@ -16,6 +16,10 @@
       "model": "Estampa",
       "namespace": "public"
     },
+    "estampaCategoria": {
+      "model": "EstampaCategoria",
+      "namespace": "public"
+    },
     "item": {
       "model": "Item",
       "namespace": "public"
@@ -38,6 +42,10 @@
     },
     "produto": {
       "model": "Produto",
+      "namespace": "public"
+    },
+    "produtoCategoria": {
+      "model": "ProdutoCategoria",
       "namespace": "public"
     },
     "produtoCor": {
@@ -222,6 +230,13 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "nomeNormalizado": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -236,7 +251,7 @@
                   ]
                 },
                 "to": {
-                  "model": "Estampa",
+                  "model": "EstampaCategoria",
                   "namespace": "public"
                 }
               },
@@ -251,7 +266,7 @@
                   ]
                 },
                 "to": {
-                  "model": "Produto",
+                  "model": "ProdutoCategoria",
                   "namespace": "public"
                 }
               }
@@ -272,6 +287,9 @@
                 },
                 "nome": {
                   "column": "nome"
+                },
+                "nomeNormalizado": {
+                  "column": "nomeNormalizado"
                 }
               },
               "namespaceId": "public",
@@ -439,13 +457,6 @@
                   "kind": "scalar"
                 }
               },
-              "categoriaId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/uuid@1",
-                  "kind": "scalar"
-                }
-              },
               "criadoEm": {
                 "nullable": false,
                 "type": {
@@ -483,22 +494,6 @@
               }
             },
             "relations": {
-              "categoria": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "categoriaId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Categoria",
-                  "namespace": "public"
-                }
-              },
               "itensEstampa": {
                 "cardinality": "1:N",
                 "on": {
@@ -526,9 +521,6 @@
                 "atualizadoEm": {
                   "column": "atualizadoEm"
                 },
-                "categoriaId": {
-                  "column": "categoriaId"
-                },
                 "criadoEm": {
                   "column": "criadoEm"
                 },
@@ -547,6 +539,70 @@
               },
               "namespaceId": "public",
               "table": "estampa"
+            }
+          },
+          "EstampaCategoria": {
+            "fields": {
+              "categoriaId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "estampaId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "categoria": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "categoriaId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Categoria",
+                  "namespace": "public"
+                }
+              },
+              "estampa": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "estampaId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Estampa",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "categoriaId": {
+                  "column": "categoriaId"
+                },
+                "estampaId": {
+                  "column": "estampaId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "estampaCategoria"
             }
           },
           "Item": {
@@ -862,6 +918,20 @@
           },
           "Material": {
             "fields": {
+              "descricao": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "etiqueta": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -876,11 +946,15 @@
                   "kind": "scalar"
                 }
               },
-              "precoPorMetro": {
+              "precoPorM2": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/numeric@1",
-                  "kind": "scalar"
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 10,
+                    "scale": 2
+                  }
                 }
               },
               "tipo": {
@@ -916,14 +990,20 @@
             },
             "storage": {
               "fields": {
+                "descricao": {
+                  "column": "descricao"
+                },
+                "etiqueta": {
+                  "column": "etiqueta"
+                },
                 "id": {
                   "column": "id"
                 },
                 "larguraFolhaCm": {
                   "column": "larguraFolhaCm"
                 },
-                "precoPorMetro": {
-                  "column": "precoPorMetro"
+                "precoPorM2": {
+                  "column": "precoPorM2"
                 },
                 "tipo": {
                   "column": "tipo"
@@ -1140,13 +1220,6 @@
                   "kind": "scalar"
                 }
               },
-              "categoriaId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/uuid@1",
-                  "kind": "scalar"
-                }
-              },
               "criadoEm": {
                 "nullable": false,
                 "type": {
@@ -1211,22 +1284,6 @@
               }
             },
             "relations": {
-              "categoria": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "categoriaId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Categoria",
-                  "namespace": "public"
-                }
-              },
               "tamanhos": {
                 "cardinality": "1:N",
                 "on": {
@@ -1247,9 +1304,6 @@
               "fields": {
                 "atualizadoEm": {
                   "column": "atualizadoEm"
-                },
-                "categoriaId": {
-                  "column": "categoriaId"
                 },
                 "criadoEm": {
                   "column": "criadoEm"
@@ -1278,6 +1332,70 @@
               },
               "namespaceId": "public",
               "table": "produto"
+            }
+          },
+          "ProdutoCategoria": {
+            "fields": {
+              "categoriaId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "produtoId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "categoria": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "categoriaId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Categoria",
+                  "namespace": "public"
+                }
+              },
+              "produto": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "produtoId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Produto",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "categoriaId": {
+                  "column": "categoriaId"
+                },
+                "produtoId": {
+                  "column": "produtoId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "produtoCategoria"
             }
           },
           "ProdutoCor": {
@@ -1710,6 +1828,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "nomeNormalizado": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
                 }
               },
               "foreignKeys": [],
@@ -1719,7 +1842,13 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "nomeNormalizado"
+                  ]
+                }
+              ]
             },
             "endereco": {
               "columns": {
@@ -1839,11 +1968,6 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
-                "categoriaId": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": true
-                },
                 "criadoEm": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -1874,14 +1998,52 @@
                   "nullable": false
                 }
               },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "estampaCategoria": {
+              "columns": {
+                "categoriaId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "estampaId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
               "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "estampaId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "estampaCategoria"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "estampa"
+                  }
+                },
                 {
                   "source": {
                     "columns": [
                       "categoriaId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "estampa"
+                    "tableName": "estampaCategoria"
                   },
                   "target": {
                     "columns": [
@@ -1897,14 +2059,23 @@
                   "columns": [
                     "categoriaId"
                   ],
-                  "name": "estampa_categoriaId_idx_63b46427",
-                  "prefix": "estampa_categoriaId_idx",
+                  "name": "estampaCategoria_categoriaId_idx_63b46427",
+                  "prefix": "estampaCategoria_categoriaId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "estampaId"
+                  ],
+                  "name": "estampaCategoria_estampaId_idx_347c4ea4",
+                  "prefix": "estampaCategoria_estampaId_idx",
                   "unique": false
                 }
               ],
               "primaryKey": {
                 "columns": [
-                  "id"
+                  "estampaId",
+                  "categoriaId"
                 ]
               },
               "uniques": []
@@ -2190,6 +2361,16 @@
                 }
               ],
               "columns": {
+                "descricao": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "etiqueta": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
@@ -2204,10 +2385,14 @@
                   "nativeType": "numeric",
                   "nullable": false
                 },
-                "precoPorMetro": {
+                "precoPorM2": {
                   "codecId": "pg/numeric@1",
                   "nativeType": "numeric",
-                  "nullable": false
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 10,
+                    "scale": 2
+                  }
                 },
                 "tipo": {
                   "codecId": "pg/text@1",
@@ -2414,11 +2599,6 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
-                "categoriaId": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": true
-                },
                 "criadoEm": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -2478,14 +2658,52 @@
                   }
                 }
               },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "produtoCategoria": {
+              "columns": {
+                "categoriaId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "produtoId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
               "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "produtoId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "produtoCategoria"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "produto"
+                  }
+                },
                 {
                   "source": {
                     "columns": [
                       "categoriaId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "produto"
+                    "tableName": "produtoCategoria"
                   },
                   "target": {
                     "columns": [
@@ -2501,14 +2719,23 @@
                   "columns": [
                     "categoriaId"
                   ],
-                  "name": "produto_categoriaId_idx_63b46427",
-                  "prefix": "produto_categoriaId_idx",
+                  "name": "produtoCategoria_categoriaId_idx_63b46427",
+                  "prefix": "produtoCategoria_categoriaId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "produtoId"
+                  ],
+                  "name": "produtoCategoria_produtoId_idx_eb62fdb9",
+                  "prefix": "produtoCategoria_produtoId_idx",
                   "unique": false
                 }
               ],
               "primaryKey": {
                 "columns": [
-                  "id"
+                  "produtoId",
+                  "categoriaId"
                 ]
               },
               "uniques": []
@@ -2883,7 +3110,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "033e1279e68f1daf6dbe1cb6d09fef02daa9b743de39b31d4cfb02ceb1818975"
+    "storageHash": "4829cd250bf69559bc7c02874fe7d849bff1a96bb8b819788025f0918f560bd1"
   },
   "execution": {
     "executionHash": "25560a8a7550f010c8d55971f442b98e1555517df87151bc4b8a0f164f6ce79c",

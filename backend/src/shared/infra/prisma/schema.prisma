@@ -78,11 +78,32 @@ model Endereco {
 model Categoria {
   id        Uuid     @id @default(uuid())
   nome      String
+  nomeNormalizado String @unique
   descricao String?
-  produtos  Produto[]
-  estampas  Estampa[]
+  produtos  ProdutoCategoria[]
+  estampas  EstampaCategoria[]
   criadoEm TimestamptzString @default(now())
   atualizadoEm temporal.updatedAtString()
+}
+
+model ProdutoCategoria {
+  produtoId   Uuid
+  produto     Produto   @relation(fields: [produtoId], references: [id])
+  categoriaId Uuid
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+
+  @@id([produtoId, categoriaId])
+  @@index([categoriaId])
+}
+
+model EstampaCategoria {
+  estampaId   Uuid
+  estampa     Estampa   @relation(fields: [estampaId], references: [id])
+  categoriaId Uuid
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+
+  @@id([estampaId, categoriaId])
+  @@index([categoriaId])
 }
 
 model Produto {
@@ -93,8 +114,6 @@ model Produto {
   imagemUrl   String?
   tipo        TipoProduto @default(PERSONALIZAVEL)
   temTamanho  Boolean  @default(true)
-  categoriaId Uuid?
-  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
   tamanhos    ProdutoTamanho[]
   criadoEm TimestamptzString @default(now())
   atualizadoEm temporal.updatedAtString()
@@ -129,8 +148,6 @@ model ProdutoCor {
 model Estampa {
   id          Uuid     @id @default(uuid())
   nome        String
-  categoriaId Uuid?
-  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
   imagemUrl   String
   larguraCm   Decimal
   alturaCm    Decimal
@@ -143,7 +160,9 @@ model Estampa {
 model Material {
   id             Uuid     @id @default(uuid())
   tipo           TipoMaterial @unique
-  precoPorMetro  Decimal
+  precoPorM2     Numeric(10, 2)
+  descricao      String
+  etiqueta       String
   larguraFolhaCm Decimal  @default("57")
   itens          Item[]
 }
