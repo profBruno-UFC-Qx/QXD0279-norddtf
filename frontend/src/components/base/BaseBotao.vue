@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import BaseSpinner from './BaseSpinner.vue'
 
 type Variante = 'primario' | 'secundario' | 'risco'
-type Tamanho = 'padrao' | 'compacto'
+type Tamanho = 'padrao' | 'compacto' | 'acao'
 
 const props = withDefaults(
   defineProps<{
@@ -26,6 +26,7 @@ const props = withDefaults(
 const classesPorTamanho: Record<Tamanho, string> = {
   padrao: 'px-4.25 py-2.25 text-24 font-semibold',
   compacto: 'h-9.25 px-2.5 text-13 font-bold whitespace-nowrap',
+  acao: 'h-10.5 px-4.25 text-14 font-bold whitespace-nowrap',
 }
 
 const classesPorVariante: Record<Variante, string> = {
@@ -37,6 +38,7 @@ const classesPorVariante: Record<Variante, string> = {
 const contornoPorTamanho: Record<Tamanho, string> = {
   padrao: 'ring-preto-dtf',
   compacto: 'ring-cinza-escuro/67',
+  acao: 'ring-cinza-escuro/67',
 }
 
 const classeDaVariante = computed(() => {

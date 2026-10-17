@@ -21,8 +21,9 @@ const props = withDefaults(
     textoCancelar?: string
     variante?: 'risco' | 'primario'
     carregando?: boolean
+    informativo?: boolean
   }>(),
-  { textoCancelar: 'Cancelar', variante: 'risco', carregando: false },
+  { textoCancelar: 'Cancelar', variante: 'risco', carregando: false, informativo: false },
 )
 
 const aberto = defineModel<boolean>('open', { default: false })
@@ -59,8 +60,11 @@ function bloquearEscDuranteCarregamento(evento: KeyboardEvent) {
           <AlertDialogTitle class="text-24 font-bold">{{ titulo }}</AlertDialogTitle>
           <AlertDialogDescription class="text-12">{{ descricao }}</AlertDialogDescription>
         </div>
-        <div class="flex w-75 max-w-full justify-between gap-2.5">
-          <AlertDialogCancel as-child>
+        <div
+          class="flex w-75 max-w-full gap-2.5"
+          :class="informativo ? 'justify-center' : 'justify-between'"
+        >
+          <AlertDialogCancel v-if="!informativo" as-child>
             <BaseBotao
               variante="secundario"
               tamanho="compacto"
