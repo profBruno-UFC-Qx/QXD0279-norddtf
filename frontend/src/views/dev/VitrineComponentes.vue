@@ -16,6 +16,7 @@ import BaseModalConfirmacao from '@/components/base/BaseModalConfirmacao.vue'
 import BaseSelecao from '@/components/base/BaseSelecao.vue'
 import BaseTrilha from '@/components/base/BaseTrilha.vue'
 import BotaoGoogle from '@/components/autenticacao/BotaoGoogle.vue'
+import IconeMais from '@/components/icones/IconeMais.vue'
 import IconeSenha from '@/components/icones/IconeSenha.vue'
 import IconeSms from '@/components/icones/IconeSms.vue'
 import { useAvisos } from '@/stores/avisos'
@@ -29,6 +30,8 @@ import {
 } from '@/utils/formatacao'
 import { mascararCep, mascararTelefone } from '@/utils/mascaras'
 import { aplicarErrosDaApi, schemaZod } from '@/utils/validacao'
+
+import ExemploModalFormulario from './ExemploModalFormulario.vue'
 
 const statusDoBackend = ref('Consultando o backend…')
 
@@ -196,6 +199,8 @@ async function chamarApiDaSessao() {
     resultadoDaSessao.value = MENSAGEM_GERAL
   }
 }
+
+const modalInformativoAberto = ref(false)
 </script>
 
 <template>
@@ -460,6 +465,28 @@ async function chamarApiDaSessao() {
       <p :data-perfil="sessao.perfil">Perfil: {{ sessao.perfil }}</p>
       <BaseBotao tamanho="compacto" @click="chamarApiDaSessao">Chamar a API</BaseBotao>
       <p v-if="resultadoDaSessao">{{ resultadoDaSessao }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-gestao-conteudo" class="flex flex-col items-start gap-5">
+      <h2 id="titulo-gestao-conteudo" class="text-24 font-semibold">Gestão de conteúdo</h2>
+      <BaseBotao tamanho="acao">
+        <IconeMais class="size-6" />
+        Nova categoria
+      </BaseBotao>
+      <ExemploModalFormulario />
+      <BaseModalConfirmacao
+        v-model:open="modalInformativoAberto"
+        titulo="Categoria em uso"
+        descricao="Esta categoria está em uso por 2 produtos e 1 estampa. Retire-a deles antes de remover."
+        texto-confirmar="Entendi"
+        variante="primario"
+        informativo
+        @confirmar="modalInformativoAberto = false"
+      >
+        <template #gatilho>
+          <BaseBotao variante="secundario" tamanho="compacto">Abrir modal informativo</BaseBotao>
+        </template>
+      </BaseModalConfirmacao>
     </section>
   </main>
 </template>
