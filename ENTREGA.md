@@ -11,7 +11,7 @@ Descreva os pré-requisitos (linguagem/SDK e versão, ferramentas necessárias) 
 | Administrador | admin@nordtf.com | admin1234 |
 | Cliente | cliente@nordtf.com | cliente1234 |
 
-As duas contas são criadas pelo seed. Em `backend/`, com as variáveis `SEED_*` do `.env.example` copiadas para o `.env`, execute `pnpm seed`. O seed não altera conta que já existe.
+As duas contas são criadas pelo seed, que também cria os materiais DTF e DTF UV com o preço por m², a descrição e a etiqueta iniciais. Em `backend/`, com as variáveis `SEED_*` do `.env.example` copiadas para o `.env`, execute `pnpm seed`. O seed não altera conta nem material que já existe.
 
 ## :robot: Uso de ferramentas de Inteligência Artificial
 
@@ -43,9 +43,8 @@ Lista as tecnologias, frameworks e bibliotecas utilizados.
 
 | Entidade| Criação | Leitura | Atualização | Remoção |
 | --- | --- | --- | --- | --- |
-| Entidade 1 | X |  X  |  | X |
-| Entidade 2 | X |    |  X | X |
-| Entidade 3 | X |    |  |  |
+| Categoria | X | X | X | X |
+| Material |  | X | X |  |
 
 > Lembre-se que é necessário implementar o CRUD de pelo menos duas entidades.
 
@@ -53,5 +52,16 @@ Lista as tecnologias, frameworks e bibliotecas utilizados.
 
 | Método HTTP | URL |
 | --- | --- |
-| GET | api/entidade1/|
-| POST | api/entidade2 |
+| POST | /auth/signup |
+| POST | /auth/login |
+| POST | /auth/logout |
+| GET | /auth/google |
+| GET | /auth/google/callback |
+| GET | /me |
+| GET | /categorias |
+| GET | /admin/categorias |
+| POST | /admin/categorias |
+| PUT | /admin/categorias/:id |
+| DELETE | /admin/categorias/:id |
+| GET | /materiais |
+| PUT | /admin/materiais/:tipo |
