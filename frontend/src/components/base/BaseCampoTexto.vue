@@ -16,6 +16,7 @@ const props = withDefaults(
     tipo?: 'text' | 'email' | 'password' | 'tel'
     icone?: Component
     mascara?: Mascara
+    limite?: number
     placeholder?: string
     autocomplete?: string
     desabilitado?: boolean
@@ -87,6 +88,7 @@ function aoDigitar(evento: Event) {
         :value="valorExibido"
         :placeholder="placeholder"
         :autocomplete="autocomplete"
+        :maxlength="limite"
         :inputmode="mascara === 'moeda' ? 'numeric' : undefined"
         :disabled="desabilitado"
         :aria-invalid="!!errorMessage || undefined"
