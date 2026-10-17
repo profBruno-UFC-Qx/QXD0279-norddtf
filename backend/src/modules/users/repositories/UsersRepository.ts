@@ -57,15 +57,16 @@ class UsersRepository {
     }
 
     async createWithPassword({ nome, email, senhaHash, tipoPerfil }: NewUserWithPassword): Promise<UserRow> {
-        try {
-            return await db.orm.public.User.create({ nome, email, senha: senhaHash, ...(tipoPerfil ? { tipoPerfil } : {}) });
-        } catch (error) {
-            if (isEmailUniqueViolation(error)) {
-                throw new EmailJaCadastradoError();
-            }
-            throw error;
-        }
+        return db.orm.public.User.create({ nome, email, senha: senhaHash, ...(tipoPerfil ? { tipoPerfil } : {}) })
+            .catch(emailRepetido);
     }
+}
+
+function emailRepetido(error: unknown): never {
+    if (isEmailUniqueViolation(error)) {
+        throw new EmailJaCadastradoError();
+    }
+    throw error;
 }
 
 function isEmailUniqueViolation(error: unknown) {
