@@ -207,7 +207,7 @@ export const rotas: RouteRecordRaw[] = [
           {
             path: 'materiais',
             name: 'admin-conteudo-materiais',
-            component: PaginaProvisoria,
+            component: () => import('@/views/admin/conteudo/AbaMateriais.vue'),
             meta: { acesso: 'admin', titulo: 'Materiais' },
           },
         ],
