@@ -5,9 +5,9 @@ import { useField } from 'vee-validate'
 import IconeOlho from '@/components/icones/IconeOlho.vue'
 import IconeOlhoFechado from '@/components/icones/IconeOlhoFechado.vue'
 import { somenteDigitos } from '@/utils/formatacao'
-import { mascararCep, mascararTelefone } from '@/utils/mascaras'
+import { mascararCep, mascararMoeda, mascararTelefone } from '@/utils/mascaras'
 
-type Mascara = 'telefone' | 'cep'
+type Mascara = 'telefone' | 'cep' | 'moeda'
 
 const props = withDefaults(
   defineProps<{
@@ -28,6 +28,7 @@ const props = withDefaults(
 const mascaras: Record<Mascara, (valor: string) => string> = {
   telefone: mascararTelefone,
   cep: mascararCep,
+  moeda: mascararMoeda,
 }
 
 const id = useId()
@@ -86,6 +87,7 @@ function aoDigitar(evento: Event) {
         :value="valorExibido"
         :placeholder="placeholder"
         :autocomplete="autocomplete"
+        :inputmode="mascara === 'moeda' ? 'numeric' : undefined"
         :disabled="desabilitado"
         :aria-invalid="!!errorMessage || undefined"
         :aria-describedby="idDescricao"

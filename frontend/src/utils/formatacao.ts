@@ -23,6 +23,18 @@ export function somenteDigitos(valor: string): string {
   return valor.replace(/\D/g, '')
 }
 
+export function centavosParaDecimal(digitos: string): string {
+  if (digitos === '') return ''
+  const completo = digitos.padStart(3, '0')
+  const reais = completo.slice(0, -2).replace(/^0+(?=\d)/, '')
+  return `${reais}.${completo.slice(-2)}`
+}
+
+export function decimalParaCentavos(texto: string): string {
+  const [reais, centavos = ''] = texto.split('.')
+  return `${reais}${centavos.padEnd(2, '0')}`
+}
+
 export function formatarMoeda(valor: string | number): string {
   return formatoMoeda.format(valor as number | Intl.StringNumericLiteral)
 }
