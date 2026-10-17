@@ -201,7 +201,7 @@ export const rotas: RouteRecordRaw[] = [
           {
             path: 'categorias',
             name: 'admin-conteudo-categorias',
-            component: PaginaProvisoria,
+            component: () => import('@/views/admin/conteudo/AbaCategorias.vue'),
             meta: { acesso: 'admin', titulo: 'Categorias' },
           },
           {
