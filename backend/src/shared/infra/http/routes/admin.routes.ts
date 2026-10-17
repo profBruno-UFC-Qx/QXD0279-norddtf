@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { validarParametro } from "../middlewares/validarParametro.js";
 import { idDaCategoria } from "../../../../modules/categorias/schemas/categoriaSchemas.js";
 import { CategoriaNaoEncontradaError } from "../../../../modules/categorias/errors/CategoriaNaoEncontradaError.js";
 import { CategoriasRepository } from "../../../../modules/categorias/repositories/CategoriasRepository.js";
@@ -18,13 +19,7 @@ const removerCategoriaController = new RemoverCategoriaController(new RemoverCat
 
 const categoriasRoutes: Router = Router();
 
-categoriasRoutes.param('id', (_request, _response, next, id) => {
-    if (!idDaCategoria.safeParse(id).success) {
-        next(new CategoriaNaoEncontradaError());
-        return;
-    }
-    next();
-});
+categoriasRoutes.param('id', validarParametro(idDaCategoria, () => new CategoriaNaoEncontradaError()));
 
 categoriasRoutes.get('/', (request, response) => listarCategoriasComUsoController.handle(request, response));
 categoriasRoutes.post('/', (request, response) => criarCategoriaController.handle(request, response));
