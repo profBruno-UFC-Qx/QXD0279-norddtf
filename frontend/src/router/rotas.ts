@@ -194,8 +194,23 @@ export const rotas: RouteRecordRaw[] = [
       {
         path: 'conteudo',
         name: 'admin-conteudo',
-        component: PaginaProvisoria,
+        component: () => import('@/views/admin/PaginaGestaoConteudo.vue'),
+        redirect: { name: 'admin-conteudo-categorias' },
         meta: { acesso: 'admin', titulo: 'Gestão de conteúdo' },
+        children: [
+          {
+            path: 'categorias',
+            name: 'admin-conteudo-categorias',
+            component: PaginaProvisoria,
+            meta: { acesso: 'admin', titulo: 'Categorias' },
+          },
+          {
+            path: 'materiais',
+            name: 'admin-conteudo-materiais',
+            component: PaginaProvisoria,
+            meta: { acesso: 'admin', titulo: 'Materiais' },
+          },
+        ],
       },
     ],
   },
