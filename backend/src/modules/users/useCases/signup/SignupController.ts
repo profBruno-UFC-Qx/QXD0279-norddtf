@@ -1,36 +1,20 @@
 import type { Request, Response } from 'express';
 import { signupSchema } from '../../schemas/authSchemas.js';
-import { EmailJaCadastradoError } from '../../errors/EmailJaCadastradoError.js';
+import { validar } from '../../../../shared/infra/http/validar.js';
 import { toSafeUser } from '../../toSafeUser.js';
 import { regenerateSession, saveSession } from '../../../../shared/infra/http/session.js';
-import { toFieldErrors } from '../../../../shared/infra/http/fieldErrors.js';
 import type { SignupService } from './SignupService.js';
-
-const MENSAGEM_CONTA_EXISTENTE =
-  'Já existe uma conta com este e-mail. Tente entrar com e-mail e senha ou com o Google.';
 
 export class SignupController {
   constructor(private readonly signupService: SignupService) {}
 
   async handle(request: Request, response: Response): Promise<void> {
-    const parsed = signupSchema.safeParse(request.body ?? {});
-    if (!parsed.success) {
-      response.status(400).json({ code: 'VALIDATION_ERROR', errors: toFieldErrors(parsed.error) });
-      return;
-    }
+    const dados = validar(signupSchema, request.body);
 
-    try {
-      const user = await this.signupService.execute(parsed.data);
-      await regenerateSession(request.session);
-      request.session.userId = user.id;
-      await saveSession(request.session);
-      response.status(201).json(toSafeUser(user));
-    } catch (error) {
-      if (error instanceof EmailJaCadastradoError) {
-        response.status(409).json({ code: 'EMAIL_JA_CADASTRADO', message: MENSAGEM_CONTA_EXISTENTE });
-        return;
-      }
-      response.status(500).json({ message: 'Não foi possível criar a conta.' });
-    }
+    const user = await this.signupService.execute(dados);
+    await regenerateSession(request.session);
+    request.session.userId = user.id;
+    await saveSession(request.session);
+    response.status(201).json(toSafeUser(user));
   }
 }

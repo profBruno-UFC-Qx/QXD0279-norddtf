@@ -1,5 +1,6 @@
 import express, { type Express } from 'express';
 import { routes } from './routes/index.js';
+import { tratarErros } from './middlewares/tratarErros.js';
 import session from 'express-session';
 import cors from 'cors';
 
@@ -28,5 +29,7 @@ app.use(routes);
 app.get('/', (_req, res) => {
   res.send('isso nao é vibecoding, servidor ta rodando na porta 3333!');
 });
+
+app.use(tratarErros);
 
 export { app };
