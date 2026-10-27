@@ -38,6 +38,16 @@
   --text-shadow-*: initial;
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @layer base {
   body {
     background-color: var(--color-branco-dtf);
@@ -46,8 +56,73 @@
     line-height: normal;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  ::selection {
+    background-color: var(--color-amarelo-dtf);
+    color: var(--color-preto-dtf);
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-preto-dtf);
     outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .revelar {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--revelar-atraso, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .revelar-visivel {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .marquee-faixa {
+    animation: marquee 26s linear infinite;
+  }
+
+  .marquee-faixa:hover {
+    animation-play-state: paused;
+  }
+
+  .texto-contorno-claro {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.18);
+  }
+
+  .texto-contorno-escuro {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.22);
+  }
+
+  .grade-street {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .revelar {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .marquee-faixa {
+      animation: none;
+    }
   }
 }
