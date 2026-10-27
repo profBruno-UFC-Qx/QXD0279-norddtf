@@ -7,6 +7,12 @@ const trilhaProdutos = { rotulo: 'Produtos', para: { name: 'loja-produtos' } }
 
 export const rotas: RouteRecordRaw[] = [
   {
+    path: '/',
+    name: 'landing',
+    component: () => import('@/views/LandingPage.vue'),
+    meta: { acesso: 'publico', titulo: 'NorDTF — Personalização' },
+  },
+  {
     path: '/login',
     component: LayoutAutenticacao,
     children: [
@@ -35,7 +41,7 @@ export const rotas: RouteRecordRaw[] = [
     component: () => import('@/layouts/LayoutLoja.vue'),
     children: [
       {
-        path: '',
+        path: 'produtos',
         name: 'loja-produtos',
         component: PaginaProvisoria,
         meta: { acesso: 'publico', titulo: 'Produtos' },
