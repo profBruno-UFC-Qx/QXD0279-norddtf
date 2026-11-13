@@ -19,19 +19,10 @@ async function criarCategoria(agent: Awaited<ReturnType<typeof entrarComo>>['age
   return resposta.body as { id: string; nome: string };
 }
 
-async function ligar(categoriaId: string, { produtos, estampas }: { produtos: number; estampas: number }) {
+async function ligar(categoriaId: string, produtos: number) {
   for (let i = 0; i < produtos; i++) {
     const produto = await db.orm.public.Produto.create({ nome: `Camiseta ${sufixo()}`, precoBase: '49.90' });
     await db.orm.public.ProdutoCategoria.create({ produtoId: produto.id, categoriaId });
-  }
-  for (let i = 0; i < estampas; i++) {
-    const estampa = await db.orm.public.Estampa.create({
-      nome: `Estampa ${sufixo()}`,
-      imagemUrl: 'https://exemplo.com/estampa.png',
-      larguraCm: '20.00',
-      alturaCm: '25.00',
-    });
-    await db.orm.public.EstampaCategoria.create({ estampaId: estampa.id, categoriaId });
   }
 }
 
@@ -51,17 +42,17 @@ describe('GET /categorias', () => {
 });
 
 describe('GET /admin/categorias', () => {
-  it('traz o número de produtos e de estampas de cada categoria', async () => {
+  it('traz o número de produtos de cada categoria', async () => {
     const { agent } = await entrarComo('ADMIN');
     const emUso = await criarCategoria(agent, `Games ${sufixo()}`);
     const semUso = await criarCategoria(agent, `Filmes ${sufixo()}`);
-    await ligar(emUso.id, { produtos: 2, estampas: 1 });
+    await ligar(emUso.id, 2);
 
     const resposta = await agent.get('/admin/categorias');
 
     expect(resposta.status).toBe(200);
-    expect(resposta.body).toContainEqual({ ...emUso, produtos: 2, estampas: 1 });
-    expect(resposta.body).toContainEqual({ ...semUso, produtos: 0, estampas: 0 });
+    expect(resposta.body).toContainEqual({ ...emUso, produtos: 2 });
+    expect(resposta.body).toContainEqual({ ...semUso, produtos: 0 });
   });
 
   it('ordena sem diferenciar maiúsculas e acentos', async () => {
@@ -205,34 +196,31 @@ describe('DELETE /admin/categorias/:id', () => {
     expect(lista.body).not.toContainEqual(categoria);
   });
 
-  it('bloqueia a remoção da categoria ligada a 2 produtos e 1 estampa', async () => {
+  it('bloqueia a remoção da categoria ligada a 2 produtos', async () => {
     const { agent } = await entrarComo('ADMIN');
     const categoria = await criarCategoria(agent, `Pets ${sufixo()}`);
-    await ligar(categoria.id, { produtos: 2, estampas: 1 });
+    await ligar(categoria.id, 2);
 
     const resposta = await agent.delete(`/admin/categorias/${categoria.id}`);
 
     expect(resposta.status).toBe(409);
     expect(resposta.body).toEqual({
       code: 'CATEGORIA_EM_USO',
-      message: 'Esta categoria está em uso por 2 produtos e 1 estampa. Retire-a deles antes de remover.',
+      message: 'Esta categoria está em uso por 2 produtos. Retire-a deles antes de remover.',
       produtos: 2,
-      estampas: 1,
     });
     expect((await request(app).get('/categorias')).body).toContainEqual(categoria);
   });
 
-  it('concorda em número com 1 produto e nenhuma estampa', async () => {
+  it('concorda em número com 1 produto', async () => {
     const { agent } = await entrarComo('ADMIN');
     const categoria = await criarCategoria(agent, `Carros ${sufixo()}`);
-    await ligar(categoria.id, { produtos: 1, estampas: 0 });
+    await ligar(categoria.id, 1);
 
     const resposta = await agent.delete(`/admin/categorias/${categoria.id}`);
 
     expect(resposta.status).toBe(409);
-    expect(resposta.body.message).toBe(
-      'Esta categoria está em uso por 1 produto e 0 estampas. Retire-a deles antes de remover.',
-    );
+    expect(resposta.body.message).toBe('Esta categoria está em uso por 1 produto. Retire-a deles antes de remover.');
   });
 
   it.each([

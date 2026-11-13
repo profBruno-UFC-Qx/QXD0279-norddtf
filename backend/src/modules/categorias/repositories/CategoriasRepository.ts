@@ -13,7 +13,7 @@ type CategoriaRow = Scalars<Models.public_Categoria>;
 type Orm = typeof db.orm;
 
 const NOME_UNICO = 'categoria_nomeNormalizado_key';
-const CHAVES_DE_USO = ['produtoCategoria_categoriaId_fkey', 'estampaCategoria_categoriaId_fkey'];
+const CHAVES_DE_USO = ['produtoCategoria_categoriaId_fkey'];
 
 export class CategoriasRepository {
   async listar() {
@@ -25,7 +25,6 @@ export class CategoriasRepository {
   async listarComUso() {
     return db.orm.public.Categoria.select('id', 'nome')
       .include('produtos', (produtos) => produtos.count())
-      .include('estampas', (estampas) => estampas.count())
       .orderBy((c) => c.nomeNormalizado.asc())
       .all();
   }
@@ -49,16 +48,15 @@ export class CategoriasRepository {
   async remover(id: string) {
     try {
       await db.transaction(async (tx) => {
-        const { produtos, estampas } = await contarUso(tx.orm, id);
-        if (produtos > 0 || estampas > 0) {
-          throw new CategoriaEmUsoError(produtos, estampas);
+        const produtos = await contarUso(tx.orm, id);
+        if (produtos > 0) {
+          throw new CategoriaEmUsoError(produtos);
         }
         await tx.orm.public.Categoria.where({ id }).delete();
       });
     } catch (error) {
       if (violou(error, '23503', CHAVES_DE_USO)) {
-        const { produtos, estampas } = await contarUso(db.orm, id);
-        throw new CategoriaEmUsoError(produtos, estampas);
+        throw new CategoriaEmUsoError(await contarUso(db.orm, id));
       }
       throw error;
     }
@@ -69,9 +67,8 @@ async function contarUso(orm: Orm, id: string) {
   const uso = await orm.public.Categoria.where({ id })
     .select('id')
     .include('produtos', (produtos) => produtos.count())
-    .include('estampas', (estampas) => estampas.count())
     .first();
-  return { produtos: uso?.produtos ?? 0, estampas: uso?.estampas ?? 0 };
+  return uso?.produtos ?? 0;
 }
 
 function nomeRepetido(error: unknown): never {
