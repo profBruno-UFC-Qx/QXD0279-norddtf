@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'76d85762995791e7d3363c7a35847452052a6ca9b54378792c84e7af3aab0a3d'>;
+  StorageHashBase<'62ac2154fe95f33d709e495e4187bdce491ef53b13817ffc1c299ad46711d8a0'>;
 export type ExecutionHash =
-  ExecutionHashBase<'effc3dd7ea6662b906ee6ee41be6c937d4a35dd225ed6ab71c74aa25ebaf6380'>;
+  ExecutionHashBase<'4f3ceb3432708b4e97a33ad78a78c7a6b058a3ba60cb5d40cf4df6e2cf4909d4'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -267,7 +267,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly pedidoId: CodecTypes['pg/uuid@1']['output'];
       readonly tipo: 'PRODUTO' | 'MATERIAL';
-      readonly produtoCorId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly quantidade: CodecTypes['pg/int4@1']['output'] | null;
       readonly materialId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly comprimentoCm: CodecTypes['pg/numeric@1']['output'] | null;
@@ -312,10 +312,11 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly nome: CodecTypes['pg/text@1']['output'];
       readonly descricao: CodecTypes['pg/text@1']['output'] | null;
-      readonly precoBase: CodecTypes['pg/numeric@1']['output'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly preco: Numeric<10, 2>;
+      readonly buscaNormalizada: CodecTypes['pg/text@1']['output'];
       readonly tipo: 'PERSONALIZAVEL' | 'VENDA_DIRETA';
       readonly temTamanho: CodecTypes['pg/bool@1']['output'];
+      readonly ativo: CodecTypes['pg/bool@1']['output'];
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -325,21 +326,23 @@ export type FieldOutputTypes = {
     };
     readonly ProdutoCor: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly produtoTamanhoId: CodecTypes['pg/uuid@1']['output'];
+      readonly produtoId: CodecTypes['pg/uuid@1']['output'];
+      readonly posicao: CodecTypes['pg/int4@1']['output'];
       readonly nome: CodecTypes['pg/text@1']['output'];
-      readonly preco: CodecTypes['pg/numeric@1']['output'] | null;
-      readonly estoque: CodecTypes['pg/int4@1']['output'];
-      readonly imagemApresentacaoFrente: CodecTypes['pg/text@1']['output'];
-      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['output'];
+      readonly nomeNormalizado: CodecTypes['pg/text@1']['output'];
+      readonly hex: CodecTypes['pg/text@1']['output'];
+      readonly imagemApresentacao: CodecTypes['pg/text@1']['output'];
+      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['output'] | null;
       readonly imagemPersonalizacaoFrente: CodecTypes['pg/text@1']['output'] | null;
       readonly imagemPersonalizacaoCostas: CodecTypes['pg/text@1']['output'] | null;
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
     };
-    readonly ProdutoTamanho: {
+    readonly ProdutoVariante: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly produtoId: CodecTypes['pg/uuid@1']['output'];
-      readonly tamanho: 'PP' | 'P' | 'M' | 'G' | 'GG' | 'XG' | null;
+      readonly produtoCorId: CodecTypes['pg/uuid@1']['output'];
+      readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
+      readonly estoque: CodecTypes['pg/int4@1']['output'];
     };
     readonly User: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
@@ -383,7 +386,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly pedidoId: CodecTypes['pg/uuid@1']['input'];
       readonly tipo: 'PRODUTO' | 'MATERIAL';
-      readonly produtoCorId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly quantidade: CodecTypes['pg/int4@1']['input'] | null;
       readonly materialId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly comprimentoCm: CodecTypes['pg/numeric@1']['input'] | null;
@@ -428,10 +431,11 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly nome: CodecTypes['pg/text@1']['input'];
       readonly descricao: CodecTypes['pg/text@1']['input'] | null;
-      readonly precoBase: CodecTypes['pg/numeric@1']['input'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly preco: CodecTypes['pg/numeric@1']['input'];
+      readonly buscaNormalizada: CodecTypes['pg/text@1']['input'];
       readonly tipo: 'PERSONALIZAVEL' | 'VENDA_DIRETA';
       readonly temTamanho: CodecTypes['pg/bool@1']['input'];
+      readonly ativo: CodecTypes['pg/bool@1']['input'];
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -441,21 +445,23 @@ export type FieldInputTypes = {
     };
     readonly ProdutoCor: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly produtoTamanhoId: CodecTypes['pg/uuid@1']['input'];
+      readonly produtoId: CodecTypes['pg/uuid@1']['input'];
+      readonly posicao: CodecTypes['pg/int4@1']['input'];
       readonly nome: CodecTypes['pg/text@1']['input'];
-      readonly preco: CodecTypes['pg/numeric@1']['input'] | null;
-      readonly estoque: CodecTypes['pg/int4@1']['input'];
-      readonly imagemApresentacaoFrente: CodecTypes['pg/text@1']['input'];
-      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['input'];
+      readonly nomeNormalizado: CodecTypes['pg/text@1']['input'];
+      readonly hex: CodecTypes['pg/text@1']['input'];
+      readonly imagemApresentacao: CodecTypes['pg/text@1']['input'];
+      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['input'] | null;
       readonly imagemPersonalizacaoFrente: CodecTypes['pg/text@1']['input'] | null;
       readonly imagemPersonalizacaoCostas: CodecTypes['pg/text@1']['input'] | null;
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
     };
-    readonly ProdutoTamanho: {
+    readonly ProdutoVariante: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly produtoId: CodecTypes['pg/uuid@1']['input'];
-      readonly tamanho: 'PP' | 'P' | 'M' | 'G' | 'GG' | 'XG' | null;
+      readonly produtoCorId: CodecTypes['pg/uuid@1']['input'];
+      readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
+      readonly estoque: CodecTypes['pg/int4@1']['input'];
     };
     readonly User: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
@@ -503,7 +509,7 @@ export type StorageColumnTypes = {
       readonly materialId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly pedidoId: CodecTypes['pg/uuid@1']['output'];
       readonly precoUnitario: CodecTypes['pg/numeric@1']['output'];
-      readonly produtoCorId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly quantidade: CodecTypes['pg/int4@1']['output'] | null;
       readonly tipo: 'PRODUTO' | 'MATERIAL';
     };
@@ -541,13 +547,14 @@ export type StorageColumnTypes = {
         'RECEBIDO' | 'CONFIRMADO' | 'IMPRESSAO' | 'PRONTO' | 'ENVIADO' | 'ENTREGUE' | 'CANCELADO';
     };
     readonly produto: {
+      readonly ativo: CodecTypes['pg/bool@1']['output'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly buscaNormalizada: CodecTypes['pg/text@1']['output'];
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly descricao: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly nome: CodecTypes['pg/text@1']['output'];
-      readonly precoBase: CodecTypes['pg/numeric@1']['output'];
+      readonly preco: Numeric<10, 2>;
       readonly temTamanho: CodecTypes['pg/bool@1']['output'];
       readonly tipo: 'PERSONALIZAVEL' | 'VENDA_DIRETA';
     };
@@ -558,20 +565,22 @@ export type StorageColumnTypes = {
     readonly produtoCor: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly estoque: CodecTypes['pg/int4@1']['output'];
+      readonly hex: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['output'];
-      readonly imagemApresentacaoFrente: CodecTypes['pg/text@1']['output'];
+      readonly imagemApresentacao: CodecTypes['pg/text@1']['output'];
+      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['output'] | null;
       readonly imagemPersonalizacaoCostas: CodecTypes['pg/text@1']['output'] | null;
       readonly imagemPersonalizacaoFrente: CodecTypes['pg/text@1']['output'] | null;
       readonly nome: CodecTypes['pg/text@1']['output'];
-      readonly preco: CodecTypes['pg/numeric@1']['output'] | null;
-      readonly produtoTamanhoId: CodecTypes['pg/uuid@1']['output'];
-    };
-    readonly produtoTamanho: {
-      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly nomeNormalizado: CodecTypes['pg/text@1']['output'];
+      readonly posicao: CodecTypes['pg/int4@1']['output'];
       readonly produtoId: CodecTypes['pg/uuid@1']['output'];
-      readonly tamanho: 'PP' | 'P' | 'M' | 'G' | 'GG' | 'XG' | null;
+    };
+    readonly produtoVariante: {
+      readonly estoque: CodecTypes['pg/int4@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly produtoCorId: CodecTypes['pg/uuid@1']['output'];
+      readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
     };
     readonly user: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -619,7 +628,7 @@ export type StorageColumnInputTypes = {
       readonly materialId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly pedidoId: CodecTypes['pg/uuid@1']['input'];
       readonly precoUnitario: CodecTypes['pg/numeric@1']['input'];
-      readonly produtoCorId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly quantidade: CodecTypes['pg/int4@1']['input'] | null;
       readonly tipo: 'PRODUTO' | 'MATERIAL';
     };
@@ -657,13 +666,14 @@ export type StorageColumnInputTypes = {
         'RECEBIDO' | 'CONFIRMADO' | 'IMPRESSAO' | 'PRONTO' | 'ENVIADO' | 'ENTREGUE' | 'CANCELADO';
     };
     readonly produto: {
+      readonly ativo: CodecTypes['pg/bool@1']['input'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly buscaNormalizada: CodecTypes['pg/text@1']['input'];
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly descricao: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly nome: CodecTypes['pg/text@1']['input'];
-      readonly precoBase: CodecTypes['pg/numeric@1']['input'];
+      readonly preco: CodecTypes['pg/numeric@1']['input'];
       readonly temTamanho: CodecTypes['pg/bool@1']['input'];
       readonly tipo: 'PERSONALIZAVEL' | 'VENDA_DIRETA';
     };
@@ -674,20 +684,22 @@ export type StorageColumnInputTypes = {
     readonly produtoCor: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly estoque: CodecTypes['pg/int4@1']['input'];
+      readonly hex: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['input'];
-      readonly imagemApresentacaoFrente: CodecTypes['pg/text@1']['input'];
+      readonly imagemApresentacao: CodecTypes['pg/text@1']['input'];
+      readonly imagemApresentacaoCostas: CodecTypes['pg/text@1']['input'] | null;
       readonly imagemPersonalizacaoCostas: CodecTypes['pg/text@1']['input'] | null;
       readonly imagemPersonalizacaoFrente: CodecTypes['pg/text@1']['input'] | null;
       readonly nome: CodecTypes['pg/text@1']['input'];
-      readonly preco: CodecTypes['pg/numeric@1']['input'] | null;
-      readonly produtoTamanhoId: CodecTypes['pg/uuid@1']['input'];
-    };
-    readonly produtoTamanho: {
-      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly nomeNormalizado: CodecTypes['pg/text@1']['input'];
+      readonly posicao: CodecTypes['pg/int4@1']['input'];
       readonly produtoId: CodecTypes['pg/uuid@1']['input'];
-      readonly tamanho: 'PP' | 'P' | 'M' | 'G' | 'GG' | 'XG' | null;
+    };
+    readonly produtoVariante: {
+      readonly estoque: CodecTypes['pg/int4@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly produtoCorId: CodecTypes['pg/uuid@1']['input'];
+      readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
     };
     readonly user: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -758,38 +770,42 @@ export namespace Models {
     id: CodecTypes['pg/uuid@1']['output'];
     nome: CodecTypes['pg/text@1']['output'];
     descricao: CodecTypes['pg/text@1']['output'] | null;
-    precoBase: CodecTypes['pg/numeric@1']['output'];
-    imagemUrl: CodecTypes['pg/text@1']['output'] | null;
+    preco: Numeric<10, 2>;
+    buscaNormalizada: CodecTypes['pg/text@1']['output'];
     tipo: 'PERSONALIZAVEL' | 'VENDA_DIRETA';
     temTamanho: CodecTypes['pg/bool@1']['output'];
+    ativo: CodecTypes['pg/bool@1']['output'];
     criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
     atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-    tamanhos: public_ProdutoTamanho[];
-    readonly [RelationKeys]?: 'tamanhos';
-  };
-  export type public_ProdutoTamanho = {
-    id: CodecTypes['pg/uuid@1']['output'];
-    produtoId: CodecTypes['pg/uuid@1']['output'];
-    tamanho: 'PP' | 'P' | 'M' | 'G' | 'GG' | 'XG' | null;
+    categorias: public_ProdutoCategoria[];
     cores: public_ProdutoCor[];
-    produto: public_Produto;
-    readonly [RelationKeys]?: 'cores' | 'produto';
+    readonly [RelationKeys]?: 'categorias' | 'cores';
   };
   export type public_ProdutoCor = {
     id: CodecTypes['pg/uuid@1']['output'];
-    produtoTamanhoId: CodecTypes['pg/uuid@1']['output'];
+    produtoId: CodecTypes['pg/uuid@1']['output'];
+    posicao: CodecTypes['pg/int4@1']['output'];
     nome: CodecTypes['pg/text@1']['output'];
-    preco: CodecTypes['pg/numeric@1']['output'] | null;
-    estoque: CodecTypes['pg/int4@1']['output'];
-    imagemApresentacaoFrente: CodecTypes['pg/text@1']['output'];
-    imagemApresentacaoCostas: CodecTypes['pg/text@1']['output'];
+    nomeNormalizado: CodecTypes['pg/text@1']['output'];
+    hex: CodecTypes['pg/text@1']['output'];
+    imagemApresentacao: CodecTypes['pg/text@1']['output'];
+    imagemApresentacaoCostas: CodecTypes['pg/text@1']['output'] | null;
     imagemPersonalizacaoFrente: CodecTypes['pg/text@1']['output'] | null;
     imagemPersonalizacaoCostas: CodecTypes['pg/text@1']['output'] | null;
     criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
     atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+    produto: public_Produto;
+    variantes: public_ProdutoVariante[];
+    readonly [RelationKeys]?: 'produto' | 'variantes';
+  };
+  export type public_ProdutoVariante = {
+    id: CodecTypes['pg/uuid@1']['output'];
+    produtoCorId: CodecTypes['pg/uuid@1']['output'];
+    tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
+    estoque: CodecTypes['pg/int4@1']['output'];
     itens: public_Item[];
-    produtoTamanho: public_ProdutoTamanho;
-    readonly [RelationKeys]?: 'itens' | 'produtoTamanho';
+    produtoCor: public_ProdutoCor;
+    readonly [RelationKeys]?: 'itens' | 'produtoCor';
   };
   export type public_Material = {
     id: CodecTypes['pg/uuid@1']['output'];
@@ -827,7 +843,7 @@ export namespace Models {
     id: CodecTypes['pg/uuid@1']['output'];
     pedidoId: CodecTypes['pg/uuid@1']['output'];
     tipo: 'PRODUTO' | 'MATERIAL';
-    produtoCorId: CodecTypes['pg/uuid@1']['output'] | null;
+    produtoVarianteId: CodecTypes['pg/uuid@1']['output'] | null;
     quantidade: CodecTypes['pg/int4@1']['output'] | null;
     materialId: CodecTypes['pg/uuid@1']['output'] | null;
     comprimentoCm: CodecTypes['pg/numeric@1']['output'] | null;
@@ -837,8 +853,8 @@ export namespace Models {
     estampas: public_ItemEstampa[];
     material: public_Material | null;
     pedido: public_Pedido;
-    produtoCor: public_ProdutoCor | null;
-    readonly [RelationKeys]?: 'estampas' | 'material' | 'pedido' | 'produtoCor';
+    produtoVariante: public_ProdutoVariante | null;
+    readonly [RelationKeys]?: 'estampas' | 'material' | 'pedido' | 'produtoVariante';
   };
   export type public_ItemEstampa = {
     id: CodecTypes['pg/uuid@1']['output'];
@@ -860,8 +876,8 @@ export declare const models: {
     Categoria: Models.public_Categoria;
     ProdutoCategoria: Models.public_ProdutoCategoria;
     Produto: Models.public_Produto;
-    ProdutoTamanho: Models.public_ProdutoTamanho;
     ProdutoCor: Models.public_ProdutoCor;
+    ProdutoVariante: Models.public_ProdutoVariante;
     Material: Models.public_Material;
     Pedido: Models.public_Pedido;
     PedidoStatusHistorico: Models.public_PedidoStatusHistorico;
@@ -1028,7 +1044,7 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
-                readonly produtoCorId: {
+                readonly produtoVarianteId: {
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: true;
@@ -1075,9 +1091,9 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
                 {
-                  readonly name: 'item_produtoCorId_idx_b6d6476b';
-                  readonly prefix: 'item_produtoCorId_idx';
-                  readonly columns: readonly ['produtoCorId'];
+                  readonly name: 'item_produtoVarianteId_idx_0f4efd0f';
+                  readonly prefix: 'item_produtoVarianteId_idx';
+                  readonly columns: readonly ['produtoVarianteId'];
                   readonly unique: false;
                 },
                 {
@@ -1104,11 +1120,11 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'item';
-                    readonly columns: readonly ['produtoCorId'];
+                    readonly columns: readonly ['produtoVarianteId'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'produtoCor';
+                    readonly tableName: 'produtoVariante';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -1365,26 +1381,32 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
-                readonly precoBase: {
+                readonly preco: {
                   readonly nativeType: 'numeric';
                   readonly codecId: 'pg/numeric@1';
                   readonly nullable: false;
+                  readonly typeParams: { readonly precision: 10; readonly scale: 2 };
                 };
-                readonly imagemUrl: {
+                readonly buscaNormalizada: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
+                  readonly nullable: false;
                 };
                 readonly tipo: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/text@1', 'PERSONALIZAVEL'>;
-                  };
                 };
                 readonly temTamanho: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly ativo: {
                   readonly nativeType: 'bool';
                   readonly codecId: 'pg/bool@1';
                   readonly nullable: false;
@@ -1473,9 +1495,14 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
-                readonly produtoTamanhoId: {
+                readonly produtoId: {
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly posicao: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
                   readonly nullable: false;
                 };
                 readonly nome: {
@@ -1483,21 +1510,17 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
-                readonly preco: {
-                  readonly nativeType: 'numeric';
-                  readonly codecId: 'pg/numeric@1';
-                  readonly nullable: true;
-                };
-                readonly estoque: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
+                readonly nomeNormalizado: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
                   readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
-                  };
                 };
-                readonly imagemApresentacaoFrente: {
+                readonly hex: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly imagemApresentacao: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
@@ -1505,7 +1528,7 @@ type ContractBase = Omit<
                 readonly imagemApresentacaoCostas: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                 };
                 readonly imagemPersonalizacaoFrente: {
                   readonly nativeType: 'text';
@@ -1530,12 +1553,12 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
+              uniques: readonly [{ readonly columns: readonly ['produtoId', 'nomeNormalizado'] }];
               indexes: readonly [
                 {
-                  readonly name: 'produtoCor_produtoTamanhoId_idx_640f4962';
-                  readonly prefix: 'produtoCor_produtoTamanhoId_idx';
-                  readonly columns: readonly ['produtoTamanhoId'];
+                  readonly name: 'produtoCor_produtoId_idx_eb62fdb9';
+                  readonly prefix: 'produtoCor_produtoId_idx';
+                  readonly columns: readonly ['produtoId'];
                   readonly unique: false;
                 },
               ];
@@ -1544,24 +1567,24 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'produtoCor';
-                    readonly columns: readonly ['produtoTamanhoId'];
+                    readonly columns: readonly ['produtoId'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'produtoTamanho';
+                    readonly tableName: 'produto';
                     readonly columns: readonly ['id'];
                   };
                 },
               ];
             };
-            readonly produtoTamanho: {
+            readonly produtoVariante: {
               columns: {
                 readonly id: {
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
-                readonly produtoId: {
+                readonly produtoCorId: {
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
@@ -1571,14 +1594,29 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly estoque: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['produtoId', 'tamanho'] }];
+              uniques: readonly [];
               indexes: readonly [
                 {
-                  readonly name: 'produtoTamanho_produtoId_idx_eb62fdb9';
-                  readonly prefix: 'produtoTamanho_produtoId_idx';
-                  readonly columns: readonly ['produtoId'];
+                  readonly name: 'produtoVariante_cor_tamanho_key_007a3aab';
+                  readonly prefix: 'produtoVariante_cor_tamanho_key';
+                  readonly expression: '"produtoCorId", coalesce(tamanho, \'\')';
+                  readonly unique: true;
+                },
+                {
+                  readonly name: 'produtoVariante_produtoCorId_idx_b6d6476b';
+                  readonly prefix: 'produtoVariante_produtoCorId_idx';
+                  readonly columns: readonly ['produtoCorId'];
                   readonly unique: false;
                 },
               ];
@@ -1586,12 +1624,12 @@ type ContractBase = Omit<
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'produtoTamanho';
-                    readonly columns: readonly ['produtoId'];
+                    readonly tableName: 'produtoVariante';
+                    readonly columns: readonly ['produtoCorId'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'produto';
+                    readonly tableName: 'produtoCor';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -1709,7 +1747,7 @@ type ContractBase = Omit<
             };
             readonly TamanhoRoupa: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['PP', 'P', 'M', 'G', 'GG', 'XG'];
+              readonly values: readonly ['P', 'M', 'G', 'GG', 'G1', 'G2'];
             };
             readonly TipoItem: {
               readonly kind: 'valueSet';
@@ -1746,13 +1784,13 @@ type ContractBase = Omit<
       readonly model: 'ProdutoCategoria';
     };
     readonly produto: { readonly namespace: 'public' & NamespaceId; readonly model: 'Produto' };
-    readonly produtoTamanho: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'ProdutoTamanho';
-    };
     readonly produtoCor: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProdutoCor';
+    };
+    readonly produtoVariante: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ProdutoVariante';
     };
     readonly material: { readonly namespace: 'public' & NamespaceId; readonly model: 'Material' };
     readonly pedido: { readonly namespace: 'public' & NamespaceId; readonly model: 'Pedido' };
@@ -1925,7 +1963,7 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly produtoCorId: {
+              readonly produtoVarianteId: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
@@ -1996,15 +2034,15 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
-              readonly produtoCor: {
+              readonly produtoVariante: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'ProdutoCor';
+                  readonly model: 'ProdutoVariante';
                 };
                 readonly cardinality: 'N:1';
                 readonly nullable: true;
                 readonly on: {
-                  readonly localFields: readonly ['produtoCorId'];
+                  readonly localFields: readonly ['produtoVarianteId'];
                   readonly targetFields: readonly ['id'];
                 };
               };
@@ -2016,7 +2054,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly pedidoId: { readonly column: 'pedidoId' };
                 readonly tipo: { readonly column: 'tipo' };
-                readonly produtoCorId: { readonly column: 'produtoCorId' };
+                readonly produtoVarianteId: { readonly column: 'produtoVarianteId' };
                 readonly quantidade: { readonly column: 'quantidade' };
                 readonly materialId: { readonly column: 'materialId' };
                 readonly comprimentoCm: { readonly column: 'comprimentoCm' };
@@ -2273,12 +2311,16 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly precoBase: {
+              readonly preco: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly typeParams: { readonly precision: 10; readonly scale: 2 };
+                };
               };
-              readonly imagemUrl: {
-                readonly nullable: true;
+              readonly buscaNormalizada: {
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly tipo: {
@@ -2286,6 +2328,10 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly temTamanho: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly ativo: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
@@ -2305,10 +2351,21 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly tamanhos: {
+              readonly categorias: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'ProdutoTamanho';
+                  readonly model: 'ProdutoCategoria';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['produtoId'];
+                };
+              };
+              readonly cores: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProdutoCor';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -2324,10 +2381,11 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly nome: { readonly column: 'nome' };
                 readonly descricao: { readonly column: 'descricao' };
-                readonly precoBase: { readonly column: 'precoBase' };
-                readonly imagemUrl: { readonly column: 'imagemUrl' };
+                readonly preco: { readonly column: 'preco' };
+                readonly buscaNormalizada: { readonly column: 'buscaNormalizada' };
                 readonly tipo: { readonly column: 'tipo' };
                 readonly temTamanho: { readonly column: 'temTamanho' };
+                readonly ativo: { readonly column: 'ativo' };
                 readonly criadoEm: { readonly column: 'criadoEm' };
                 readonly atualizadoEm: { readonly column: 'atualizadoEm' };
               };
@@ -2385,28 +2443,32 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
-              readonly produtoTamanhoId: {
+              readonly produtoId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly posicao: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
               readonly nome: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly preco: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
-              };
-              readonly estoque: {
+              readonly nomeNormalizado: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly imagemApresentacaoFrente: {
+              readonly hex: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly imagemApresentacao: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly imagemApresentacaoCostas: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly imagemPersonalizacaoFrente: {
@@ -2433,76 +2495,6 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly itens: {
-                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Item' };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['produtoCorId'];
-                };
-              };
-              readonly produtoTamanho: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'ProdutoTamanho';
-                };
-                readonly cardinality: 'N:1';
-                readonly nullable: false;
-                readonly on: {
-                  readonly localFields: readonly ['produtoTamanhoId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'produtoCor';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly produtoTamanhoId: { readonly column: 'produtoTamanhoId' };
-                readonly nome: { readonly column: 'nome' };
-                readonly preco: { readonly column: 'preco' };
-                readonly estoque: { readonly column: 'estoque' };
-                readonly imagemApresentacaoFrente: { readonly column: 'imagemApresentacaoFrente' };
-                readonly imagemApresentacaoCostas: { readonly column: 'imagemApresentacaoCostas' };
-                readonly imagemPersonalizacaoFrente: {
-                  readonly column: 'imagemPersonalizacaoFrente';
-                };
-                readonly imagemPersonalizacaoCostas: {
-                  readonly column: 'imagemPersonalizacaoCostas';
-                };
-                readonly criadoEm: { readonly column: 'criadoEm' };
-                readonly atualizadoEm: { readonly column: 'atualizadoEm' };
-              };
-            };
-          };
-          readonly ProdutoTamanho: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
-              readonly produtoId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
-              readonly tamanho: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-            };
-            readonly relations: {
-              readonly cores: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'ProdutoCor';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['produtoTamanhoId'];
-                };
-              };
               readonly produto: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -2515,14 +2507,90 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly variantes: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProdutoVariante';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['produtoCorId'];
+                };
+              };
             };
             readonly storage: {
-              readonly table: 'produtoTamanho';
+              readonly table: 'produtoCor';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly produtoId: { readonly column: 'produtoId' };
+                readonly posicao: { readonly column: 'posicao' };
+                readonly nome: { readonly column: 'nome' };
+                readonly nomeNormalizado: { readonly column: 'nomeNormalizado' };
+                readonly hex: { readonly column: 'hex' };
+                readonly imagemApresentacao: { readonly column: 'imagemApresentacao' };
+                readonly imagemApresentacaoCostas: { readonly column: 'imagemApresentacaoCostas' };
+                readonly imagemPersonalizacaoFrente: {
+                  readonly column: 'imagemPersonalizacaoFrente';
+                };
+                readonly imagemPersonalizacaoCostas: {
+                  readonly column: 'imagemPersonalizacaoCostas';
+                };
+                readonly criadoEm: { readonly column: 'criadoEm' };
+                readonly atualizadoEm: { readonly column: 'atualizadoEm' };
+              };
+            };
+          };
+          readonly ProdutoVariante: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly produtoCorId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly tamanho: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly estoque: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly itens: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Item' };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['produtoVarianteId'];
+                };
+              };
+              readonly produtoCor: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProdutoCor';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['produtoCorId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'produtoVariante';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly produtoCorId: { readonly column: 'produtoCorId' };
                 readonly tamanho: { readonly column: 'tamanho' };
+                readonly estoque: { readonly column: 'estoque' };
               };
             };
           };
@@ -2653,12 +2721,12 @@ type ContractBase = Omit<
           readonly TamanhoRoupa: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
-              { readonly name: 'PP'; readonly value: 'PP' },
               { readonly name: 'P'; readonly value: 'P' },
               { readonly name: 'M'; readonly value: 'M' },
               { readonly name: 'G'; readonly value: 'G' },
               { readonly name: 'GG'; readonly value: 'GG' },
-              { readonly name: 'XG'; readonly value: 'XG' },
+              { readonly name: 'G1'; readonly value: 'G1' },
+              { readonly name: 'G2'; readonly value: 'G2' },
             ];
           };
           readonly TipoMaterial: {
@@ -2838,7 +2906,7 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'produtoTamanho';
+            readonly table: 'produtoVariante';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };

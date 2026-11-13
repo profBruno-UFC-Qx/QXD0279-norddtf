@@ -21,12 +21,12 @@ enum TipoProduto {
 }
 
 enum TamanhoRoupa {
-  PP
   P
   M
   G
   GG
-  XG
+  G1
+  G2
 }
 
 enum TipoMaterial {
@@ -96,42 +96,51 @@ model ProdutoCategoria {
 }
 
 model Produto {
-  id          Uuid     @id @default(uuid())
-  nome        String
-  descricao   String?
-  precoBase   Decimal
-  imagemUrl   String?
-  tipo        TipoProduto @default(PERSONALIZAVEL)
-  temTamanho  Boolean  @default(true)
-  tamanhos    ProdutoTamanho[]
-  criadoEm TimestamptzString @default(now())
-  atualizadoEm temporal.updatedAtString()
-}
+  id               Uuid     @id @default(uuid())
+  nome             String
+  descricao        String?
+  preco            Numeric(10, 2)
+  buscaNormalizada String
+  tipo             TipoProduto
+  temTamanho       Boolean  @default(true)
+  ativo            Boolean  @default(true)
+  categorias       ProdutoCategoria[]
+  cores            ProdutoCor[]
+  criadoEm         TimestamptzString @default(now())
+  atualizadoEm     temporal.updatedAtString()
 
-model ProdutoTamanho {
-  id        Uuid     @id @default(uuid())
-  produtoId Uuid
-  produto   Produto  @relation(fields: [produtoId], references: [id])
-  tamanho   TamanhoRoupa?
-  cores     ProdutoCor[]
-
-  @@unique([produtoId, tamanho])
+  @@check(expression: "preco >= 0", name: "produto_preco_nao_negativo")
 }
 
 model ProdutoCor {
   id                         Uuid     @id @default(uuid())
-  produtoTamanhoId           Uuid
-  produtoTamanho             ProdutoTamanho @relation(fields: [produtoTamanhoId], references: [id])
+  produtoId                  Uuid
+  produto                    Produto  @relation(fields: [produtoId], references: [id])
+  posicao                    Int
   nome                       String
-  preco                      Decimal?
-  estoque                    Int      @default(0)
-  imagemApresentacaoFrente   String
-  imagemApresentacaoCostas   String
+  nomeNormalizado            String
+  hex                        String
+  imagemApresentacao         String
+  imagemApresentacaoCostas   String?
   imagemPersonalizacaoFrente String?
   imagemPersonalizacaoCostas String?
-  itens                      Item[]
-  criadoEm TimestamptzString @default(now())
-  atualizadoEm temporal.updatedAtString()
+  variantes                  ProdutoVariante[]
+  criadoEm                   TimestamptzString @default(now())
+  atualizadoEm               temporal.updatedAtString()
+
+  @@unique([produtoId, nomeNormalizado])
+}
+
+model ProdutoVariante {
+  id           Uuid          @id @default(uuid())
+  produtoCorId Uuid
+  produtoCor   ProdutoCor    @relation(fields: [produtoCorId], references: [id])
+  tamanho      TamanhoRoupa?
+  estoque      Int           @default(0)
+  itens        Item[]
+
+  @@index(expression: "\"produtoCorId\", coalesce(tamanho, '')", unique: true, name: "produtoVariante_cor_tamanho_key")
+  @@check(expression: "estoque >= 0", name: "produtoVariante_estoque_nao_negativo")
 }
 
 model Material {
@@ -169,8 +178,8 @@ model Item {
   pedidoId       Uuid
   pedido         Pedido   @relation(fields: [pedidoId], references: [id])
   tipo           TipoItem
-  produtoCorId   Uuid?
-  produtoCor     ProdutoCor? @relation(fields: [produtoCorId], references: [id])
+  produtoVarianteId Uuid?
+  produtoVariante   ProdutoVariante? @relation(fields: [produtoVarianteId], references: [id])
   quantidade     Int?
   materialId     Uuid?
   material       Material? @relation(fields: [materialId], references: [id])

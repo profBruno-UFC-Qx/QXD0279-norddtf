@@ -44,8 +44,8 @@
       "model": "ProdutoCor",
       "namespace": "public"
     },
-    "produtoTamanho": {
-      "model": "ProdutoTamanho",
+    "produtoVariante": {
+      "model": "ProdutoVariante",
       "namespace": "public"
     },
     "user": {
@@ -107,10 +107,6 @@
             "codecId": "pg/text@1",
             "members": [
               {
-                "name": "PP",
-                "value": "PP"
-              },
-              {
                 "name": "P",
                 "value": "P"
               },
@@ -127,8 +123,12 @@
                 "value": "GG"
               },
               {
-                "name": "XG",
-                "value": "XG"
+                "name": "G1",
+                "value": "G1"
+              },
+              {
+                "name": "G2",
+                "value": "G2"
               }
             ]
           },
@@ -462,7 +462,7 @@
                   "kind": "scalar"
                 }
               },
-              "produtoCorId": {
+              "produtoVarianteId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/uuid@1",
@@ -538,19 +538,19 @@
                   "namespace": "public"
                 }
               },
-              "produtoCor": {
+              "produtoVariante": {
                 "cardinality": "N:1",
                 "nullable": true,
                 "on": {
                   "localFields": [
-                    "produtoCorId"
+                    "produtoVarianteId"
                   ],
                   "targetFields": [
                     "id"
                   ]
                 },
                 "to": {
-                  "model": "ProdutoCor",
+                  "model": "ProdutoVariante",
                   "namespace": "public"
                 }
               }
@@ -578,8 +578,8 @@
                 "precoUnitario": {
                   "column": "precoUnitario"
                 },
-                "produtoCorId": {
-                  "column": "produtoCorId"
+                "produtoVarianteId": {
+                  "column": "produtoVarianteId"
                 },
                 "quantidade": {
                   "column": "quantidade"
@@ -993,10 +993,24 @@
           },
           "Produto": {
             "fields": {
+              "ativo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "atualizadoEm": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "buscaNormalizada": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -1021,13 +1035,6 @@
                   "kind": "scalar"
                 }
               },
-              "imagemUrl": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "nome": {
                 "nullable": false,
                 "type": {
@@ -1035,11 +1042,15 @@
                   "kind": "scalar"
                 }
               },
-              "precoBase": {
+              "preco": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/numeric@1",
-                  "kind": "scalar"
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 10,
+                    "scale": 2
+                  }
                 }
               },
               "temTamanho": {
@@ -1064,7 +1075,7 @@
               }
             },
             "relations": {
-              "tamanhos": {
+              "categorias": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -1075,15 +1086,36 @@
                   ]
                 },
                 "to": {
-                  "model": "ProdutoTamanho",
+                  "model": "ProdutoCategoria",
+                  "namespace": "public"
+                }
+              },
+              "cores": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "produtoId"
+                  ]
+                },
+                "to": {
+                  "model": "ProdutoCor",
                   "namespace": "public"
                 }
               }
             },
             "storage": {
               "fields": {
+                "ativo": {
+                  "column": "ativo"
+                },
                 "atualizadoEm": {
                   "column": "atualizadoEm"
+                },
+                "buscaNormalizada": {
+                  "column": "buscaNormalizada"
                 },
                 "criadoEm": {
                   "column": "criadoEm"
@@ -1094,14 +1126,11 @@
                 "id": {
                   "column": "id"
                 },
-                "imagemUrl": {
-                  "column": "imagemUrl"
-                },
                 "nome": {
                   "column": "nome"
                 },
-                "precoBase": {
-                  "column": "precoBase"
+                "preco": {
+                  "column": "preco"
                 },
                 "temTamanho": {
                   "column": "temTamanho"
@@ -1194,10 +1223,10 @@
                   "kind": "scalar"
                 }
               },
-              "estoque": {
+              "hex": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/int4@1",
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -1208,15 +1237,15 @@
                   "kind": "scalar"
                 }
               },
-              "imagemApresentacaoCostas": {
+              "imagemApresentacao": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
-              "imagemApresentacaoFrente": {
-                "nullable": false,
+              "imagemApresentacaoCostas": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -1243,14 +1272,21 @@
                   "kind": "scalar"
                 }
               },
-              "preco": {
-                "nullable": true,
+              "nomeNormalizado": {
+                "nullable": false,
                 "type": {
-                  "codecId": "pg/numeric@1",
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
-              "produtoTamanhoId": {
+              "posicao": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "produtoId": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/uuid@1",
@@ -1259,7 +1295,23 @@
               }
             },
             "relations": {
-              "itens": {
+              "produto": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "produtoId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Produto",
+                  "namespace": "public"
+                }
+              },
+              "variantes": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -1270,23 +1322,7 @@
                   ]
                 },
                 "to": {
-                  "model": "Item",
-                  "namespace": "public"
-                }
-              },
-              "produtoTamanho": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "produtoTamanhoId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "ProdutoTamanho",
+                  "model": "ProdutoVariante",
                   "namespace": "public"
                 }
               }
@@ -1299,17 +1335,17 @@
                 "criadoEm": {
                   "column": "criadoEm"
                 },
-                "estoque": {
-                  "column": "estoque"
+                "hex": {
+                  "column": "hex"
                 },
                 "id": {
                   "column": "id"
                 },
+                "imagemApresentacao": {
+                  "column": "imagemApresentacao"
+                },
                 "imagemApresentacaoCostas": {
                   "column": "imagemApresentacaoCostas"
-                },
-                "imagemApresentacaoFrente": {
-                  "column": "imagemApresentacaoFrente"
                 },
                 "imagemPersonalizacaoCostas": {
                   "column": "imagemPersonalizacaoCostas"
@@ -1320,19 +1356,29 @@
                 "nome": {
                   "column": "nome"
                 },
-                "preco": {
-                  "column": "preco"
+                "nomeNormalizado": {
+                  "column": "nomeNormalizado"
                 },
-                "produtoTamanhoId": {
-                  "column": "produtoTamanhoId"
+                "posicao": {
+                  "column": "posicao"
+                },
+                "produtoId": {
+                  "column": "produtoId"
                 }
               },
               "namespaceId": "public",
               "table": "produtoCor"
             }
           },
-          "ProdutoTamanho": {
+          "ProdutoVariante": {
             "fields": {
+              "estoque": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -1340,7 +1386,7 @@
                   "kind": "scalar"
                 }
               },
-              "produtoId": {
+              "produtoCorId": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/uuid@1",
@@ -1362,52 +1408,55 @@
               }
             },
             "relations": {
-              "cores": {
+              "itens": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
                     "id"
                   ],
                   "targetFields": [
-                    "produtoTamanhoId"
+                    "produtoVarianteId"
                   ]
                 },
                 "to": {
-                  "model": "ProdutoCor",
+                  "model": "Item",
                   "namespace": "public"
                 }
               },
-              "produto": {
+              "produtoCor": {
                 "cardinality": "N:1",
                 "nullable": false,
                 "on": {
                   "localFields": [
-                    "produtoId"
+                    "produtoCorId"
                   ],
                   "targetFields": [
                     "id"
                   ]
                 },
                 "to": {
-                  "model": "Produto",
+                  "model": "ProdutoCor",
                   "namespace": "public"
                 }
               }
             },
             "storage": {
               "fields": {
+                "estoque": {
+                  "column": "estoque"
+                },
                 "id": {
                   "column": "id"
                 },
-                "produtoId": {
-                  "column": "produtoId"
+                "produtoCorId": {
+                  "column": "produtoCorId"
                 },
                 "tamanho": {
                   "column": "tamanho"
                 }
               },
               "namespaceId": "public",
-              "table": "produtoTamanho"
+              "table": "produtoVariante"
             }
           },
           "User": {
@@ -1775,7 +1824,7 @@
                   "nativeType": "numeric",
                   "nullable": false
                 },
-                "produtoCorId": {
+                "produtoVarianteId": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": true
@@ -1817,7 +1866,7 @@
                 {
                   "source": {
                     "columns": [
-                      "produtoCorId"
+                      "produtoVarianteId"
                     ],
                     "namespaceId": "public",
                     "tableName": "item"
@@ -1827,7 +1876,7 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "produtoCor"
+                    "tableName": "produtoVariante"
                   }
                 },
                 {
@@ -1866,10 +1915,10 @@
                 },
                 {
                   "columns": [
-                    "produtoCorId"
+                    "produtoVarianteId"
                   ],
-                  "name": "item_produtoCorId_idx_b6d6476b",
-                  "prefix": "item_produtoCorId_idx",
+                  "name": "item_produtoVarianteId_idx_0f4efd0f",
+                  "prefix": "item_produtoVarianteId_idx",
                   "unique": false
                 }
               ],
@@ -2206,15 +2255,34 @@
             "produto": {
               "checks": [
                 {
+                  "expression": "preco >= 0",
+                  "name": "produto_preco_nao_negativo_e54711fe",
+                  "prefix": "produto_preco_nao_negativo"
+                },
+                {
                   "expression": "\"tipo\" IN ('PERSONALIZAVEL', 'VENDA_DIRETA')",
                   "name": "produto_tipo_check_d3633827",
                   "prefix": "produto_tipo_check"
                 }
               ],
               "columns": {
+                "ativo": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "atualizadoEm": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "buscaNormalizada": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
                   "nullable": false
                 },
                 "criadoEm": {
@@ -2236,20 +2304,19 @@
                   "nativeType": "uuid",
                   "nullable": false
                 },
-                "imagemUrl": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "nome": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
                 },
-                "precoBase": {
+                "preco": {
                   "codecId": "pg/numeric@1",
                   "nativeType": "numeric",
-                  "nullable": false
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 10,
+                    "scale": 2
+                  }
                 },
                 "temTamanho": {
                   "codecId": "pg/bool@1",
@@ -2262,10 +2329,6 @@
                 },
                 "tipo": {
                   "codecId": "pg/text@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": "PERSONALIZAVEL"
-                  },
                   "nativeType": "text",
                   "nullable": false,
                   "valueSet": {
@@ -2374,13 +2437,9 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
-                "estoque": {
-                  "codecId": "pg/int4@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": 0
-                  },
-                  "nativeType": "int4",
+                "hex": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
                   "nullable": false
                 },
                 "id": {
@@ -2388,15 +2447,15 @@
                   "nativeType": "uuid",
                   "nullable": false
                 },
-                "imagemApresentacaoCostas": {
+                "imagemApresentacao": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
                 },
-                "imagemApresentacaoFrente": {
+                "imagemApresentacaoCostas": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
+                  "nullable": true
                 },
                 "imagemPersonalizacaoCostas": {
                   "codecId": "pg/text@1",
@@ -2413,12 +2472,17 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "preco": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
-                  "nullable": true
+                "nomeNormalizado": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
                 },
-                "produtoTamanhoId": {
+                "posicao": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "produtoId": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": false
@@ -2428,7 +2492,7 @@
                 {
                   "source": {
                     "columns": [
-                      "produtoTamanhoId"
+                      "produtoId"
                     ],
                     "namespaceId": "public",
                     "tableName": "produtoCor"
@@ -2438,17 +2502,17 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "produtoTamanho"
+                    "tableName": "produto"
                   }
                 }
               ],
               "indexes": [
                 {
                   "columns": [
-                    "produtoTamanhoId"
+                    "produtoId"
                   ],
-                  "name": "produtoCor_produtoTamanhoId_idx_640f4962",
-                  "prefix": "produtoCor_produtoTamanhoId_idx",
+                  "name": "produtoCor_produtoId_idx_eb62fdb9",
+                  "prefix": "produtoCor_produtoId_idx",
                   "unique": false
                 }
               ],
@@ -2457,23 +2521,44 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "produtoId",
+                    "nomeNormalizado"
+                  ]
+                }
+              ]
             },
-            "produtoTamanho": {
+            "produtoVariante": {
               "checks": [
                 {
-                  "expression": "\"tamanho\" IN ('PP', 'P', 'M', 'G', 'GG', 'XG')",
-                  "name": "produtoTamanho_tamanho_check_9bca7208",
-                  "prefix": "produtoTamanho_tamanho_check"
+                  "expression": "estoque >= 0",
+                  "name": "produtoVariante_estoque_nao_negativo_4a5c3906",
+                  "prefix": "produtoVariante_estoque_nao_negativo"
+                },
+                {
+                  "expression": "\"tamanho\" IN ('P', 'M', 'G', 'GG', 'G1', 'G2')",
+                  "name": "produtoVariante_tamanho_check_9d3bda29",
+                  "prefix": "produtoVariante_tamanho_check"
                 }
               ],
               "columns": {
+                "estoque": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": false
                 },
-                "produtoId": {
+                "produtoCorId": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": false
@@ -2494,27 +2579,33 @@
                 {
                   "source": {
                     "columns": [
-                      "produtoId"
+                      "produtoCorId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "produtoTamanho"
+                    "tableName": "produtoVariante"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "produto"
+                    "tableName": "produtoCor"
                   }
                 }
               ],
               "indexes": [
                 {
+                  "expression": "\"produtoCorId\", coalesce(tamanho, '')",
+                  "name": "produtoVariante_cor_tamanho_key_007a3aab",
+                  "prefix": "produtoVariante_cor_tamanho_key",
+                  "unique": true
+                },
+                {
                   "columns": [
-                    "produtoId"
+                    "produtoCorId"
                   ],
-                  "name": "produtoTamanho_produtoId_idx_eb62fdb9",
-                  "prefix": "produtoTamanho_produtoId_idx",
+                  "name": "produtoVariante_produtoCorId_idx_b6d6476b",
+                  "prefix": "produtoVariante_produtoCorId_idx",
                   "unique": false
                 }
               ],
@@ -2523,14 +2614,7 @@
                   "id"
                 ]
               },
-              "uniques": [
-                {
-                  "columns": [
-                    "produtoId",
-                    "tamanho"
-                  ]
-                }
-              ]
+              "uniques": []
             },
             "user": {
               "checks": [
@@ -2686,12 +2770,12 @@
             "TamanhoRoupa": {
               "kind": "valueSet",
               "values": [
-                "PP",
                 "P",
                 "M",
                 "G",
                 "GG",
-                "XG"
+                "G1",
+                "G2"
               ]
             },
             "TipoItem": {
@@ -2728,10 +2812,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "76d85762995791e7d3363c7a35847452052a6ca9b54378792c84e7af3aab0a3d"
+    "storageHash": "62ac2154fe95f33d709e495e4187bdce491ef53b13817ffc1c299ad46711d8a0"
   },
   "execution": {
-    "executionHash": "effc3dd7ea6662b906ee6ee41be6c937d4a35dd225ed6ab71c74aa25ebaf6380",
+    "executionHash": "4f3ceb3432708b4e97a33ad78a78c7a6b058a3ba60cb5d40cf4df6e2cf4909d4",
     "mutations": {
       "defaults": [
         {
@@ -2931,7 +3015,7 @@
           "ref": {
             "column": "id",
             "namespace": "public",
-            "table": "produtoTamanho"
+            "table": "produtoVariante"
           }
         },
         {

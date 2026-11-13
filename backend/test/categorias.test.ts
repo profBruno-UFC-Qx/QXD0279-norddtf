@@ -1,13 +1,18 @@
 import { randomUUID } from 'node:crypto';
+import type { Scalars } from '@prisma/orm-postgres/family-contract/types';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
+import { normalizarNome } from '../src/modules/categorias/normalizarNome.js';
 import { app } from '../src/shared/infra/http/app.js';
 import { db } from '../src/shared/infra/prisma/db.js';
+import type { Models } from '../src/shared/infra/prisma/schema.js';
 import { entrarComo } from './entrarComo.js';
 
 const JA_CADASTRADA = { code: 'CATEGORIA_JA_CADASTRADA', message: 'Já existe uma categoria com esse nome.' };
 const NAO_ENCONTRADA = { code: 'CATEGORIA_NAO_ENCONTRADA', message: 'Categoria não encontrada.' };
 const ACESSO_NEGADO = { code: 'ACESSO_NEGADO', message: 'Você não tem permissão para acessar esta área.' };
+
+type Preco = Scalars<Models.public_Produto>['preco'];
 
 function sufixo() {
   return randomUUID().slice(0, 8);
@@ -21,7 +26,13 @@ async function criarCategoria(agent: Awaited<ReturnType<typeof entrarComo>>['age
 
 async function ligar(categoriaId: string, produtos: number) {
   for (let i = 0; i < produtos; i++) {
-    const produto = await db.orm.public.Produto.create({ nome: `Camiseta ${sufixo()}`, precoBase: '49.90' });
+    const nome = `Camiseta ${sufixo()}`;
+    const produto = await db.orm.public.Produto.create({
+      nome,
+      preco: '49.90' as Preco,
+      buscaNormalizada: normalizarNome(nome),
+      tipo: 'PERSONALIZAVEL',
+    });
     await db.orm.public.ProdutoCategoria.create({ produtoId: produto.id, categoriaId });
   }
 }
