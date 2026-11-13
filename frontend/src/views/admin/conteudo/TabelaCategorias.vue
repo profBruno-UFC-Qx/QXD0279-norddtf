@@ -15,7 +15,6 @@ const emit = defineEmits<{ renomear: [CategoriaComUso]; remover: [CategoriaComUs
     <colgroup>
       <col />
       <col class="w-27.5" />
-      <col class="w-27.5" />
       <col class="w-62.5" />
     </colgroup>
     <thead>
@@ -34,12 +33,6 @@ const emit = defineEmits<{ renomear: [CategoriaComUso]; remover: [CategoriaComUs
         </th>
         <th
           scope="col"
-          class="border-y bg-cinza-claro border-cinza-escuro/67 px-2.75 py-2.5 font-medium"
-        >
-          Estampas
-        </th>
-        <th
-          scope="col"
           class="rounded-tr-padrao border bg-cinza-claro border-l-0 border-cinza-escuro/67 px-2.75 py-2.5 font-medium"
         >
           Ações
@@ -52,7 +45,6 @@ const emit = defineEmits<{ renomear: [CategoriaComUso]; remover: [CategoriaComUs
           {{ categoria.nome }}
         </td>
         <td class="border-b border-cinza-escuro/67 p-2.75 text-center">{{ categoria.produtos }}</td>
-        <td class="border-b border-cinza-escuro/67 p-2.75 text-center">{{ categoria.estampas }}</td>
         <td class="border-r border-b border-cinza-escuro/67 p-2.75">
           <div class="flex justify-center gap-2.5">
             <BaseBotao

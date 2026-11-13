@@ -118,8 +118,8 @@ function mostrarUso(texto: string) {
 }
 
 function pedirRemocao(categoria: CategoriaComUso) {
-  if (categoria.produtos + categoria.estampas > 0) {
-    mostrarUso(mensagemDeUso(categoria.produtos, categoria.estampas))
+  if (categoria.produtos > 0) {
+    mostrarUso(mensagemDeUso(categoria.produtos))
     return
   }
   aRemover.value = categoria
@@ -180,7 +180,7 @@ async function remover() {
     <BaseEstadoVazio
       v-else-if="categorias.length === 0"
       titulo="Nenhuma categoria cadastrada."
-      descricao="As categorias organizam produtos e estampas na loja."
+      descricao="As categorias organizam os produtos na loja."
     >
       <template #acao>
         <BaseBotao tamanho="compacto" @click="abrirFormulario()">Nova categoria</BaseBotao>

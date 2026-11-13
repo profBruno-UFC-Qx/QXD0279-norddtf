@@ -450,7 +450,7 @@ const modalInformativoAberto = ref(false)
         </BaseEstadoVazio>
         <BaseEstadoVazio
           titulo="Nenhum resultado"
-          descricao="Não temos estampas com esse nome ou estilo. Tente buscar algo diferente"
+          descricao="Nenhum produto encontrado. Tente buscar outro nome ou categoria."
         />
       </div>
     </section>
@@ -477,7 +477,7 @@ const modalInformativoAberto = ref(false)
       <BaseModalConfirmacao
         v-model:open="modalInformativoAberto"
         titulo="Categoria em uso"
-        descricao="Esta categoria está em uso por 2 produtos e 1 estampa. Retire-a deles antes de remover."
+        descricao="Esta categoria está em uso por 2 produtos. Retire-a deles antes de remover."
         texto-confirmar="Entendi"
         variante="primario"
         informativo
