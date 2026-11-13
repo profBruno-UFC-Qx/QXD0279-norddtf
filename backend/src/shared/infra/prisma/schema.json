@@ -12,14 +12,6 @@
       "model": "Endereco",
       "namespace": "public"
     },
-    "estampa": {
-      "model": "Estampa",
-      "namespace": "public"
-    },
-    "estampaCategoria": {
-      "model": "EstampaCategoria",
-      "namespace": "public"
-    },
     "item": {
       "model": "Item",
       "namespace": "public"
@@ -240,21 +232,6 @@
               }
             },
             "relations": {
-              "estampas": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "categoriaId"
-                  ]
-                },
-                "to": {
-                  "model": "EstampaCategoria",
-                  "namespace": "public"
-                }
-              },
               "produtos": {
                 "cardinality": "1:N",
                 "on": {
@@ -432,177 +409,6 @@
               },
               "namespaceId": "public",
               "table": "endereco"
-            }
-          },
-          "Estampa": {
-            "fields": {
-              "alturaCm": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/numeric@1",
-                  "kind": "scalar"
-                }
-              },
-              "ativo": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/bool@1",
-                  "kind": "scalar"
-                }
-              },
-              "atualizadoEm": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
-              },
-              "criadoEm": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
-              },
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/uuid@1",
-                  "kind": "scalar"
-                }
-              },
-              "imagemUrl": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "larguraCm": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/numeric@1",
-                  "kind": "scalar"
-                }
-              },
-              "nome": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "itensEstampa": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "estampaId"
-                  ]
-                },
-                "to": {
-                  "model": "ItemEstampa",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "alturaCm": {
-                  "column": "alturaCm"
-                },
-                "ativo": {
-                  "column": "ativo"
-                },
-                "atualizadoEm": {
-                  "column": "atualizadoEm"
-                },
-                "criadoEm": {
-                  "column": "criadoEm"
-                },
-                "id": {
-                  "column": "id"
-                },
-                "imagemUrl": {
-                  "column": "imagemUrl"
-                },
-                "larguraCm": {
-                  "column": "larguraCm"
-                },
-                "nome": {
-                  "column": "nome"
-                }
-              },
-              "namespaceId": "public",
-              "table": "estampa"
-            }
-          },
-          "EstampaCategoria": {
-            "fields": {
-              "categoriaId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/uuid@1",
-                  "kind": "scalar"
-                }
-              },
-              "estampaId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/uuid@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "categoria": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "categoriaId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Categoria",
-                  "namespace": "public"
-                }
-              },
-              "estampa": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "estampaId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Estampa",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "categoriaId": {
-                  "column": "categoriaId"
-                },
-                "estampaId": {
-                  "column": "estampaId"
-                }
-              },
-              "namespaceId": "public",
-              "table": "estampaCategoria"
             }
           },
           "Item": {
@@ -802,13 +608,6 @@
                   "kind": "scalar"
                 }
               },
-              "estampaId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/uuid@1",
-                  "kind": "scalar"
-                }
-              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -852,22 +651,6 @@
               }
             },
             "relations": {
-              "estampa": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "estampaId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Estampa",
-                  "namespace": "public"
-                }
-              },
               "item": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -892,9 +675,6 @@
                 },
                 "arteClienteUrl": {
                   "column": "arteClienteUrl"
-                },
-                "estampaId": {
-                  "column": "estampaId"
                 },
                 "id": {
                   "column": "id"
@@ -1947,139 +1727,6 @@
               },
               "uniques": []
             },
-            "estampa": {
-              "columns": {
-                "alturaCm": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
-                  "nullable": false
-                },
-                "ativo": {
-                  "codecId": "pg/bool@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": true
-                  },
-                  "nativeType": "bool",
-                  "nullable": false
-                },
-                "atualizadoEm": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
-                "criadoEm": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
-                "id": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": false
-                },
-                "imagemUrl": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": false
-                },
-                "larguraCm": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
-                  "nullable": false
-                },
-                "nome": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [],
-              "indexes": [],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": []
-            },
-            "estampaCategoria": {
-              "columns": {
-                "categoriaId": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": false
-                },
-                "estampaId": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "source": {
-                    "columns": [
-                      "estampaId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "estampaCategoria"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "estampa"
-                  }
-                },
-                {
-                  "source": {
-                    "columns": [
-                      "categoriaId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "estampaCategoria"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "categoria"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "categoriaId"
-                  ],
-                  "name": "estampaCategoria_categoriaId_idx_63b46427",
-                  "prefix": "estampaCategoria_categoriaId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "estampaId"
-                  ],
-                  "name": "estampaCategoria_estampaId_idx_347c4ea4",
-                  "prefix": "estampaCategoria_estampaId_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "estampaId",
-                  "categoriaId"
-                ]
-              },
-              "uniques": []
-            },
             "item": {
               "checks": [
                 {
@@ -2252,11 +1899,6 @@
                   "nativeType": "text",
                   "nullable": true
                 },
-                "estampaId": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": true
-                },
                 "id": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
@@ -2309,33 +1951,9 @@
                     "namespaceId": "public",
                     "tableName": "item"
                   }
-                },
-                {
-                  "source": {
-                    "columns": [
-                      "estampaId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "itemEstampa"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "estampa"
-                  }
                 }
               ],
               "indexes": [
-                {
-                  "columns": [
-                    "estampaId"
-                  ],
-                  "name": "itemEstampa_estampaId_idx_347c4ea4",
-                  "prefix": "itemEstampa_estampaId_idx",
-                  "unique": false
-                },
                 {
                   "columns": [
                     "itemId"
@@ -3110,10 +2728,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4829cd250bf69559bc7c02874fe7d849bff1a96bb8b819788025f0918f560bd1"
+    "storageHash": "76d85762995791e7d3363c7a35847452052a6ca9b54378792c84e7af3aab0a3d"
   },
   "execution": {
-    "executionHash": "25560a8a7550f010c8d55971f442b98e1555517df87151bc4b8a0f164f6ce79c",
+    "executionHash": "effc3dd7ea6662b906ee6ee41be6c937d4a35dd225ed6ab71c74aa25ebaf6380",
     "mutations": {
       "defaults": [
         {
@@ -3166,32 +2784,6 @@
             "column": "id",
             "namespace": "public",
             "table": "endereco"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "ref": {
-            "column": "atualizadoEm",
-            "namespace": "public",
-            "table": "estampa"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "uuidv4",
-            "kind": "generator"
-          },
-          "ref": {
-            "column": "id",
-            "namespace": "public",
-            "table": "estampa"
           }
         },
         {

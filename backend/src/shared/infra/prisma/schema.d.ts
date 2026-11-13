@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'4829cd250bf69559bc7c02874fe7d849bff1a96bb8b819788025f0918f560bd1'>;
+  StorageHashBase<'76d85762995791e7d3363c7a35847452052a6ca9b54378792c84e7af3aab0a3d'>;
 export type ExecutionHash =
-  ExecutionHashBase<'25560a8a7550f010c8d55971f442b98e1555517df87151bc4b8a0f164f6ce79c'>;
+  ExecutionHashBase<'effc3dd7ea6662b906ee6ee41be6c937d4a35dd225ed6ab71c74aa25ebaf6380'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -263,20 +263,6 @@ export type FieldOutputTypes = {
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
     };
-    readonly Estampa: {
-      readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly nome: CodecTypes['pg/text@1']['output'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['output'];
-      readonly larguraCm: CodecTypes['pg/numeric@1']['output'];
-      readonly alturaCm: CodecTypes['pg/numeric@1']['output'];
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly EstampaCategoria: {
-      readonly estampaId: CodecTypes['pg/uuid@1']['output'];
-      readonly categoriaId: CodecTypes['pg/uuid@1']['output'];
-    };
     readonly Item: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly pedidoId: CodecTypes['pg/uuid@1']['output'];
@@ -292,7 +278,6 @@ export type FieldOutputTypes = {
     readonly ItemEstampa: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly itemId: CodecTypes['pg/uuid@1']['output'];
-      readonly estampaId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly arteClienteUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly posicao: 'FRENTE' | 'COSTAS' | null;
       readonly quantidade: CodecTypes['pg/int4@1']['output'];
@@ -394,20 +379,6 @@ export type FieldInputTypes = {
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
     };
-    readonly Estampa: {
-      readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly nome: CodecTypes['pg/text@1']['input'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['input'];
-      readonly larguraCm: CodecTypes['pg/numeric@1']['input'];
-      readonly alturaCm: CodecTypes['pg/numeric@1']['input'];
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly EstampaCategoria: {
-      readonly estampaId: CodecTypes['pg/uuid@1']['input'];
-      readonly categoriaId: CodecTypes['pg/uuid@1']['input'];
-    };
     readonly Item: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly pedidoId: CodecTypes['pg/uuid@1']['input'];
@@ -423,7 +394,6 @@ export type FieldInputTypes = {
     readonly ItemEstampa: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly itemId: CodecTypes['pg/uuid@1']['input'];
-      readonly estampaId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly arteClienteUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly posicao: 'FRENTE' | 'COSTAS' | null;
       readonly quantidade: CodecTypes['pg/int4@1']['input'];
@@ -525,20 +495,6 @@ export type StorageColumnTypes = {
       readonly numero: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
     };
-    readonly estampa: {
-      readonly alturaCm: CodecTypes['pg/numeric@1']['output'];
-      readonly ativo: CodecTypes['pg/bool@1']['output'];
-      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['output'];
-      readonly larguraCm: CodecTypes['pg/numeric@1']['output'];
-      readonly nome: CodecTypes['pg/text@1']['output'];
-    };
-    readonly estampaCategoria: {
-      readonly categoriaId: CodecTypes['pg/uuid@1']['output'];
-      readonly estampaId: CodecTypes['pg/uuid@1']['output'];
-    };
     readonly item: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly comprimentoCm: CodecTypes['pg/numeric@1']['output'] | null;
@@ -554,7 +510,6 @@ export type StorageColumnTypes = {
     readonly itemEstampa: {
       readonly alturaCm: CodecTypes['pg/numeric@1']['output'];
       readonly arteClienteUrl: CodecTypes['pg/text@1']['output'] | null;
-      readonly estampaId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly itemId: CodecTypes['pg/uuid@1']['output'];
       readonly larguraCm: CodecTypes['pg/numeric@1']['output'];
@@ -656,20 +611,6 @@ export type StorageColumnInputTypes = {
       readonly numero: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
     };
-    readonly estampa: {
-      readonly alturaCm: CodecTypes['pg/numeric@1']['input'];
-      readonly ativo: CodecTypes['pg/bool@1']['input'];
-      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly imagemUrl: CodecTypes['pg/text@1']['input'];
-      readonly larguraCm: CodecTypes['pg/numeric@1']['input'];
-      readonly nome: CodecTypes['pg/text@1']['input'];
-    };
-    readonly estampaCategoria: {
-      readonly categoriaId: CodecTypes['pg/uuid@1']['input'];
-      readonly estampaId: CodecTypes['pg/uuid@1']['input'];
-    };
     readonly item: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly comprimentoCm: CodecTypes['pg/numeric@1']['input'] | null;
@@ -685,7 +626,6 @@ export type StorageColumnInputTypes = {
     readonly itemEstampa: {
       readonly alturaCm: CodecTypes['pg/numeric@1']['input'];
       readonly arteClienteUrl: CodecTypes['pg/text@1']['input'] | null;
-      readonly estampaId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly itemId: CodecTypes['pg/uuid@1']['input'];
       readonly larguraCm: CodecTypes['pg/numeric@1']['input'];
@@ -804,9 +744,8 @@ export namespace Models {
     descricao: CodecTypes['pg/text@1']['output'] | null;
     criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
     atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-    estampas: public_EstampaCategoria[];
     produtos: public_ProdutoCategoria[];
-    readonly [RelationKeys]?: 'estampas' | 'produtos';
+    readonly [RelationKeys]?: 'produtos';
   };
   export type public_ProdutoCategoria = {
     produtoId: CodecTypes['pg/uuid@1']['output'];
@@ -814,13 +753,6 @@ export namespace Models {
     categoria: public_Categoria;
     produto: public_Produto;
     readonly [RelationKeys]?: 'categoria' | 'produto';
-  };
-  export type public_EstampaCategoria = {
-    estampaId: CodecTypes['pg/uuid@1']['output'];
-    categoriaId: CodecTypes['pg/uuid@1']['output'];
-    categoria: public_Categoria;
-    estampa: public_Estampa;
-    readonly [RelationKeys]?: 'categoria' | 'estampa';
   };
   export type public_Produto = {
     id: CodecTypes['pg/uuid@1']['output'];
@@ -858,18 +790,6 @@ export namespace Models {
     itens: public_Item[];
     produtoTamanho: public_ProdutoTamanho;
     readonly [RelationKeys]?: 'itens' | 'produtoTamanho';
-  };
-  export type public_Estampa = {
-    id: CodecTypes['pg/uuid@1']['output'];
-    nome: CodecTypes['pg/text@1']['output'];
-    imagemUrl: CodecTypes['pg/text@1']['output'];
-    larguraCm: CodecTypes['pg/numeric@1']['output'];
-    alturaCm: CodecTypes['pg/numeric@1']['output'];
-    ativo: CodecTypes['pg/bool@1']['output'];
-    criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-    atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-    itensEstampa: public_ItemEstampa[];
-    readonly [RelationKeys]?: 'itensEstampa';
   };
   export type public_Material = {
     id: CodecTypes['pg/uuid@1']['output'];
@@ -923,15 +843,13 @@ export namespace Models {
   export type public_ItemEstampa = {
     id: CodecTypes['pg/uuid@1']['output'];
     itemId: CodecTypes['pg/uuid@1']['output'];
-    estampaId: CodecTypes['pg/uuid@1']['output'] | null;
     arteClienteUrl: CodecTypes['pg/text@1']['output'] | null;
     posicao: 'FRENTE' | 'COSTAS' | null;
     quantidade: CodecTypes['pg/int4@1']['output'];
     larguraCm: CodecTypes['pg/numeric@1']['output'];
     alturaCm: CodecTypes['pg/numeric@1']['output'];
-    estampa: public_Estampa | null;
     item: public_Item;
-    readonly [RelationKeys]?: 'estampa' | 'item';
+    readonly [RelationKeys]?: 'item';
   };
 }
 
@@ -941,11 +859,9 @@ export declare const models: {
     Endereco: Models.public_Endereco;
     Categoria: Models.public_Categoria;
     ProdutoCategoria: Models.public_ProdutoCategoria;
-    EstampaCategoria: Models.public_EstampaCategoria;
     Produto: Models.public_Produto;
     ProdutoTamanho: Models.public_ProdutoTamanho;
     ProdutoCor: Models.public_ProdutoCor;
-    Estampa: Models.public_Estampa;
     Material: Models.public_Material;
     Pedido: Models.public_Pedido;
     PedidoStatusHistorico: Models.public_PedidoStatusHistorico;
@@ -1095,115 +1011,6 @@ type ContractBase = Omit<
                 },
               ];
             };
-            readonly estampa: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: false;
-                };
-                readonly nome: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly imagemUrl: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly larguraCm: {
-                  readonly nativeType: 'numeric';
-                  readonly codecId: 'pg/numeric@1';
-                  readonly nullable: false;
-                };
-                readonly alturaCm: {
-                  readonly nativeType: 'numeric';
-                  readonly codecId: 'pg/numeric@1';
-                  readonly nullable: false;
-                };
-                readonly ativo: {
-                  readonly nativeType: 'bool';
-                  readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-                  };
-                };
-                readonly criadoEm: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly atualizadoEm: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
-              indexes: readonly [];
-              foreignKeys: readonly [];
-            };
-            readonly estampaCategoria: {
-              columns: {
-                readonly estampaId: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: false;
-                };
-                readonly categoriaId: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['estampaId', 'categoriaId'] };
-              uniques: readonly [];
-              indexes: readonly [
-                {
-                  readonly name: 'estampaCategoria_categoriaId_idx_63b46427';
-                  readonly prefix: 'estampaCategoria_categoriaId_idx';
-                  readonly columns: readonly ['categoriaId'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'estampaCategoria_estampaId_idx_347c4ea4';
-                  readonly prefix: 'estampaCategoria_estampaId_idx';
-                  readonly columns: readonly ['estampaId'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'estampaCategoria';
-                    readonly columns: readonly ['estampaId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'estampa';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'estampaCategoria';
-                    readonly columns: readonly ['categoriaId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'categoria';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
-            };
             readonly item: {
               columns: {
                 readonly id: {
@@ -1331,11 +1138,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
-                readonly estampaId: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: true;
-                };
                 readonly arteClienteUrl: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -1375,12 +1177,6 @@ type ContractBase = Omit<
                   readonly columns: readonly ['itemId'];
                   readonly unique: false;
                 },
-                {
-                  readonly name: 'itemEstampa_estampaId_idx_347c4ea4';
-                  readonly prefix: 'itemEstampa_estampaId_idx';
-                  readonly columns: readonly ['estampaId'];
-                  readonly unique: false;
-                },
               ];
               foreignKeys: readonly [
                 {
@@ -1392,18 +1188,6 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'item';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'itemEstampa';
-                    readonly columns: readonly ['estampaId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'estampa';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -1961,10 +1745,6 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProdutoCategoria';
     };
-    readonly estampaCategoria: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'EstampaCategoria';
-    };
     readonly produto: { readonly namespace: 'public' & NamespaceId; readonly model: 'Produto' };
     readonly produtoTamanho: {
       readonly namespace: 'public' & NamespaceId;
@@ -1974,7 +1754,6 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProdutoCor';
     };
-    readonly estampa: { readonly namespace: 'public' & NamespaceId; readonly model: 'Estampa' };
     readonly material: { readonly namespace: 'public' & NamespaceId; readonly model: 'Material' };
     readonly pedido: { readonly namespace: 'public' & NamespaceId; readonly model: 'Pedido' };
     readonly pedidoStatusHistorico: {
@@ -2025,17 +1804,6 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly estampas: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'EstampaCategoria';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['categoriaId'];
-                };
-              };
               readonly produtos: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -2140,121 +1908,6 @@ type ContractBase = Omit<
                 readonly estado: { readonly column: 'estado' };
                 readonly criadoEm: { readonly column: 'criadoEm' };
                 readonly atualizadoEm: { readonly column: 'atualizadoEm' };
-              };
-            };
-          };
-          readonly Estampa: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
-              readonly nome: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly imagemUrl: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly larguraCm: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
-              };
-              readonly alturaCm: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
-              };
-              readonly ativo: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-              };
-              readonly criadoEm: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly atualizadoEm: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-            };
-            readonly relations: {
-              readonly itensEstampa: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'ItemEstampa';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['estampaId'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'estampa';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly nome: { readonly column: 'nome' };
-                readonly imagemUrl: { readonly column: 'imagemUrl' };
-                readonly larguraCm: { readonly column: 'larguraCm' };
-                readonly alturaCm: { readonly column: 'alturaCm' };
-                readonly ativo: { readonly column: 'ativo' };
-                readonly criadoEm: { readonly column: 'criadoEm' };
-                readonly atualizadoEm: { readonly column: 'atualizadoEm' };
-              };
-            };
-          };
-          readonly EstampaCategoria: {
-            readonly fields: {
-              readonly estampaId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
-              readonly categoriaId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
-            };
-            readonly relations: {
-              readonly categoria: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Categoria';
-                };
-                readonly cardinality: 'N:1';
-                readonly nullable: false;
-                readonly on: {
-                  readonly localFields: readonly ['categoriaId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-              readonly estampa: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Estampa';
-                };
-                readonly cardinality: 'N:1';
-                readonly nullable: false;
-                readonly on: {
-                  readonly localFields: readonly ['estampaId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'estampaCategoria';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly estampaId: { readonly column: 'estampaId' };
-                readonly categoriaId: { readonly column: 'categoriaId' };
               };
             };
           };
@@ -2383,10 +2036,6 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
-              readonly estampaId: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
               readonly arteClienteUrl: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -2409,18 +2058,6 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly estampa: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Estampa';
-                };
-                readonly cardinality: 'N:1';
-                readonly nullable: true;
-                readonly on: {
-                  readonly localFields: readonly ['estampaId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
               readonly item: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Item' };
                 readonly cardinality: 'N:1';
@@ -2437,7 +2074,6 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly itemId: { readonly column: 'itemId' };
-                readonly estampaId: { readonly column: 'estampaId' };
                 readonly arteClienteUrl: { readonly column: 'arteClienteUrl' };
                 readonly posicao: { readonly column: 'posicao' };
                 readonly quantidade: { readonly column: 'quantidade' };
@@ -3103,23 +2739,6 @@ type ContractBase = Omit<
           readonly ref: {
             readonly namespace: 'public';
             readonly table: 'endereco';
-            readonly column: 'id';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'estampa';
-            readonly column: 'atualizadoEm';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'estampa';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };

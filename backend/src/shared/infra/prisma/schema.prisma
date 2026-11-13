@@ -81,7 +81,6 @@ model Categoria {
   nomeNormalizado String @unique
   descricao String?
   produtos  ProdutoCategoria[]
-  estampas  EstampaCategoria[]
   criadoEm TimestamptzString @default(now())
   atualizadoEm temporal.updatedAtString()
 }
@@ -93,16 +92,6 @@ model ProdutoCategoria {
   categoria   Categoria @relation(fields: [categoriaId], references: [id])
 
   @@id([produtoId, categoriaId])
-  @@index([categoriaId])
-}
-
-model EstampaCategoria {
-  estampaId   Uuid
-  estampa     Estampa   @relation(fields: [estampaId], references: [id])
-  categoriaId Uuid
-  categoria   Categoria @relation(fields: [categoriaId], references: [id])
-
-  @@id([estampaId, categoriaId])
   @@index([categoriaId])
 }
 
@@ -141,18 +130,6 @@ model ProdutoCor {
   imagemPersonalizacaoFrente String?
   imagemPersonalizacaoCostas String?
   itens                      Item[]
-  criadoEm TimestamptzString @default(now())
-  atualizadoEm temporal.updatedAtString()
-}
-
-model Estampa {
-  id          Uuid     @id @default(uuid())
-  nome        String
-  imagemUrl   String
-  larguraCm   Decimal
-  alturaCm    Decimal
-  ativo       Boolean  @default(true)
-  itensEstampa ItemEstampa[]
   criadoEm TimestamptzString @default(now())
   atualizadoEm temporal.updatedAtString()
 }
@@ -208,8 +185,6 @@ model ItemEstampa {
   id             Uuid     @id @default(uuid())
   itemId         Uuid
   item           Item     @relation(fields: [itemId], references: [id])
-  estampaId      Uuid?
-  estampa        Estampa? @relation(fields: [estampaId], references: [id])
   arteClienteUrl String?
   posicao        PosicaoEstampa?
   quantidade     Int      @default(1)
