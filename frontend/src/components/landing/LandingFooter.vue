@@ -30,10 +30,10 @@ import logoBranco from '@/assets/logo-branco.webp'
             </li>
             <li>
               <RouterLink
-                :to="{ name: 'loja-estampas' }"
+                :to="{ name: 'loja-materiais' }"
                 class="text-14 text-branco-dtf/75 transition-colors hover:text-amarelo-dtf"
               >
-                Estampas
+                Materiais
               </RouterLink>
             </li>
             <li>

@@ -5,7 +5,7 @@ const caminhos = [
     titulo: 'Estampas',
     descricao: 'Artes prontas para aplicar na peça que você quiser.',
     acao: 'Ver estampas',
-    destino: { name: 'loja-estampas' },
+    destino: { name: 'loja-materiais' },
     fundo: 'bg-[#171717]',
   },
   {

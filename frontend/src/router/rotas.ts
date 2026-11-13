@@ -57,20 +57,10 @@ export const rotas: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'estampas',
-        name: 'loja-estampas',
+        path: 'materiais',
+        name: 'loja-materiais',
         component: PaginaProvisoria,
-        meta: { acesso: 'publico', titulo: 'Estampas', trilha: [{ rotulo: 'Estampas' }] },
-      },
-      {
-        path: 'estampas/:id',
-        name: 'loja-estampa',
-        component: PaginaProvisoria,
-        meta: {
-          acesso: 'publico',
-          titulo: 'Estampa',
-          trilha: [{ rotulo: 'Estampas', para: { name: 'loja-estampas' } }, { rotulo: 'Estampa' }],
-        },
+        meta: { acesso: 'publico', titulo: 'Materiais', trilha: [{ rotulo: 'Materiais' }] },
       },
       {
         path: 'produtos/:id/personalizar',
@@ -190,12 +180,6 @@ export const rotas: RouteRecordRaw[] = [
         name: 'admin-produto-editar',
         component: PaginaProvisoria,
         meta: { acesso: 'admin', titulo: 'Editar produto' },
-      },
-      {
-        path: 'estampas',
-        name: 'admin-estampas',
-        component: PaginaProvisoria,
-        meta: { acesso: 'admin', titulo: 'Estampas' },
       },
       {
         path: 'conteudo',

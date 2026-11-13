@@ -27,10 +27,10 @@ import LandingBotaoLink from './LandingBotaoLink.vue'
           </li>
           <li>
             <RouterLink
-              :to="{ name: 'loja-estampas' }"
+              :to="{ name: 'loja-materiais' }"
               class="text-[11px] font-bold uppercase tracking-[0.18em] text-branco-dtf/80 transition-colors hover:text-amarelo-dtf"
             >
-              Estampas
+              Materiais
             </RouterLink>
           </li>
           <li>

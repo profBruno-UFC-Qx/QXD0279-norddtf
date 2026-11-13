@@ -5,14 +5,12 @@ import { useRoute, useRouter, type RouteLocationRaw } from 'vue-router'
 import logoPreto from '@/assets/logo-preto.webp'
 import IconeCabide from '@/components/icones/IconeCabide.vue'
 import IconeConteudo from '@/components/icones/IconeConteudo.vue'
-import IconeEstampa from '@/components/icones/IconeEstampa.vue'
 import IconePedidos from '@/components/icones/IconePedidos.vue'
 import IconeSair from '@/components/icones/IconeSair.vue'
 import { useSair } from './useSair'
 
 const itens: { rotulo: string; para: RouteLocationRaw; icone: Component }[] = [
   { rotulo: 'Produtos', para: { name: 'admin-produtos' }, icone: IconeCabide },
-  { rotulo: 'Estampas', para: { name: 'admin-estampas' }, icone: IconeEstampa },
   { rotulo: 'Pedidos', para: { name: 'admin-pedidos' }, icone: IconePedidos },
   { rotulo: 'Gestão de conteúdo', para: { name: 'admin-conteudo' }, icone: IconeConteudo },
 ]
@@ -36,7 +34,7 @@ function estaAtivo(para: RouteLocationRaw) {
       <div class="flex flex-col gap-25">
         <img :src="logoPreto" alt="NorDTF" class="w-37.5" />
         <nav aria-label="Menu do painel">
-          <ul class="flex h-80 flex-col justify-between">
+          <ul class="flex flex-col gap-[17.5px]">
             <li v-for="item in itens" :key="item.rotulo">
               <RouterLink
                 :to="item.para"

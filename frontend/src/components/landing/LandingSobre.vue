@@ -93,7 +93,7 @@ const motivos = [
             etapas escondidas.
           </p>
           <RouterLink
-            :to="{ name: 'loja-estampas' }"
+            :to="{ name: 'loja-materiais' }"
             class="mt-5 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.14em] underline underline-offset-4 transition-opacity hover:opacity-60"
           >
             Explorar estampas
