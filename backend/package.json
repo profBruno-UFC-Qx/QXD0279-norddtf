@@ -11,7 +11,8 @@
     "dev": "tsx watch src/shared/infra/http/server.ts",
     "seed": "tsx src/shared/infra/prisma/seed.ts",
     "contract:emit": "prisma contract emit",
-    "docker-compose": "infisical run --env=dev -- docker compose"
+    "docker-compose": "infisical run --env=dev -- docker compose",
+    "garage:iniciar": "sh docker/garage/iniciar.sh"
   },
   "keywords": [],
   "author": "",

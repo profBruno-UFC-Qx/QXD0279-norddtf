@@ -14,5 +14,19 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  garage:
+    image: dxflrs/garage:v2.5.0
+    container_name: garage_norz
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET}
+    ports:
+      - "3900:3900"
+    volumes:
+      - ./docker/garage/garage.toml:/etc/garage.toml:ro
+      - garage_meta:/var/lib/garage/meta
+      - garage_data:/var/lib/garage/data
+
 volumes:
   db_data:
+  garage_meta:
+  garage_data:
