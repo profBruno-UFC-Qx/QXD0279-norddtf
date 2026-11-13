@@ -3,11 +3,10 @@ import type { z } from 'zod';
 export function toFieldErrors(error: z.ZodError) {
   const errors: Record<string, string> = {};
   for (const issue of error.issues) {
-    const [campo] = issue.path;
-    if (typeof campo !== 'string') {
+    if (issue.path.length === 0) {
       continue;
     }
-    errors[campo] ??= issue.message;
+    errors[issue.path.map(String).join('.')] ??= issue.message;
   }
   return errors;
 }
