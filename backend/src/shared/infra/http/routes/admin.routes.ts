@@ -24,6 +24,7 @@ import { ProdutoNaoEncontradoError } from "../../../../modules/produtos/errors/P
 import { ProdutosRepository } from "../../../../modules/produtos/repositories/ProdutosRepository.js";
 import { CadastrarProdutoService } from "../../../../modules/produtos/useCases/cadastrarProduto/CadastrarProdutoService.js";
 import { CadastrarProdutoController } from "../../../../modules/produtos/useCases/cadastrarProduto/CadastrarProdutoController.js";
+import { ListarProdutosController } from "../../../../modules/produtos/useCases/listarProdutos/ListarProdutosController.js";
 import { DetalharProdutoController } from "../../../../modules/produtos/useCases/detalharProduto/DetalharProdutoController.js";
 import { EditarProdutoService } from "../../../../modules/produtos/useCases/editarProduto/EditarProdutoService.js";
 import { EditarProdutoController } from "../../../../modules/produtos/useCases/editarProduto/EditarProdutoController.js";
@@ -41,6 +42,7 @@ const atualizarMaterialController = new AtualizarMaterialController(new Atualiza
 const enviarImagemController = new EnviarImagemController(new EnviarImagemService(armazenamento));
 const produtosRepository = new ProdutosRepository();
 const cadastrarProdutoController = new CadastrarProdutoController(new CadastrarProdutoService(produtosRepository, armazenamento));
+const listarProdutosController = new ListarProdutosController(produtosRepository);
 const detalharProdutoController = new DetalharProdutoController(produtosRepository);
 const editarProdutoController = new EditarProdutoController(new EditarProdutoService(produtosRepository, armazenamento));
 const mudarSituacaoController = new MudarSituacaoController(new MudarSituacaoService(produtosRepository));
@@ -69,6 +71,7 @@ const produtosRoutes: Router = Router();
 
 produtosRoutes.param('id', validarParametro(idDoProduto, () => new ProdutoNaoEncontradoError()));
 
+produtosRoutes.get('/', (request, response) => listarProdutosController.handle(request, response));
 produtosRoutes.post('/', (request, response) => cadastrarProdutoController.handle(request, response));
 produtosRoutes.get('/:id', (request, response) => detalharProdutoController.handle(request, response));
 produtosRoutes.put('/:id', (request, response) => editarProdutoController.handle(request, response));

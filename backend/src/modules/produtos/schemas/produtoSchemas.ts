@@ -182,6 +182,60 @@ export const situacaoSchema = z.object({
   ativo: z.boolean({ error: 'Informe a situação.' }),
 });
 
+const PRECO_DO_FILTRO = /^\d{1,8}(\.\d{1,2})?$/;
+const BUSCA_INVALIDA = 'A busca pode ter até 120 caracteres.';
+const CATEGORIAS_DO_FILTRO_INVALIDAS = 'Selecione categorias válidas.';
+const TAMANHOS_INVALIDOS = 'Selecione tamanhos válidos.';
+const PAGINA_INVALIDA = 'Informe uma página válida.';
+
+function vazioComoAusente<T extends z.ZodType>(schema: T) {
+  return z.preprocess((valor) => (valor === '' ? undefined : valor), schema.optional());
+}
+
+function listaDoFiltro<T extends z.ZodType<unknown, string>>(item: T, mensagem: string) {
+  return vazioComoAusente(
+    z.union([z.string(), z.array(z.string())], { error: mensagem }).transform((valor, ctx) => {
+      const lista = z.array(item).safeParse([valor].flat().flatMap((parte) => parte.split(',')));
+      if (!lista.success) {
+        ctx.addIssue({ code: 'custom', message: mensagem });
+        return z.NEVER;
+      }
+      return lista.data;
+    }),
+  );
+}
+
+const precoDoFiltro = vazioComoAusente(z.string({ error: PRECO_INVALIDO }).regex(PRECO_DO_FILTRO, { error: PRECO_INVALIDO }));
+
+function precoValido(preco: string | undefined): preco is string {
+  return preco !== undefined && PRECO_DO_FILTRO.test(preco);
+}
+
+export const filtrosDaListagemSchema = z
+  .object({
+    busca: z
+      .string({ error: 'Informe uma busca válida.' })
+      .trim()
+      .max(120, { error: BUSCA_INVALIDA })
+      .optional()
+      .transform((busca) => busca || undefined),
+    categorias: listaDoFiltro(z.uuid(), CATEGORIAS_DO_FILTRO_INVALIDAS),
+    precoMin: precoDoFiltro,
+    precoMax: precoDoFiltro,
+    tamanhos: listaDoFiltro(z.enum(TAMANHOS), TAMANHOS_INVALIDOS),
+    pagina: z.coerce
+      .number({ error: PAGINA_INVALIDA })
+      .int({ error: PAGINA_INVALIDA })
+      .min(1, { error: PAGINA_INVALIDA })
+      .default(1),
+  })
+  .refine(
+    ({ precoMin, precoMax }) => !precoValido(precoMin) || !precoValido(precoMax) || Number(precoMin) <= Number(precoMax),
+    { error: 'O preço mínimo não pode ser maior que o máximo.', path: ['precoMin'] },
+  );
+
+export type FiltrosDaListagem = z.output<typeof filtrosDaListagemSchema>;
+
 type CoresParciais = ReturnType<typeof coresParciais>;
 
 function conferirImagens(tipo: TipoProduto, cores: CoresParciais, ctx: z.RefinementCtx) {

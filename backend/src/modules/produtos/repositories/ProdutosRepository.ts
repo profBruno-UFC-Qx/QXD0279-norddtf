@@ -1,11 +1,17 @@
 import type { Scalars } from '@prisma/orm-postgres/family-contract/types';
+import { and, or } from '@prisma/orm-postgres/orm-client';
 import { db } from '../../../shared/infra/prisma/db.js';
 import type { Models } from '../../../shared/infra/prisma/schema.js';
 import { normalizarNome } from '../../categorias/normalizarNome.js';
 import { DadosDoProdutoInvalidosError } from '../errors/DadosDoProdutoInvalidosError.js';
 import { ProdutoNaoEncontradoError } from '../errors/ProdutoNaoEncontradoError.js';
 import { ProdutoVendidoError } from '../errors/ProdutoVendidoError.js';
-import { CATEGORIAS_INVALIDAS, type DadosDaEdicao, type DadosDoProduto } from '../schemas/produtoSchemas.js';
+import {
+  CATEGORIAS_INVALIDAS,
+  type DadosDaEdicao,
+  type DadosDoProduto,
+  type FiltrosDaListagem,
+} from '../schemas/produtoSchemas.js';
 
 type Preco = Scalars<Models.public_Produto>['preco'];
 type Orm = typeof db.orm;
@@ -23,6 +29,8 @@ export interface MudancasDaEdicao {
   coresRemovidas: string[];
   trocarVariantes: boolean;
 }
+
+export const POR_PAGINA = 12;
 
 const CATEGORIA_DO_PRODUTO = 'produtoCategoria_categoriaId_fkey';
 const VARIANTE_DO_ITEM = 'item_produtoVarianteId_fkey';
@@ -51,6 +59,51 @@ export class ProdutosRepository {
         return produto.id;
       })
       .catch(categoriaRemovida);
+  }
+
+  async listar({ busca, categorias, precoMin, precoMax, tamanhos, pagina }: FiltrosDaListagem) {
+    let consulta = db.orm.public.Produto;
+    if (busca) {
+      const padrao = padraoDeBusca(busca);
+      consulta = consulta.where((p) =>
+        or(
+          p.buscaNormalizada.like(padrao),
+          p.categorias.some((pc) => pc.categoria.some((c) => c.nomeNormalizado.like(padrao))),
+        ),
+      );
+    }
+    if (categorias) {
+      consulta = consulta.where((p) => p.categorias.some((pc) => pc.categoriaId.in(categorias)));
+    }
+    if (precoMin) {
+      consulta = consulta.where((p) => p.preco.gte(precoMin as Preco));
+    }
+    if (precoMax) {
+      consulta = consulta.where((p) => p.preco.lte(precoMax as Preco));
+    }
+    if (tamanhos) {
+      consulta = consulta.where((p) =>
+        p.cores.some((c) => c.variantes.some((v) => and(v.tamanho.in(tamanhos), v.estoque.gt(0)))),
+      );
+    }
+
+    const [itens, { total }, { min, max }] = await Promise.all([
+      consulta
+        .select('id', 'nome', 'preco', 'ativo', 'tipo')
+        .include('cores', (cores) =>
+          cores
+            .select('imagemApresentacao')
+            .orderBy([(c) => c.posicao.asc(), (c) => c.criadoEm.asc()])
+            .limit(1),
+        )
+        .orderBy([(p) => p.criadoEm.desc(), (p) => p.id.desc()])
+        .limit(POR_PAGINA)
+        .offset((pagina - 1) * POR_PAGINA)
+        .all(),
+      consulta.aggregate((a) => ({ total: a.count() })),
+      db.orm.public.Produto.aggregate((a) => ({ min: a.min('preco'), max: a.max('preco') })),
+    ]);
+    return { itens, total, faixaDePreco: min === null ? null : { min, max } };
   }
 
   async detalhar(id: string) {
@@ -155,6 +208,10 @@ export class ProdutosRepository {
       })
       .catch(produtoVendido);
   }
+}
+
+function padraoDeBusca(termo: string) {
+  return `%${normalizarNome(termo).replace(/[\\%_]/g, (caractere) => `\\${caractere}`)}%`;
 }
 
 async function bloquearProduto(tx: Transacao, id: string) {
