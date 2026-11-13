@@ -19,6 +19,12 @@ import { AtualizarMaterialService } from "../../../../modules/materiais/useCases
 import { AtualizarMaterialController } from "../../../../modules/materiais/useCases/atualizarMaterial/AtualizarMaterialController.js";
 import { EnviarImagemService } from "../../../../modules/imagens/useCases/enviarImagem/EnviarImagemService.js";
 import { EnviarImagemController } from "../../../../modules/imagens/useCases/enviarImagem/EnviarImagemController.js";
+import { idDoProduto } from "../../../../modules/produtos/schemas/produtoSchemas.js";
+import { ProdutoNaoEncontradoError } from "../../../../modules/produtos/errors/ProdutoNaoEncontradoError.js";
+import { ProdutosRepository } from "../../../../modules/produtos/repositories/ProdutosRepository.js";
+import { CadastrarProdutoService } from "../../../../modules/produtos/useCases/cadastrarProduto/CadastrarProdutoService.js";
+import { CadastrarProdutoController } from "../../../../modules/produtos/useCases/cadastrarProduto/CadastrarProdutoController.js";
+import { DetalharProdutoController } from "../../../../modules/produtos/useCases/detalharProduto/DetalharProdutoController.js";
 
 const categoriasRepository = new CategoriasRepository();
 const listarCategoriasComUsoController = new ListarCategoriasComUsoController(categoriasRepository);
@@ -27,6 +33,9 @@ const renomearCategoriaController = new RenomearCategoriaController(new Renomear
 const removerCategoriaController = new RemoverCategoriaController(new RemoverCategoriaService(categoriasRepository));
 const atualizarMaterialController = new AtualizarMaterialController(new AtualizarMaterialService(new MateriaisRepository()));
 const enviarImagemController = new EnviarImagemController(new EnviarImagemService(armazenamento));
+const produtosRepository = new ProdutosRepository();
+const cadastrarProdutoController = new CadastrarProdutoController(new CadastrarProdutoService(produtosRepository, armazenamento));
+const detalharProdutoController = new DetalharProdutoController(produtosRepository);
 
 const categoriasRoutes: Router = Router();
 
@@ -47,10 +56,18 @@ const imagensRoutes: Router = Router();
 
 imagensRoutes.post('/', receberArquivo, (request, response) => enviarImagemController.handle(request, response));
 
+const produtosRoutes: Router = Router();
+
+produtosRoutes.param('id', validarParametro(idDoProduto, () => new ProdutoNaoEncontradoError()));
+
+produtosRoutes.post('/', (request, response) => cadastrarProdutoController.handle(request, response));
+produtosRoutes.get('/:id', (request, response) => detalharProdutoController.handle(request, response));
+
 const adminRoutes: Router = Router();
 
 adminRoutes.use('/categorias', categoriasRoutes);
 adminRoutes.use('/materiais', materiaisRoutes);
 adminRoutes.use('/imagens', imagensRoutes);
+adminRoutes.use('/produtos', produtosRoutes);
 
 export { adminRoutes };
