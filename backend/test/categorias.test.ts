@@ -220,7 +220,7 @@ describe('DELETE /admin/categorias/:id', () => {
     const resposta = await agent.delete(`/admin/categorias/${categoria.id}`);
 
     expect(resposta.status).toBe(409);
-    expect(resposta.body.message).toBe('Esta categoria está em uso por 1 produto. Retire-a deles antes de remover.');
+    expect(resposta.body.message).toBe('Esta categoria está em uso por 1 produto. Retire-a dele antes de remover.');
   });
 
   it.each([
