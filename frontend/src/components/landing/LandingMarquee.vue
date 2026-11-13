@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const itens = [
-  'Estampas prontas',
   'Arte própria',
+  'Folha DTF',
   'Impressão DTF',
   'Personalização',
   'Envio para todo o Brasil',

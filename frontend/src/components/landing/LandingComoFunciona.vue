@@ -16,8 +16,7 @@ const passos = [
     numero: '02',
     icone: IconeConteudo,
     titulo: 'Envie sua arte',
-    descricao:
-      'Use uma estampa pronta ou envie seu arquivo. Conferimos os detalhes antes de imprimir.',
+    descricao: 'Envie seu arquivo. Conferimos os detalhes antes de imprimir.',
   },
   {
     numero: '03',

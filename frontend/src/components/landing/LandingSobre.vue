@@ -5,12 +5,12 @@ const motivos = [
   {
     numero: '01',
     titulo: 'Sua ideia no centro',
-    descricao: 'Estampas prontas ou arte própria: você escolhe o ponto de partida.',
+    descricao: 'Você traz a arte e escolhe onde ela vai: na peça ou na folha.',
   },
   {
     numero: '02',
     titulo: 'Sem complicação',
-    descricao: 'Produtos, estampas e personalização reunidos em um só lugar.',
+    descricao: 'Produtos, folha DTF e personalização reunidos em um só lugar.',
   },
   {
     numero: '03',
@@ -40,8 +40,7 @@ const motivos = [
             Estampas com atitude.
           </h2>
           <p class="mt-5 max-w-sm text-16 leading-relaxed text-cinza-dtf">
-            Peças que saem do óbvio. Escolha uma estampa pronta ou traga a sua arte e transforme a
-            ideia em visual.
+            Peças que saem do óbvio. Traga a sua arte e transforme a ideia em visual.
           </p>
           <LandingBotaoLink
             :para="{ name: 'loja-produtos' }"
@@ -96,7 +95,7 @@ const motivos = [
             :to="{ name: 'loja-materiais' }"
             class="mt-5 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.14em] underline underline-offset-4 transition-opacity hover:opacity-60"
           >
-            Explorar estampas
+            Explorar materiais
             <span aria-hidden="true">→</span>
           </RouterLink>
         </div>

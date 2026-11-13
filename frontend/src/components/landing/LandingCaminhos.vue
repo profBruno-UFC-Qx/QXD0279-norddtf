@@ -2,9 +2,9 @@
 const caminhos = [
   {
     numero: '01',
-    titulo: 'Estampas',
-    descricao: 'Artes prontas para aplicar na peça que você quiser.',
-    acao: 'Ver estampas',
+    titulo: 'Folha DTF',
+    descricao: 'Sua arte impressa em folha, pronta para aplicar onde você quiser.',
+    acao: 'Ver materiais',
     destino: { name: 'loja-materiais' },
     fundo: 'bg-[#171717]',
   },

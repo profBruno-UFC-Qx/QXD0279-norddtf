@@ -7,7 +7,7 @@ const beneficios = [
     descricao: 'Alta definição na peça',
   },
   {
-    titulo: 'Estampa ou arte',
+    titulo: 'Peça ou folha',
     descricao: 'Você escolhe o caminho',
   },
   {

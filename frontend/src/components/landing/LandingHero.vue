@@ -59,8 +59,8 @@ import LandingBotaoLink from './LandingBotaoLink.vue'
           data-revelar
           :style="{ '--revelar-atraso': '180ms' }"
         >
-          Estampas prontas, arte própria e impressão DTF de alta definição. Para quem não repete o
-          visual de ninguém.
+          Arte própria e impressão DTF de alta definição, na peça ou em folha. Para quem não repete
+          o visual de ninguém.
         </p>
 
         <div

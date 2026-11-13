@@ -22,7 +22,7 @@ const perguntas = [
     numero: '04',
     pergunta: 'Preciso criar conta para comprar?',
     resposta:
-      'Você pode explorar produtos e estampas sem conta. Para finalizar a compra e acompanhar pedidos, é preciso entrar ou se cadastrar.',
+      'Você pode explorar produtos e materiais sem conta. Para finalizar a compra e acompanhar pedidos, é preciso entrar ou se cadastrar.',
   },
   {
     numero: '05',
