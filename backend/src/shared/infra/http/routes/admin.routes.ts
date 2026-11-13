@@ -25,6 +25,12 @@ import { ProdutosRepository } from "../../../../modules/produtos/repositories/Pr
 import { CadastrarProdutoService } from "../../../../modules/produtos/useCases/cadastrarProduto/CadastrarProdutoService.js";
 import { CadastrarProdutoController } from "../../../../modules/produtos/useCases/cadastrarProduto/CadastrarProdutoController.js";
 import { DetalharProdutoController } from "../../../../modules/produtos/useCases/detalharProduto/DetalharProdutoController.js";
+import { EditarProdutoService } from "../../../../modules/produtos/useCases/editarProduto/EditarProdutoService.js";
+import { EditarProdutoController } from "../../../../modules/produtos/useCases/editarProduto/EditarProdutoController.js";
+import { MudarSituacaoService } from "../../../../modules/produtos/useCases/mudarSituacao/MudarSituacaoService.js";
+import { MudarSituacaoController } from "../../../../modules/produtos/useCases/mudarSituacao/MudarSituacaoController.js";
+import { RemoverProdutoService } from "../../../../modules/produtos/useCases/removerProduto/RemoverProdutoService.js";
+import { RemoverProdutoController } from "../../../../modules/produtos/useCases/removerProduto/RemoverProdutoController.js";
 
 const categoriasRepository = new CategoriasRepository();
 const listarCategoriasComUsoController = new ListarCategoriasComUsoController(categoriasRepository);
@@ -36,6 +42,9 @@ const enviarImagemController = new EnviarImagemController(new EnviarImagemServic
 const produtosRepository = new ProdutosRepository();
 const cadastrarProdutoController = new CadastrarProdutoController(new CadastrarProdutoService(produtosRepository, armazenamento));
 const detalharProdutoController = new DetalharProdutoController(produtosRepository);
+const editarProdutoController = new EditarProdutoController(new EditarProdutoService(produtosRepository, armazenamento));
+const mudarSituacaoController = new MudarSituacaoController(new MudarSituacaoService(produtosRepository));
+const removerProdutoController = new RemoverProdutoController(new RemoverProdutoService(produtosRepository));
 
 const categoriasRoutes: Router = Router();
 
@@ -62,6 +71,9 @@ produtosRoutes.param('id', validarParametro(idDoProduto, () => new ProdutoNaoEnc
 
 produtosRoutes.post('/', (request, response) => cadastrarProdutoController.handle(request, response));
 produtosRoutes.get('/:id', (request, response) => detalharProdutoController.handle(request, response));
+produtosRoutes.put('/:id', (request, response) => editarProdutoController.handle(request, response));
+produtosRoutes.patch('/:id/situacao', (request, response) => mudarSituacaoController.handle(request, response));
+produtosRoutes.delete('/:id', (request, response) => removerProdutoController.handle(request, response));
 
 const adminRoutes: Router = Router();
 

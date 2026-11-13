@@ -5,7 +5,7 @@ import { ProdutosRepository } from '../src/modules/produtos/repositories/Produto
 import { app } from '../src/shared/infra/http/app.js';
 import { db } from '../src/shared/infra/prisma/db.js';
 import { entrarComo } from './entrarComo.js';
-import { corpoDeProduto, criarCategoria, estoque, gravarImagem } from './produtosDeTeste.js';
+import { corpoDeProduto, criarCategoria, estoque, gravarImagem, venderCor } from './produtosDeTeste.js';
 
 const ACESSO_NEGADO = { code: 'ACESSO_NEGADO', message: 'Você não tem permissão para acessar esta área.' };
 const NAO_ENCONTRADO = { code: 'PRODUTO_NAO_ENCONTRADO', message: 'Produto não encontrado.' };
@@ -37,19 +37,6 @@ function semEstoque(corpo: Corpo) {
 
 function comCor(corpo: Corpo, mudancas: Record<string, unknown>) {
   return { ...corpo, cores: [{ ...corpo.cores[0]!, ...mudancas }] };
-}
-
-async function venderCor(corId: string) {
-  const variante = await db.orm.public.ProdutoVariante.where({ produtoCorId: corId }).first();
-  const user = await db.orm.public.User.create({ nome: 'Ana', email: `cliente-${randomUUID()}@x.com` });
-  const pedido = await db.orm.public.Pedido.create({ userId: user.id, valorTotal: '45.00' });
-  await db.orm.public.Item.create({
-    pedidoId: pedido.id,
-    tipo: 'PRODUTO',
-    produtoVarianteId: variante!.id,
-    quantidade: 1,
-    precoUnitario: '45.00',
-  });
 }
 
 describe('POST /admin/produtos', () => {

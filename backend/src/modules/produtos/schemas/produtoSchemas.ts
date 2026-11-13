@@ -7,6 +7,7 @@ export const CATEGORIAS_INVALIDAS = 'Selecione ao menos uma categoria.';
 const CORES_INVALIDAS = 'Cadastre ao menos uma cor.';
 const NOME_DA_COR_INVALIDO = 'Informe o nome da cor.';
 const QUANTIDADE_INVALIDA = 'Informe uma quantidade válida.';
+export const COR_NAO_ENCONTRADA = 'Cor não encontrada.';
 
 export const TAMANHOS = ['P', 'M', 'G', 'GG', 'G1', 'G2'] as const;
 
@@ -34,7 +35,7 @@ export const idDoProduto = z.uuid();
 
 const tipoProduto = z.enum(['PERSONALIZAVEL', 'VENDA_DIRETA'], { error: 'Selecione o tipo de produto.' });
 
-type TipoProduto = z.infer<typeof tipoProduto>;
+export type TipoProduto = z.infer<typeof tipoProduto>;
 
 const IMAGENS_POR_TIPO: Record<TipoProduto, { obrigatorias: CampoDeImagem[]; proibidas: CampoDeImagem[] }> = {
   PERSONALIZAVEL: {
@@ -135,22 +136,51 @@ export type DadosDoProduto = Omit<z.output<typeof camposDoProduto>, 'cores'> & {
   cores: (Omit<Cor, 'estoque'> & { estoque: NonNullable<Cor['estoque']> })[];
 };
 
+const camposDaEdicao = camposDoProduto.omit({ tipo: true }).extend({
+  cores: z
+    .array(
+      corSchema.extend({
+        id: z
+          .uuid({ error: COR_NAO_ENCONTRADA })
+          .nullish()
+          .transform((id) => id ?? undefined),
+      }),
+      { error: CORES_INVALIDAS },
+    )
+    .min(1, { error: CORES_INVALIDAS }),
+});
+
+export type DadosDaEdicao = Omit<DadosDoProduto, 'tipo' | 'cores'> & {
+  cores: (DadosDoProduto['cores'][number] & { id?: string })[];
+};
+
+const SO_COM_OBJETO = { when: ({ value }: { value: unknown }) => typeof value === 'object' && value !== null };
+
+function conferirRegrasCruzadas(produto: { temTamanho: unknown; cores: unknown }, tipo: unknown, ctx: z.RefinementCtx) {
+  const cores = coresParciais(produto.cores);
+  const tipoValido = tipoProduto.safeParse(tipo);
+  if (tipoValido.success) {
+    conferirImagens(tipoValido.data, cores, ctx);
+  }
+  if (typeof produto.temTamanho === 'boolean') {
+    conferirEstoque(produto.temTamanho, cores, ctx);
+  }
+  conferirNomesDasCores(cores, ctx);
+}
+
 export const produtoSchema = camposDoProduto
-  .superRefine(
-    (produto, ctx) => {
-      const cores = coresParciais(produto.cores);
-      const tipo = tipoProduto.safeParse(produto.tipo);
-      if (tipo.success) {
-        conferirImagens(tipo.data, cores, ctx);
-      }
-      if (typeof produto.temTamanho === 'boolean') {
-        conferirEstoque(produto.temTamanho, cores, ctx);
-      }
-      conferirNomesDasCores(cores, ctx);
-    },
-    { when: ({ value }) => typeof value === 'object' && value !== null },
-  )
+  .superRefine((produto, ctx) => conferirRegrasCruzadas(produto, produto.tipo, ctx), SO_COM_OBJETO)
   .transform((produto) => produto as DadosDoProduto);
+
+export function edicaoDoProdutoSchema(tipo: TipoProduto) {
+  return camposDaEdicao
+    .superRefine((produto, ctx) => conferirRegrasCruzadas(produto, tipo, ctx), SO_COM_OBJETO)
+    .transform((produto) => produto as DadosDaEdicao);
+}
+
+export const situacaoSchema = z.object({
+  ativo: z.boolean({ error: 'Informe a situação.' }),
+});
 
 type CoresParciais = ReturnType<typeof coresParciais>;
 

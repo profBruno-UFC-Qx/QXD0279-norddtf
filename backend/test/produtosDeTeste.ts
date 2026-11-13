@@ -67,3 +67,58 @@ export async function corpoDeProduto({ tipo = 'PERSONALIZAVEL', temTamanho = tru
     ),
   };
 }
+
+type Orm = typeof db.orm;
+
+export async function venderProduto(varianteId: string, orm: Orm = db.orm) {
+  const user = await orm.public.User.create({ nome: 'Ana', email: `cliente-${randomUUID()}@x.com` });
+  const pedido = await orm.public.Pedido.create({ userId: user.id, valorTotal: '45.00' });
+  await orm.public.Item.create({
+    pedidoId: pedido.id,
+    tipo: 'PRODUTO',
+    produtoVarianteId: varianteId,
+    quantidade: 1,
+    precoUnitario: '45.00',
+  });
+}
+
+async function primeiraVariante(corId: string) {
+  const variante = await db.orm.public.ProdutoVariante.where({ produtoCorId: corId }).first();
+  return variante!.id;
+}
+
+export async function venderCor(corId: string) {
+  await venderProduto(await primeiraVariante(corId));
+}
+
+type Transacao = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function esperarBloqueioPor(tx: Transacao, terminou: () => boolean) {
+  const [linha] = await tx.query(db.raw.sql`SELECT pg_backend_pid() AS pid`.returnsRow({ pid: 'pg/int4@1' }).build());
+  const bloqueadas = db.raw.sql`SELECT 1 FROM pg_stat_activity WHERE ${linha!.pid}::int = ANY(pg_blocking_pids(pid))`
+    .affectedCount()
+    .build();
+  while (!terminou()) {
+    if ((await db.runtime().execute(bloqueadas)).affectedRows > 0) {
+      return true;
+    }
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  return false;
+}
+
+export async function venderCorDuranteARequisicao<T extends { status: number }>(corId: string, enviar: () => PromiseLike<T>) {
+  const varianteId = await primeiraVariante(corId);
+  let resposta!: Promise<T>;
+  let terminou = false;
+  await db.transaction(async (tx) => {
+    await venderProduto(varianteId, tx.orm);
+    resposta = Promise.resolve(enviar()).finally(() => {
+      terminou = true;
+    });
+    if (!(await esperarBloqueioPor(tx, () => terminou))) {
+      throw new Error(`A requisição terminou com ${(await resposta).status} sem esperar a venda.`);
+    }
+  });
+  return resposta;
+}
