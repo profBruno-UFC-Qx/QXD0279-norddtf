@@ -1,5 +1,7 @@
+import type { Request, Response } from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { tratarErros } from '../src/shared/infra/http/middlewares/tratarErros.js';
 import { app } from '../src/shared/infra/http/app.js';
 import { UsersRepository } from '../src/modules/users/repositories/UsersRepository.js';
 
@@ -25,5 +27,23 @@ describe('tratamento de erro da API', () => {
 
     expect(resposta.status).toBe(500);
     expect(resposta.body).toEqual({ message: 'Não foi possível concluir agora.' });
+  });
+
+  it('não tenta responder com a conexão já fechada', () => {
+    const response = { headersSent: false, destroyed: true, status: vi.fn(), destroy: vi.fn() };
+
+    tratarErros(new Error('storage caiu'), {} as Request, response as unknown as Response, vi.fn());
+
+    expect(response.status).not.toHaveBeenCalled();
+    expect(response.destroy).not.toHaveBeenCalled();
+  });
+
+  it('fecha a conexão quando os cabeçalhos já foram enviados', () => {
+    const response = { headersSent: true, destroyed: false, status: vi.fn(), destroy: vi.fn() };
+
+    tratarErros(new Error('storage caiu'), {} as Request, response as unknown as Response, vi.fn());
+
+    expect(response.status).not.toHaveBeenCalled();
+    expect(response.destroy).toHaveBeenCalled();
   });
 });

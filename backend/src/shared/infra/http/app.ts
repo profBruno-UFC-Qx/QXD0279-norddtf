@@ -1,5 +1,6 @@
 import express, { type Express } from 'express';
 import { routes } from './routes/index.js';
+import { imagensRoutes } from './routes/imagens.routes.js';
 import { tratarErros } from './middlewares/tratarErros.js';
 import session from 'express-session';
 import cors from 'cors';
@@ -12,6 +13,7 @@ app.use(cors({
     exposedHeaders: ['Retry-After'],
 }));
 app.use(express.json());
+app.use('/imagens', imagensRoutes);
 app.use(session({
     secret: process.env.SESSION_SECRET!,
     resave: false,

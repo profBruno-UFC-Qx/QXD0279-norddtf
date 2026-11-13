@@ -30,5 +30,12 @@ export function tratarErros(error: unknown, _request: Request, response: Respons
   if (process.env.NODE_ENV !== 'test') {
     console.error(error);
   }
+  if (response.destroyed) {
+    return;
+  }
+  if (response.headersSent) {
+    response.destroy();
+    return;
+  }
   response.status(500).json({ message: 'Não foi possível concluir agora.' });
 }

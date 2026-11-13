@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { validarParametro } from "../middlewares/validarParametro.js";
+import { receberArquivo } from "../middlewares/receberArquivo.js";
+import { armazenamento } from "../../armazenamento/index.js";
 import { idDaCategoria } from "../../../../modules/categorias/schemas/categoriaSchemas.js";
 import { CategoriaNaoEncontradaError } from "../../../../modules/categorias/errors/CategoriaNaoEncontradaError.js";
 import { CategoriasRepository } from "../../../../modules/categorias/repositories/CategoriasRepository.js";
@@ -15,6 +17,8 @@ import { MaterialNaoEncontradoError } from "../../../../modules/materiais/errors
 import { MateriaisRepository } from "../../../../modules/materiais/repositories/MateriaisRepository.js";
 import { AtualizarMaterialService } from "../../../../modules/materiais/useCases/atualizarMaterial/AtualizarMaterialService.js";
 import { AtualizarMaterialController } from "../../../../modules/materiais/useCases/atualizarMaterial/AtualizarMaterialController.js";
+import { EnviarImagemService } from "../../../../modules/imagens/useCases/enviarImagem/EnviarImagemService.js";
+import { EnviarImagemController } from "../../../../modules/imagens/useCases/enviarImagem/EnviarImagemController.js";
 
 const categoriasRepository = new CategoriasRepository();
 const listarCategoriasComUsoController = new ListarCategoriasComUsoController(categoriasRepository);
@@ -22,6 +26,7 @@ const criarCategoriaController = new CriarCategoriaController(new CriarCategoria
 const renomearCategoriaController = new RenomearCategoriaController(new RenomearCategoriaService(categoriasRepository));
 const removerCategoriaController = new RemoverCategoriaController(new RemoverCategoriaService(categoriasRepository));
 const atualizarMaterialController = new AtualizarMaterialController(new AtualizarMaterialService(new MateriaisRepository()));
+const enviarImagemController = new EnviarImagemController(new EnviarImagemService(armazenamento));
 
 const categoriasRoutes: Router = Router();
 
@@ -38,9 +43,14 @@ materiaisRoutes.param('tipo', validarParametro(tipoMaterial, () => new MaterialN
 
 materiaisRoutes.put('/:tipo', (request, response) => atualizarMaterialController.handle(request, response));
 
+const imagensRoutes: Router = Router();
+
+imagensRoutes.post('/', receberArquivo, (request, response) => enviarImagemController.handle(request, response));
+
 const adminRoutes: Router = Router();
 
 adminRoutes.use('/categorias', categoriasRoutes);
 adminRoutes.use('/materiais', materiaisRoutes);
+adminRoutes.use('/imagens', imagensRoutes);
 
 export { adminRoutes };
