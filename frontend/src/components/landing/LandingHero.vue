@@ -2,10 +2,6 @@
 import heroNordtf from '@/assets/hero-nordtf.png'
 
 import LandingBotaoLink from './LandingBotaoLink.vue'
-import { imagemLanding } from './imagensLanding'
-
-// `landing/hero.*` tem prioridade; sem ela, usa a arte oficial em `assets`.
-const imagemHero = imagemLanding('hero') ?? heroNordtf
 </script>
 
 <template>
@@ -15,7 +11,7 @@ const imagemHero = imagemLanding('hero') ?? heroNordtf
   >
     <div
       class="absolute inset-0 -z-20 bg-cover bg-[position:72%_center] md:bg-[position:center]"
-      :style="{ backgroundImage: `url(${imagemHero})` }"
+      :style="{ backgroundImage: `url(${heroNordtf})` }"
       aria-hidden="true"
     ></div>
 
@@ -44,7 +40,7 @@ const imagemHero = imagemLanding('hero') ?? heroNordtf
           data-revelar
         >
           <span class="h-px w-10 bg-amarelo-dtf" aria-hidden="true"></span>
-          Streetwear · Personalização · Cultura
+          Qualidade · Personalização · Cultura
         </div>
 
         <h1

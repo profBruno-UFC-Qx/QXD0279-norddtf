@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { imagemLanding } from './imagensLanding'
-
 const caminhos = [
   {
     numero: '01',
@@ -8,7 +6,6 @@ const caminhos = [
     descricao: 'Artes prontas para aplicar na peça que você quiser.',
     acao: 'Ver estampas',
     destino: { name: 'loja-estampas' },
-    imagem: imagemLanding('categoria-estampas'),
     fundo: 'bg-[#171717]',
   },
   {
@@ -17,7 +14,6 @@ const caminhos = [
     descricao: 'Escolha o produto e monte a combinação do seu jeito.',
     acao: 'Ver produtos',
     destino: { name: 'loja-produtos' },
-    imagem: imagemLanding('categoria-personalize'),
     fundo: 'bg-[#241d0b]',
   },
   {
@@ -26,7 +22,6 @@ const caminhos = [
     descricao: 'Use uma criação própria e prepare o arquivo para impressão.',
     acao: 'Começar projeto',
     destino: { name: 'loja-produtos' },
-    imagem: imagemLanding('categoria-arte'),
     fundo: 'bg-[#111111]',
   },
   {
@@ -35,7 +30,6 @@ const caminhos = [
     descricao: 'Crie sua conta e acompanhe cada etapa da compra.',
     acao: 'Criar conta',
     destino: { name: 'cadastro' },
-    imagem: imagemLanding('categoria-pedidos'),
     fundo: 'bg-[#1c1508]',
   },
 ]
@@ -80,14 +74,6 @@ const caminhos = [
           :style="{ '--revelar-atraso': `${indice * 90}ms` }"
         >
           <div
-            v-if="caminho.imagem"
-            class="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-            :style="{ backgroundImage: `url(${caminho.imagem})` }"
-            aria-hidden="true"
-          ></div>
-
-          <div
-            v-else
             class="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
             :class="caminho.fundo"
             aria-hidden="true"

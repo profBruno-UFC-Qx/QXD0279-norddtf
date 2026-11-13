@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import LandingBotaoLink from './LandingBotaoLink.vue'
-import { imagemLanding } from './imagensLanding'
-
-const imagemSobre = imagemLanding('sobre')
 
 const motivos = [
   {
@@ -62,14 +59,7 @@ const motivos = [
           data-revelar
           :style="{ '--revelar-atraso': '100ms' }"
         >
-          <div
-            v-if="imagemSobre"
-            class="absolute inset-0 bg-cover bg-center"
-            :style="{ backgroundImage: `url(${imagemSobre})` }"
-            aria-hidden="true"
-          ></div>
-
-          <div v-else class="absolute inset-0 bg-[#161616]" aria-hidden="true">
+          <div class="absolute inset-0 bg-[#161616]" aria-hidden="true">
             <span
               class="texto-contorno-claro absolute inset-0 grid place-items-center font-destaque text-[clamp(4rem,14vw,9rem)] font-black uppercase leading-none"
             >

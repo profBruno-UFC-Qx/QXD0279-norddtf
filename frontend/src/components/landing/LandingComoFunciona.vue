@@ -4,20 +4,17 @@ import IconeConteudo from '@/components/icones/IconeConteudo.vue'
 import IconePedidos from '@/components/icones/IconePedidos.vue'
 
 import LandingBotaoLink from './LandingBotaoLink.vue'
-import { imagemLanding } from './imagensLanding'
 
 const passos = [
   {
     numero: '01',
     icone: IconeCabide,
-    imagem: imagemLanding('passo-1'),
     titulo: 'Escolha a peça',
     descricao: 'Navegue pelos produtos e selecione o modelo que combina com a sua ideia.',
   },
   {
     numero: '02',
     icone: IconeConteudo,
-    imagem: imagemLanding('passo-2'),
     titulo: 'Envie sua arte',
     descricao:
       'Use uma estampa pronta ou envie seu arquivo. Conferimos os detalhes antes de imprimir.',
@@ -25,7 +22,6 @@ const passos = [
   {
     numero: '03',
     icone: IconePedidos,
-    imagem: imagemLanding('passo-3'),
     titulo: 'Receba em casa',
     descricao: 'Imprimimos em DTF e enviamos a peça pronta. Acompanhe tudo pela sua conta.',
   },
@@ -61,14 +57,7 @@ const passos = [
           :style="{ '--revelar-atraso': `${indice * 100}ms` }"
         >
           <div class="relative aspect-square overflow-hidden bg-[#111111]">
-            <div
-              v-if="passo.imagem"
-              class="absolute inset-0 bg-cover bg-center"
-              :style="{ backgroundImage: `url(${passo.imagem})` }"
-              aria-hidden="true"
-            ></div>
-
-            <div v-else class="absolute inset-0 grid place-items-center" aria-hidden="true">
+            <div class="absolute inset-0 grid place-items-center" aria-hidden="true">
               <component :is="passo.icone" class="size-16 text-amarelo-dtf" />
               <span
                 class="texto-contorno-claro absolute bottom-1 right-3 font-destaque text-[6rem] font-black leading-none"

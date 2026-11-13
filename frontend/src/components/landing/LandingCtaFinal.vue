@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import LandingBotaoLink from './LandingBotaoLink.vue'
-import { imagemLanding } from './imagensLanding'
-
-const imagemCta = imagemLanding('cta')
 </script>
 
 <template>
@@ -10,13 +7,7 @@ const imagemCta = imagemLanding('cta')
     class="relative isolate overflow-hidden bg-preto-dtf text-branco-dtf"
     aria-labelledby="titulo-cta"
   >
-    <div
-      v-if="imagemCta"
-      class="absolute inset-0 -z-20 bg-cover bg-center"
-      :style="{ backgroundImage: `url(${imagemCta})` }"
-      aria-hidden="true"
-    ></div>
-    <div v-else class="grade-street absolute inset-0 -z-20 bg-preto-dtf" aria-hidden="true"></div>
+    <div class="grade-street absolute inset-0 -z-20 bg-preto-dtf" aria-hidden="true"></div>
 
     <div class="absolute inset-0 -z-10 bg-preto-dtf/70" aria-hidden="true"></div>
     <div
