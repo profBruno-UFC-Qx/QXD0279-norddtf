@@ -60,6 +60,7 @@ Lista as tecnologias, frameworks e bibliotecas utilizados.
 | Entidade| Criação | Leitura | Atualização | Remoção |
 | --- | --- | --- | --- | --- |
 | Categoria | X | X | X | X |
+| Produto | X | X | X | X |
 | Material |  | X | X |  |
 
 > Lembre-se que é necessário implementar o CRUD de pelo menos duas entidades.
@@ -81,3 +82,11 @@ Lista as tecnologias, frameworks e bibliotecas utilizados.
 | DELETE | /admin/categorias/:id |
 | GET | /materiais |
 | PUT | /admin/materiais/:tipo |
+| POST | /admin/imagens |
+| GET | /imagens/*chave |
+| GET | /admin/produtos |
+| GET | /admin/produtos/:id |
+| POST | /admin/produtos |
+| PUT | /admin/produtos/:id |
+| PATCH | /admin/produtos/:id/situacao |
+| DELETE | /admin/produtos/:id |
