@@ -1,7 +1,7 @@
 import type { Scalars } from '@prisma/orm-postgres/family-contract/types';
-import { and, or } from '@prisma/orm-postgres/orm-client';
+import { and, type ModelAccessor, or } from '@prisma/orm-postgres/orm-client';
 import { db } from '../../../shared/infra/prisma/db.js';
-import type { Models } from '../../../shared/infra/prisma/schema.js';
+import type { Contract, Models } from '../../../shared/infra/prisma/schema.js';
 import { normalizarNome } from '../../categorias/normalizarNome.js';
 import { DadosDoProdutoInvalidosError } from '../errors/DadosDoProdutoInvalidosError.js';
 import { ProdutoNaoEncontradoError } from '../errors/ProdutoNaoEncontradoError.js';
@@ -61,34 +61,10 @@ export class ProdutosRepository {
       .catch(categoriaRemovida);
   }
 
-  async listar({ busca, categorias, precoMin, precoMax, tamanhos, pagina }: FiltrosDaListagem) {
-    let consulta = db.orm.public.Produto;
-    if (busca) {
-      const padrao = padraoDeBusca(busca);
-      consulta = consulta.where((p) =>
-        or(
-          p.buscaNormalizada.like(padrao),
-          p.categorias.some((pc) => pc.categoria.some((c) => c.nomeNormalizado.like(padrao))),
-        ),
-      );
-    }
-    if (categorias) {
-      consulta = consulta.where((p) => p.categorias.some((pc) => pc.categoriaId.in(categorias)));
-    }
-    if (precoMin) {
-      consulta = consulta.where((p) => p.preco.gte(precoMin as Preco));
-    }
-    if (precoMax) {
-      consulta = consulta.where((p) => p.preco.lte(precoMax as Preco));
-    }
-    if (tamanhos) {
-      consulta = consulta.where((p) =>
-        p.cores.some((c) => c.variantes.some((v) => and(v.tamanho.in(tamanhos), v.estoque.gt(0)))),
-      );
-    }
-
-    const [itens, { total }, { min, max }] = await Promise.all([
-      consulta
+  async listar(filtros: FiltrosDaListagem) {
+    const consulta = filtrar(db.orm.public.Produto, filtros);
+    const [itens, total, faixaDePreco] = await Promise.all([
+      paginar(consulta, filtros.pagina)
         .select('id', 'nome', 'preco', 'ativo', 'tipo')
         .include('cores', (cores) =>
           cores
@@ -96,14 +72,30 @@ export class ProdutosRepository {
             .orderBy([(c) => c.posicao.asc(), (c) => c.criadoEm.asc()])
             .limit(1),
         )
-        .orderBy([(p) => p.criadoEm.desc(), (p) => p.id.desc()])
-        .limit(POR_PAGINA)
-        .offset((pagina - 1) * POR_PAGINA)
         .all(),
-      consulta.aggregate((a) => ({ total: a.count() })),
-      db.orm.public.Produto.aggregate((a) => ({ min: a.min('preco'), max: a.max('preco') })),
+      contar(consulta),
+      calcularFaixaDePreco(db.orm.public.Produto),
     ]);
-    return { itens, total, faixaDePreco: min === null ? null : { min, max } };
+    return { itens, total, faixaDePreco };
+  }
+
+  async listarDaLoja(filtros: FiltrosDaListagem) {
+    const visiveis = db.orm.public.Produto.where({ ativo: true }).where((p) => p.cores.some(temEstoque));
+    const consulta = filtrar(visiveis, filtros);
+    const [itens, total, faixaDePreco] = await Promise.all([
+      paginar(consulta, filtros.pagina)
+        .select('id', 'nome', 'preco', 'tipo')
+        .include('cores', (cores) =>
+          cores
+            .where(temEstoque)
+            .select('nome', 'hex', 'imagemApresentacao')
+            .orderBy([(c) => c.posicao.asc(), (c) => c.criadoEm.asc()]),
+        )
+        .all(),
+      contar(consulta),
+      calcularFaixaDePreco(visiveis),
+    ]);
+    return { itens, total, faixaDePreco };
   }
 
   async detalhar(id: string) {
@@ -208,6 +200,57 @@ export class ProdutosRepository {
       })
       .catch(produtoVendido);
   }
+}
+
+type Produtos = typeof db.orm.public.Produto;
+
+function temEstoque(cor: ModelAccessor<Contract, 'ProdutoCor', 'public'>) {
+  return cor.variantes.some((v) => v.estoque.gt(0));
+}
+
+function filtrar(consulta: Produtos, { busca, categorias, precoMin, precoMax, tamanhos }: FiltrosDaListagem) {
+  let filtrada = consulta;
+  if (busca) {
+    const padrao = padraoDeBusca(busca);
+    filtrada = filtrada.where((p) =>
+      or(
+        p.buscaNormalizada.like(padrao),
+        p.categorias.some((pc) => pc.categoria.some((c) => c.nomeNormalizado.like(padrao))),
+      ),
+    );
+  }
+  if (categorias) {
+    filtrada = filtrada.where((p) => p.categorias.some((pc) => pc.categoriaId.in(categorias)));
+  }
+  if (precoMin) {
+    filtrada = filtrada.where((p) => p.preco.gte(precoMin as Preco));
+  }
+  if (precoMax) {
+    filtrada = filtrada.where((p) => p.preco.lte(precoMax as Preco));
+  }
+  if (tamanhos) {
+    filtrada = filtrada.where((p) =>
+      p.cores.some((c) => c.variantes.some((v) => and(v.tamanho.in(tamanhos), v.estoque.gt(0)))),
+    );
+  }
+  return filtrada;
+}
+
+function paginar(consulta: Produtos, pagina: number) {
+  return consulta
+    .orderBy([(p) => p.criadoEm.desc(), (p) => p.id.desc()])
+    .limit(POR_PAGINA)
+    .offset((pagina - 1) * POR_PAGINA);
+}
+
+async function contar(consulta: Produtos) {
+  const { total } = await consulta.aggregate((a) => ({ total: a.count() }));
+  return total;
+}
+
+async function calcularFaixaDePreco(consulta: Produtos) {
+  const { min, max } = await consulta.aggregate((a) => ({ min: a.min('preco'), max: a.max('preco') }));
+  return min === null ? null : { min, max };
 }
 
 function padraoDeBusca(termo: string) {

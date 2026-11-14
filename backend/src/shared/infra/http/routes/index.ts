@@ -3,6 +3,7 @@ import { healthRoutes } from "./health.routes.js";
 import { authRoutes } from "./auth.routes.js";
 import { categoriasRoutes } from "./categorias.routes.js";
 import { materiaisRoutes } from "./materiais.routes.js";
+import { produtosRoutes } from "./produtos.routes.js";
 import { adminRoutes } from "./admin.routes.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { requireAdmin } from "../middlewares/requireAdmin.js";
@@ -18,6 +19,7 @@ routes.use('/health', healthRoutes);
 routes.use('/auth', authRoutes);
 routes.use('/categorias', categoriasRoutes);
 routes.use('/materiais', materiaisRoutes);
+routes.use('/produtos', produtosRoutes);
 routes.get('/me', requireAuth, (request, response) => meController.handle(request, response));
 routes.use('/admin', requireAuth, requireAdmin(usersRepository), adminRoutes);
 
