@@ -22,6 +22,7 @@ const props = withDefaults(
     desabilitado?: boolean
     dica?: string
     rotuloOculto?: boolean
+    digitosDaMoeda?: number
   }>(),
   { tipo: 'text', desabilitado: false, rotuloOculto: false },
 )
@@ -29,7 +30,7 @@ const props = withDefaults(
 const mascaras: Record<Mascara, (valor: string) => string> = {
   telefone: mascararTelefone,
   cep: mascararCep,
-  moeda: mascararMoeda,
+  moeda: (valor) => mascararMoeda(valor, props.digitosDaMoeda),
 }
 
 const id = useId()
