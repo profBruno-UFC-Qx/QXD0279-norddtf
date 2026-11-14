@@ -5,14 +5,24 @@ import { z } from 'zod'
 
 import { ErroApi, MENSAGEM_GERAL } from '@/api/ErroApi'
 import { api } from '@/api/http'
+import camisaDeExemplo from '@/assets/camisa-flutuante.png'
+import BaseAlternador from '@/components/base/BaseAlternador.vue'
+import BaseAmostraCor from '@/components/base/BaseAmostraCor.vue'
 import BaseAreaTexto from '@/components/base/BaseAreaTexto.vue'
 import BaseBotao from '@/components/base/BaseBotao.vue'
 import BaseCaixaSelecao from '@/components/base/BaseCaixaSelecao.vue'
 import BaseCampoTexto from '@/components/base/BaseCampoTexto.vue'
 import BaseCarregando from '@/components/base/BaseCarregando.vue'
+import BaseChave from '@/components/base/BaseChave.vue'
+import BaseContador from '@/components/base/BaseContador.vue'
+import BaseEscolhaMultipla from '@/components/base/BaseEscolhaMultipla.vue'
 import BaseEstadoVazio from '@/components/base/BaseEstadoVazio.vue'
+import BaseEtiqueta from '@/components/base/BaseEtiqueta.vue'
+import BaseFaixaPreco from '@/components/base/BaseFaixaPreco.vue'
 import BaseMensagem from '@/components/base/BaseMensagem.vue'
 import BaseModalConfirmacao from '@/components/base/BaseModalConfirmacao.vue'
+import BasePaginacao from '@/components/base/BasePaginacao.vue'
+import BaseQuadroImagem from '@/components/base/BaseQuadroImagem.vue'
 import BaseSelecao from '@/components/base/BaseSelecao.vue'
 import BaseTrilha from '@/components/base/BaseTrilha.vue'
 import BotaoGoogle from '@/components/autenticacao/BotaoGoogle.vue'
@@ -21,6 +31,8 @@ import IconeSenha from '@/components/icones/IconeSenha.vue'
 import IconeSms from '@/components/icones/IconeSms.vue'
 import { useAvisos } from '@/stores/avisos'
 import { useSessao } from '@/stores/sessao'
+import type { ItemProduto } from '@/types/produto'
+import CardProduto from '@/views/admin/produtos/CardProduto.vue'
 import {
   formatarCep,
   formatarData,
@@ -201,6 +213,94 @@ async function chamarApiDaSessao() {
 }
 
 const modalInformativoAberto = ref(false)
+
+const situacaoAtiva = ref(true)
+const situacaoInativa = ref(false)
+const situacaoCompacta = ref(true)
+const trocasRecusadas = ref(0)
+
+const chaveLigada = ref(false)
+const chaveTravada = ref(false)
+
+const opcoesDeCategoria = [
+  { valor: 'anime', rotulo: 'Anime' },
+  { valor: 'camisa-algodao', rotulo: 'Camisa algodão' },
+  { valor: 'esporte', rotulo: 'Esporte' },
+  { valor: 'herois', rotulo: 'Heróis' },
+  { valor: 'oversized', rotulo: 'Oversized' },
+  { valor: 'pokemon', rotulo: 'Pokemon' },
+]
+
+const formularioDeProduto = useTemplateRef<InstanceType<typeof Form>>('formularioDeProduto')
+
+const errosDeProduto = {
+  categoriasComErro: 'Selecione ao menos uma categoria.',
+  amostraComErro: 'Escolha a cor da amostra.',
+}
+
+const esquemaDeProduto = schemaZod(
+  z.object({
+    categoriasComErro: z.never({ error: errosDeProduto.categoriasComErro }),
+    amostraComErro: z.never({ error: errosDeProduto.amostraComErro }),
+  }),
+)
+
+onMounted(() => {
+  formularioDeProduto.value?.setErrors(errosDeProduto)
+})
+
+const estadoDoQuadro = ref<'vazio' | 'enviando' | 'enviado'>('vazio')
+const urlDoQuadro = ref<string>()
+
+function escolherImagem(arquivo: File) {
+  if (urlDoQuadro.value) URL.revokeObjectURL(urlDoQuadro.value)
+  estadoDoQuadro.value = 'enviando'
+  setTimeout(() => {
+    urlDoQuadro.value = URL.createObjectURL(arquivo)
+    estadoDoQuadro.value = 'enviado'
+  }, 500)
+}
+
+const quantidade = ref<number | null>(0)
+const quantidadeNoLimite = ref<number | null>(99999)
+const quantidadeInvalida = ref<number | null>(120000)
+
+const faixaDePreco = ref<[string, string]>(['29.90', '89.90'])
+const faixaConfirmada = ref<[string, string]>()
+const faixaDeUmPreco = ref<[string, string]>(['50.00', '60.00'])
+
+const etiquetas = ref(['Heróis', 'R$ 30,00 a R$ 60,00', 'Tamanho G'])
+
+function removerEtiqueta(texto: string) {
+  etiquetas.value = etiquetas.value.filter((etiqueta) => etiqueta !== texto)
+}
+
+const paginaAtual = ref(1)
+
+const produtosDeExemplo = ref<ItemProduto[]>([
+  {
+    id: '00000000-0000-0000-0000-000000000001',
+    nome: 'Camisa Oversized básica',
+    preco: '45.00',
+    ativo: true,
+    tipo: 'PERSONALIZAVEL',
+    imagem: '/imagens/produtos/vitrine.png',
+  },
+  {
+    id: '00000000-0000-0000-0000-000000000002',
+    nome: 'Camisa Oversized Bulbasauro com estampa nas costas e na frente',
+    preco: '89.90',
+    ativo: false,
+    tipo: 'VENDA_DIRETA',
+    imagem: null,
+  },
+])
+
+const produtoEditado = ref('')
+
+function mudarSituacao(produto: ItemProduto, ativo: boolean) {
+  produto.ativo = ativo
+}
 </script>
 
 <template>
@@ -487,6 +587,179 @@ const modalInformativoAberto = ref(false)
           <BaseBotao variante="secundario" tamanho="compacto">Abrir modal informativo</BaseBotao>
         </template>
       </BaseModalConfirmacao>
+    </section>
+
+    <section aria-labelledby="titulo-mascara-reais" class="flex flex-col gap-5">
+      <h2 id="titulo-mascara-reais" class="text-24 font-semibold">Máscara de reais</h2>
+      <Form class="flex w-100.25 flex-col gap-5">
+        <BaseCampoTexto nome="precoPadrao" rotulo="Até R$ 9.999,99" mascara="moeda" />
+        <BaseCampoTexto
+          nome="precoDeProduto"
+          rotulo="Até R$ 99.999,99"
+          mascara="moeda"
+          :digitos-da-moeda="7"
+        />
+      </Form>
+    </section>
+
+    <section aria-labelledby="titulo-alternador" class="flex flex-col gap-5">
+      <h2 id="titulo-alternador" class="text-24 font-semibold">Alternador</h2>
+      <div class="flex w-72.75 flex-col gap-5">
+        <BaseAlternador v-model="situacaoAtiva" rotulo="Situação ativa" />
+        <BaseAlternador v-model="situacaoInativa" rotulo="Situação inativa" />
+        <BaseAlternador v-model="situacaoInativa" rotulo="Situação desabilitada" desabilitado />
+        <BaseAlternador
+          :model-value="true"
+          rotulo="Situação que a tela recusa"
+          @update:model-value="trocasRecusadas++"
+        />
+      </div>
+      <p>Trocas recusadas: {{ trocasRecusadas }}</p>
+      <div class="w-40">
+        <BaseAlternador v-model="situacaoCompacta" rotulo="Situação compacta" tamanho="compacto" />
+      </div>
+    </section>
+
+    <section aria-labelledby="titulo-chave" class="flex flex-col items-start gap-5">
+      <h2 id="titulo-chave" class="text-24 font-semibold">Chave</h2>
+      <BaseChave v-model="chaveLigada" rotulo="Produto sem tamanho" />
+      <BaseChave
+        v-model="chaveTravada"
+        rotulo="Produto sem tamanho (travada)"
+        desabilitado
+        mensagem="Este produto já foi vendido e não pode mudar a opção de tamanho."
+      />
+    </section>
+
+    <Form
+      ref="formularioDeProduto"
+      v-slot="{ values }"
+      :validation-schema="esquemaDeProduto"
+      :initial-values="{ categorias: [], amostra: '' }"
+      class="flex flex-col gap-12.5"
+    >
+      <section aria-labelledby="titulo-escolha-multipla" class="flex flex-col gap-5">
+        <h2 id="titulo-escolha-multipla" class="text-24 font-semibold">Escolha múltipla</h2>
+        <div class="flex w-87.25 flex-col gap-5">
+          <BaseEscolhaMultipla nome="categorias" rotulo="Categorias" :opcoes="opcoesDeCategoria" />
+          <BaseEscolhaMultipla
+            nome="categoriasComErro"
+            rotulo="Categorias com erro"
+            :opcoes="opcoesDeCategoria"
+          />
+        </div>
+        <p>Escolhidas: {{ values.categorias?.join(', ') }}</p>
+      </section>
+
+      <section aria-labelledby="titulo-amostra-cor" class="flex flex-col gap-5">
+        <h2 id="titulo-amostra-cor" class="text-24 font-semibold">Amostra de cor</h2>
+        <div class="flex w-68.25 flex-col gap-5">
+          <BaseAmostraCor nome="amostra" rotulo="Cor da amostra" />
+          <BaseAmostraCor nome="amostraComErro" rotulo="Cor da amostra com erro" />
+        </div>
+        <p>Guardada: {{ values.amostra }}</p>
+      </section>
+    </Form>
+
+    <section aria-labelledby="titulo-quadro-imagem" class="flex flex-col gap-5">
+      <h2 id="titulo-quadro-imagem" class="text-24 font-semibold">Quadro de imagem</h2>
+      <div class="flex w-68.25 flex-col gap-1.25">
+        <div class="flex justify-between gap-1.25">
+          <BaseQuadroImagem rotulo="Vazio" estado="vazio" />
+          <BaseQuadroImagem rotulo="Enviando" estado="enviando" />
+          <BaseQuadroImagem rotulo="Enviado" estado="enviado" :url="camisaDeExemplo" />
+        </div>
+        <div class="flex justify-between gap-1.25">
+          <BaseQuadroImagem
+            rotulo="Erro de formato"
+            estado="erro"
+            :url="camisaDeExemplo"
+            mensagem="Formato não suportado. Envie PNG, JPEG ou WebP de até 5 MB."
+          />
+          <BaseQuadroImagem
+            rotulo="Obrigatória"
+            estado="erro"
+            mensagem="Envie a imagem de apresentação."
+          />
+          <BaseQuadroImagem
+            rotulo="Escolher arquivo"
+            :estado="estadoDoQuadro"
+            :url="urlDoQuadro"
+            @escolher="escolherImagem"
+          />
+        </div>
+        <p class="text-12 text-erro">Formato não suportado. Envie PNG, JPEG ou WebP de até 5 MB.</p>
+        <p class="text-12 text-erro">Envie a imagem de apresentação.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="titulo-contador" class="flex flex-col items-start gap-5">
+      <h2 id="titulo-contador" class="text-24 font-semibold">Contador</h2>
+      <BaseContador v-model="quantidade" rotulo="Estoque P" />
+      <BaseContador v-model="quantidadeNoLimite" rotulo="Estoque M" />
+      <BaseContador v-model="quantidadeInvalida" rotulo="Estoque G" />
+      <p>Quantidades: {{ quantidade }}, {{ quantidadeNoLimite }}, {{ quantidadeInvalida }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-faixa-preco" class="flex flex-col gap-5">
+      <h2 id="titulo-faixa-preco" class="text-24 font-semibold">Faixa de preço</h2>
+      <div class="w-75">
+        <BaseFaixaPreco
+          v-model="faixaDePreco"
+          min="29.90"
+          max="120.00"
+          @confirmar="faixaConfirmada = $event"
+        />
+      </div>
+      <p>Faixa: {{ faixaDePreco.join(' a ') }}</p>
+      <p>Confirmada: {{ faixaConfirmada?.join(' a ') }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-faixa-preco-unico" class="flex flex-col gap-5">
+      <h2 id="titulo-faixa-preco-unico" class="text-24 font-semibold">Faixa com um preço só</h2>
+      <div class="w-75">
+        <BaseFaixaPreco v-model="faixaDeUmPreco" min="45.00" max="45.00" />
+      </div>
+      <p>Valor: {{ faixaDeUmPreco.join(' a ') }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-etiqueta" class="flex flex-col gap-5">
+      <h2 id="titulo-etiqueta" class="text-24 font-semibold">Etiqueta</h2>
+      <ul aria-label="Filtros aplicados" class="flex flex-wrap gap-5">
+        <li v-for="etiqueta in etiquetas" :key="etiqueta">
+          <BaseEtiqueta :texto="etiqueta" @remover="removerEtiqueta(etiqueta)" />
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="titulo-paginacao" class="flex flex-col gap-5">
+      <h2 id="titulo-paginacao" class="text-24 font-semibold">Paginação</h2>
+      <BasePaginacao
+        :pagina="paginaAtual"
+        :total="24"
+        :por-pagina="12"
+        @mudar="paginaAtual = $event"
+      />
+      <p>Página atual: {{ paginaAtual }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-paginacao-unica" class="flex flex-col gap-5">
+      <h2 id="titulo-paginacao-unica" class="text-24 font-semibold">Paginação com uma página</h2>
+      <BasePaginacao :pagina="1" :total="12" :por-pagina="12" />
+    </section>
+
+    <section aria-labelledby="titulo-card-produto" class="flex flex-col gap-5">
+      <h2 id="titulo-card-produto" class="text-24 font-semibold">Card de produto</h2>
+      <div class="flex items-start gap-17.5">
+        <CardProduto
+          v-for="produto in produtosDeExemplo"
+          :key="produto.id"
+          :produto="produto"
+          @mudar-situacao="mudarSituacao(produto, $event)"
+          @editar="produtoEditado = produto.nome"
+        />
+      </div>
+      <p v-if="produtoEditado">Editar: {{ produtoEditado }}</p>
     </section>
   </main>
 </template>
