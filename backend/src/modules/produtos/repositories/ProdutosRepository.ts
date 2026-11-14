@@ -117,10 +117,7 @@ export class ProdutosRepository {
             .orderBy([(c) => c.posicao.asc(), (c) => c.criadoEm.asc()]),
         )
         .first(),
-      db.orm.public.Categoria.where((c) => c.produtos.some((pc) => pc.produtoId.eq(id)))
-        .select('id', 'nome')
-        .orderBy((c) => c.nomeNormalizado.asc())
-        .all(),
+      buscarCategorias(id),
       buscarCoresVendidas(db.orm, id),
     ]);
 
@@ -128,6 +125,28 @@ export class ProdutosRepository {
       return null;
     }
     return { ...produto, categorias, coresVendidas };
+  }
+
+  async detalharDaLoja(id: string) {
+    const [produto, categorias] = await Promise.all([
+      db.orm.public.Produto.where({ id, ativo: true })
+        .where((p) => p.cores.some(temEstoque))
+        .select('id', 'tipo', 'nome', 'preco', 'descricao', 'temTamanho')
+        .include('cores', (cores) =>
+          cores
+            .where(temEstoque)
+            .select('id', 'nome', 'hex', 'imagemApresentacao')
+            .include('variantes', (variantes) => variantes.select('tamanho', 'estoque'))
+            .orderBy([(c) => c.posicao.asc(), (c) => c.criadoEm.asc()]),
+        )
+        .first(),
+      buscarCategorias(id),
+    ]);
+
+    if (!produto) {
+      return null;
+    }
+    return { ...produto, categorias };
   }
 
   async atualizar(id: string, dados: DadosDaEdicao, planejar: (estado: EstadoDaEdicao) => MudancasDaEdicao) {
@@ -275,6 +294,13 @@ async function lerEstadoDaEdicao(orm: Orm, id: string): Promise<EstadoDaEdicao |
   return produto && { ...produto, coresVendidas };
 }
 
+function buscarCategorias(produtoId: string) {
+  return db.orm.public.Categoria.where((c) => c.produtos.some((pc) => pc.produtoId.eq(produtoId)))
+    .select('id', 'nome')
+    .orderBy((c) => c.nomeNormalizado.asc())
+    .all();
+}
+
 async function buscarCoresVendidas(orm: Orm, produtoId: string) {
   const cores = await orm.public.ProdutoCor.where({ produtoId })
     .where((c) => c.variantes.some((v) => v.itens.some()))
@@ -356,6 +382,7 @@ async function atualizarEstoque(orm: Orm, cores: CorQueContinua[]) {
 }
 
 export type ProdutoDetalhado = NonNullable<Awaited<ReturnType<ProdutosRepository['detalhar']>>>;
+export type ProdutoDaLoja = NonNullable<Awaited<ReturnType<ProdutosRepository['detalharDaLoja']>>>;
 
 function categoriaRemovida(error: unknown): never {
   if (violou(error, '23503', CATEGORIA_DO_PRODUTO)) {

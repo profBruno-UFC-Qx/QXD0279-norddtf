@@ -1,8 +1,11 @@
 import { urlDaImagem } from '../imagens/chaveDeImagem.js';
 import type { ProdutoDetalhado } from './repositories/ProdutosRepository.js';
-import { TAMANHOS } from './schemas/produtoSchemas.js';
+import { TAMANHOS, type Tamanho } from './schemas/produtoSchemas.js';
 
-type Variante = ProdutoDetalhado['cores'][number]['variantes'][number];
+interface Variante {
+  tamanho: Tamanho | null;
+  estoque: number;
+}
 
 function imagem(chave: string | null) {
   if (!chave) {
@@ -13,6 +16,12 @@ function imagem(chave: string | null) {
 
 function ordemDoTamanho({ tamanho }: Variante) {
   return tamanho === null ? -1 : TAMANHOS.indexOf(tamanho);
+}
+
+export function montarEstoque(variantes: Variante[]) {
+  return [...variantes]
+    .sort((a, b) => ordemDoTamanho(a) - ordemDoTamanho(b))
+    .map(({ tamanho, estoque }) => ({ tamanho, quantidade: estoque }));
 }
 
 export function montarDetalhe({ cores, coresVendidas, ...produto }: ProdutoDetalhado) {
@@ -35,9 +44,7 @@ export function montarDetalhe({ cores, coresVendidas, ...produto }: ProdutoDetal
       imagemApresentacaoCostas: imagem(cor.imagemApresentacaoCostas),
       imagemPersonalizacaoFrente: imagem(cor.imagemPersonalizacaoFrente),
       imagemPersonalizacaoCostas: imagem(cor.imagemPersonalizacaoCostas),
-      estoque: [...cor.variantes]
-        .sort((a, b) => ordemDoTamanho(a) - ordemDoTamanho(b))
-        .map(({ tamanho, estoque }) => ({ tamanho, quantidade: estoque })),
+      estoque: montarEstoque(cor.variantes),
     })),
     criadoEm: produto.criadoEm,
     atualizadoEm: produto.atualizadoEm,
