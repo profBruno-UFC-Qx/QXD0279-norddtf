@@ -85,6 +85,7 @@ Lista as tecnologias, frameworks e bibliotecas utilizados.
 | POST | /admin/imagens |
 | GET | /imagens/*chave |
 | GET | /produtos |
+| GET | /produtos/:id |
 | GET | /admin/produtos |
 | GET | /admin/produtos/:id |
 | POST | /admin/produtos |
