@@ -160,7 +160,7 @@ export const rotas: RouteRecordRaw[] = [
       {
         path: 'produtos',
         name: 'admin-produtos',
-        component: PaginaProvisoria,
+        component: () => import('@/views/admin/produtos/PaginaProdutos.vue'),
         meta: { acesso: 'admin', titulo: 'Produtos' },
       },
       {

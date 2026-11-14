@@ -16,3 +16,7 @@ export function renomearCategoria(id: string, nome: string) {
 export function removerCategoria(id: string) {
   return api.delete<void>(`/admin/categorias/${id}`)
 }
+
+export function listarCategorias(sinal?: AbortSignal) {
+  return api.get<Categoria[]>('/categorias', sinal)
+}
