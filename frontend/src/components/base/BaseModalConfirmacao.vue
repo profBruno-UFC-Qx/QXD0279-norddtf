@@ -22,8 +22,15 @@ const props = withDefaults(
     variante?: 'risco' | 'primario'
     carregando?: boolean
     informativo?: boolean
+    cancelarEmDestaque?: boolean
   }>(),
-  { textoCancelar: 'Cancelar', variante: 'risco', carregando: false, informativo: false },
+  {
+    textoCancelar: 'Cancelar',
+    variante: 'risco',
+    carregando: false,
+    informativo: false,
+    cancelarEmDestaque: false,
+  },
 )
 
 const aberto = defineModel<boolean>('open', { default: false })
@@ -64,9 +71,19 @@ function bloquearEscDuranteCarregamento(evento: KeyboardEvent) {
           class="flex w-75 max-w-full gap-2.5"
           :class="informativo ? 'justify-center' : 'justify-between'"
         >
+          <BaseBotao
+            v-if="cancelarEmDestaque"
+            variante="secundario"
+            tamanho="compacto"
+            :carregando="carregando"
+            class="w-30"
+            @click="emit('confirmar')"
+          >
+            {{ textoConfirmar }}
+          </BaseBotao>
           <AlertDialogCancel v-if="!informativo" as-child>
             <BaseBotao
-              variante="secundario"
+              :variante="cancelarEmDestaque ? 'primario' : 'secundario'"
               tamanho="compacto"
               :desabilitado="carregando"
               class="w-30"
@@ -75,6 +92,7 @@ function bloquearEscDuranteCarregamento(evento: KeyboardEvent) {
             </BaseBotao>
           </AlertDialogCancel>
           <BaseBotao
+            v-if="!cancelarEmDestaque"
             :variante="variante"
             tamanho="compacto"
             :carregando="carregando"

@@ -30,6 +30,7 @@ import {
   linhaDoDetalhe,
   montarCorpo,
   montarCorpoDaEdicao,
+  retratoDoFormulario,
   valoresDoDetalhe,
   type CorDoFormulario,
   type LinhaDeEstoque,
@@ -41,6 +42,7 @@ import SecaoEstoque from './SecaoEstoque.vue'
 import SecaoInformacoes from './SecaoInformacoes.vue'
 import SecaoTipo from './SecaoTipo.vue'
 import { useEnvioDeImagem } from './useEnvioDeImagem'
+import { useSairSemSalvar } from './useSairSemSalvar'
 
 const MENSAGEM_DE_COR_VENDIDA = 'Esta cor já foi vendida e não pode ser removida.'
 
@@ -120,6 +122,7 @@ function naoEncontrado(erro: unknown) {
 
 const categorias = ref<Categoria[]>([])
 const estado = ref<'carregando' | 'erro' | 'nao-encontrado' | 'pronta'>('carregando')
+const retrato = ref<string>()
 let controladorDaCarga: AbortController | undefined
 let controladorDasCategorias: AbortController | undefined
 
@@ -467,6 +470,7 @@ const enviar = handleSubmit(async (valores) => {
     return
   }
   salvo.value = true
+  liberarSaida()
   avisos.sucesso(id ? 'Produto atualizado.' : 'Produto cadastrado.')
   if (!desmontado) await router.replace({ name: 'admin-produto', params: { id: produto.id } })
 })
@@ -491,6 +495,30 @@ function irParaListagem() {
   router.push({ name: 'admin-produtos' })
 }
 
+function retratoAtual() {
+  const cores = values.cores.filter((cor) => modoDe(cor) !== 'nova' || corPreenchida(cor))
+  return retratoDoFormulario({ ...values, cores })
+}
+
+const alterado = computed(() => {
+  if (estado.value !== 'pronta' || salvo.value || retrato.value === undefined) return false
+  return envio.enviando.value || retratoAtual() !== retrato.value
+})
+
+const {
+  confirmacaoAberta: confirmacaoDeSaidaAberta,
+  motivo: motivoDaSaida,
+  sair: confirmarSaida,
+  liberar: liberarSaida,
+  religar: religarSaida,
+} = useSairSemSalvar(() => alterado.value)
+
+const descricaoDaSaida = computed(() => {
+  if (motivoDaSaida.value === 'logout')
+    return 'As alterações serão descartadas e a sessão será encerrada.'
+  return 'As alterações serão descartadas, e você será redirecionado para a tela inicial do módulo'
+})
+
 function preencher(produto: ProdutoDetalhado | undefined) {
   envio.descartarTudo()
   for (const colecao of [modos, copias, comErrosVisiveis, coresVendidas, avisosDeVenda]) {
@@ -509,6 +537,8 @@ function preencher(produto: ProdutoDetalhado | undefined) {
   const valores = produto ? valoresDoDetalhe(produto) : structuredClone(valoresIniciais)
   tipoAplicado.value = valores.tipo
   resetForm({ values: valores })
+  retrato.value = retratoDoFormulario(valores)
+  religarSaida()
 }
 
 watch(
@@ -619,6 +649,15 @@ onBeforeUnmount(() => {
       descricao="O estoque preenchido vai ser zerado em todas as cores."
       texto-confirmar="Zerar estoque"
       @confirmar="confirmarTamanho"
+    />
+    <BaseModalConfirmacao
+      v-model:open="confirmacaoDeSaidaAberta"
+      :titulo="edicao ? 'Deseja sair da edição do produto?' : 'Deseja sair do cadastro do produto?'"
+      :descricao="descricaoDaSaida"
+      texto-cancelar="Continuar edição"
+      texto-confirmar="Sair"
+      cancelar-em-destaque
+      @confirmar="confirmarSaida"
     />
   </div>
 </template>

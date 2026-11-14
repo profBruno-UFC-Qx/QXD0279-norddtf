@@ -327,6 +327,24 @@ export function valoresDoDetalhe(produto: ProdutoDetalhado): ValoresDoProduto {
   }
 }
 
+export function retratoDoFormulario(valores: ValoresDoProduto) {
+  return JSON.stringify({
+    tipo: valores.tipo,
+    nome: valores.nome.trim(),
+    preco: centavosParaDecimal(valores.preco),
+    descricao: valores.descricao.trim(),
+    categorias: [...valores.categorias].sort(),
+    temTamanho: valores.temTamanho,
+    cores: valores.cores.map((cor) => ({
+      idLocal: cor.idLocal,
+      nome: cor.nome.trim(),
+      hex: cor.hex.toUpperCase(),
+      imagens: CAMPOS_DE_IMAGEM.map((campo) => cor[campo]?.chave ?? null),
+      quantidades: valores.estoque.find((linha) => linha.cor === cor.idLocal)?.quantidades ?? null,
+    })),
+  })
+}
+
 const ERRO_DA_COR = /^cores\.(\d+)\.(.+)$/
 const ERRO_DE_QUANTIDADE = /^estoque\.(\d+)\.quantidade$/
 
