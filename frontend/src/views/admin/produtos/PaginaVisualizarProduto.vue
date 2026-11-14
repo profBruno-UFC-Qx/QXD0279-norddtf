@@ -8,7 +8,6 @@ import { detalharProduto, mudarSituacao, removerProduto } from '@/api/produtos'
 import BaseAlternador from '@/components/base/BaseAlternador.vue'
 import BaseBotao from '@/components/base/BaseBotao.vue'
 import BaseCarregando from '@/components/base/BaseCarregando.vue'
-import BaseEstadoVazio from '@/components/base/BaseEstadoVazio.vue'
 import BaseMensagem from '@/components/base/BaseMensagem.vue'
 import BaseModalConfirmacao from '@/components/base/BaseModalConfirmacao.vue'
 import IconeEditar from '@/components/icones/IconeEditar.vue'
@@ -19,6 +18,7 @@ import type { ProdutoDetalhado } from '@/types/produto'
 import { formatarMoeda } from '@/utils/formatacao'
 import CoresDoProduto from './CoresDoProduto.vue'
 import GradeDeEstoque from './GradeDeEstoque.vue'
+import ProdutoNaoEncontrado from './ProdutoNaoEncontrado.vue'
 
 const MENSAGEM_DE_VENDIDO =
   'Este produto já foi vendido e não pode ser removido. Inative-o para tirá-lo da loja.'
@@ -208,20 +208,7 @@ onBeforeUnmount(() => {
         Tentar novamente
       </BaseBotao>
     </div>
-    <BaseEstadoVazio
-      v-else-if="estado === 'nao-encontrado'"
-      titulo="Produto não encontrado."
-      descricao="Ele pode ter sido removido."
-    >
-      <template #acao>
-        <RouterLink
-          :to="{ name: 'admin-produtos' }"
-          class="inline-flex h-9.25 items-center justify-center rounded-padrao bg-branco-dtf px-2.5 text-13 font-bold whitespace-nowrap text-preto-dtf ring-1 ring-cinza-escuro/67 ring-inset"
-        >
-          Voltar para produtos
-        </RouterLink>
-      </template>
-    </BaseEstadoVazio>
+    <ProdutoNaoEncontrado v-else-if="estado === 'nao-encontrado'" />
     <div v-else-if="produto" class="flex flex-col gap-6.25">
       <div class="flex items-start gap-6.25">
         <img

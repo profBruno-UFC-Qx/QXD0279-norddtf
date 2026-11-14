@@ -18,6 +18,7 @@ defineProps<{
   mostrarErrosDe: (cor: CorDoFormulario) => boolean
   enviandoNaCor: (cor: CorDoFormulario) => boolean
   envioDe: (cor: CorDoFormulario, campo: CampoDeImagem) => EnvioDeImagem | undefined
+  avisoDe: (cor: CorDoFormulario) => string | undefined
 }>()
 
 const emit = defineEmits<{
@@ -54,6 +55,7 @@ const idTitulo = useId()
         :mostrar-erros="mostrarErrosDe(cor)"
         :enviando="enviandoNaCor(cor)"
         :envio-de="(campo) => envioDe(cor, campo)"
+        :aviso="avisoDe(cor)"
         @salvar="emit('salvar', cor.idLocal)"
         @descartar="emit('descartar', cor.idLocal)"
         @editar="emit('editar', cor.idLocal)"

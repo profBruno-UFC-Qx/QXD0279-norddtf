@@ -14,6 +14,7 @@ const props = defineProps<{
   coresDoEstoque: CorDoFormulario[]
   erros: Partial<Record<string, string>>
   tentou: boolean
+  travada: boolean
 }>()
 
 const emit = defineEmits<{
@@ -73,7 +74,14 @@ function mensagemDa(indice: number, linha: LinhaDeEstoque) {
         <p class="text-12">Para cada cor, informe o estoque de cada tamanho.</p>
         <p v-for="erro in errosDasCores" :key="erro" class="text-12 text-erro">{{ erro }}</p>
       </div>
-      <BaseChave v-model="semTamanho" rotulo="Produto sem tamanho" />
+      <BaseChave
+        v-model="semTamanho"
+        rotulo="Produto sem tamanho"
+        :desabilitado="travada"
+        :mensagem="
+          travada ? 'Este produto já foi vendido e não pode mudar a opção de tamanho.' : undefined
+        "
+      />
     </div>
     <LinhaEstoque
       v-for="({ chave, linha }, indice) in linhas"

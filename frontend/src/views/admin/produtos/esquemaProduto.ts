@@ -3,13 +3,16 @@ import { z } from 'zod'
 import {
   TAMANHOS,
   type CampoDeImagem,
+  type CorDetalhada,
+  type DadosDaEdicao,
   type DadosDoProduto,
   type EntradaDeEstoque,
   type ImagemEnviada,
+  type ProdutoDetalhado,
   type Tamanho,
   type TipoProduto,
 } from '@/types/produto'
-import { centavosParaDecimal } from '@/utils/formatacao'
+import { centavosParaDecimal, decimalParaCentavos } from '@/utils/formatacao'
 
 export type CorDoFormulario = Record<CampoDeImagem, ImagemEnviada | null> & {
   idLocal: string
@@ -268,6 +271,59 @@ export function montarCorpo(valores: ValoresDoProduto): DadosDoProduto {
         valores.estoque.find((linha) => linha.cor === cor.idLocal),
       ),
     })),
+  }
+}
+
+export function montarCorpoDaEdicao(
+  valores: ValoresDoProduto,
+  coresSalvas: ReadonlySet<string>,
+): DadosDaEdicao {
+  const { nome, preco, descricao, categorias, temTamanho, cores } = montarCorpo(valores)
+  return {
+    nome,
+    preco,
+    descricao,
+    categorias,
+    temTamanho,
+    cores: cores.map((cor, indice) => {
+      const idLocal = valores.cores[indice]?.idLocal ?? ''
+      return coresSalvas.has(idLocal) ? { id: idLocal, ...cor } : cor
+    }),
+  }
+}
+
+export function corDoDetalhe(cor: CorDetalhada): CorDoFormulario {
+  return {
+    idLocal: cor.id,
+    nome: cor.nome,
+    hex: cor.hex,
+    imagemApresentacao: cor.imagemApresentacao,
+    imagemApresentacaoCostas: cor.imagemApresentacaoCostas,
+    imagemPersonalizacaoFrente: cor.imagemPersonalizacaoFrente,
+    imagemPersonalizacaoCostas: cor.imagemPersonalizacaoCostas,
+  }
+}
+
+export function linhaDoDetalhe(cor: CorDetalhada, temTamanho: boolean): LinhaDeEstoque {
+  const tamanhos: (Tamanho | null)[] = temTamanho ? [...TAMANHOS] : [null]
+  return {
+    cor: cor.id,
+    quantidades: tamanhos.map(
+      (tamanho) => cor.estoque.find((entrada) => entrada.tamanho === tamanho)?.quantidade ?? 0,
+    ),
+  }
+}
+
+export function valoresDoDetalhe(produto: ProdutoDetalhado): ValoresDoProduto {
+  return {
+    tipo: produto.tipo,
+    nome: produto.nome,
+    preco: decimalParaCentavos(produto.preco),
+    descricao: produto.descricao ?? '',
+    categorias: produto.categorias.map((categoria) => categoria.id),
+    temTamanho: produto.temTamanho,
+    cores: produto.cores.map(corDoDetalhe),
+    estoque: produto.cores.map((cor) => linhaDoDetalhe(cor, produto.temTamanho)),
   }
 }
 

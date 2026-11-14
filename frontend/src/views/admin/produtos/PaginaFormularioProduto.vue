@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowReactive, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, nextTick, onBeforeUnmount, ref, shallowReactive, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useFieldArray, useForm, type Path } from 'vee-validate'
 
 import { listarCategorias } from '@/api/categorias'
 import { ErroApi, MENSAGEM_GERAL } from '@/api/ErroApi'
-import { cadastrarProduto } from '@/api/produtos'
+import { cadastrarProduto, detalharProduto, editarProduto } from '@/api/produtos'
 import BaseBotao from '@/components/base/BaseBotao.vue'
 import BaseCarregando from '@/components/base/BaseCarregando.vue'
 import BaseMensagem from '@/components/base/BaseMensagem.vue'
@@ -13,25 +13,38 @@ import BaseModalConfirmacao from '@/components/base/BaseModalConfirmacao.vue'
 import IconeVoltar from '@/components/icones/IconeVoltar.vue'
 import { useAvisos } from '@/stores/avisos'
 import type { Categoria } from '@/types/categoria'
-import { TAMANHOS, type CampoDeImagem, type TipoProduto } from '@/types/produto'
+import {
+  TAMANHOS,
+  type CampoDeImagem,
+  type ProdutoDetalhado,
+  type TipoProduto,
+} from '@/types/produto'
 import { aplicarErrosDaApi, schemaZod } from '@/utils/validacao'
 import type { ModoDaCor } from './CardCor.vue'
 import {
   CAMPOS_DE_IMAGEM,
   IMAGENS_POR_TIPO,
+  corDoDetalhe,
   criarEsquemaProduto,
   errosNoFormulario,
+  linhaDoDetalhe,
   montarCorpo,
+  montarCorpoDaEdicao,
+  valoresDoDetalhe,
   type CorDoFormulario,
   type LinhaDeEstoque,
   type ValoresDoProduto,
 } from './esquemaProduto'
+import ProdutoNaoEncontrado from './ProdutoNaoEncontrado.vue'
 import SecaoCores from './SecaoCores.vue'
 import SecaoEstoque from './SecaoEstoque.vue'
 import SecaoInformacoes from './SecaoInformacoes.vue'
 import SecaoTipo from './SecaoTipo.vue'
 import { useEnvioDeImagem } from './useEnvioDeImagem'
 
+const MENSAGEM_DE_COR_VENDIDA = 'Esta cor já foi vendida e não pode ser removida.'
+
+const route = useRoute()
 const router = useRouter()
 const avisos = useAvisos()
 const envio = useEnvioDeImagem()
@@ -39,6 +52,10 @@ const envio = useEnvioDeImagem()
 const modos = shallowReactive(new Map<string, ModoDaCor>())
 const copias = shallowReactive(new Map<string, CorDoFormulario>())
 const comErrosVisiveis = shallowReactive(new Set<string>())
+const coresVendidas = shallowReactive(new Set<string>())
+const avisosDeVenda = shallowReactive(new Set<string>())
+const coresSalvas = new Set<string>()
+const vendido = ref(false)
 let proximaCor = 0
 let desmontado = false
 
@@ -62,6 +79,7 @@ const {
   errors,
   submitCount,
   handleSubmit,
+  resetForm,
   setErrors,
   setFieldValue,
   validate,
@@ -76,36 +94,62 @@ const {
 
 const {
   push: incluirCor,
+  insert: inserirCor,
   remove: tirarCor,
   update: atualizarCor,
 } = useFieldArray<CorDoFormulario>('cores')
 const {
   fields: camposDoEstoque,
   push: incluirLinha,
+  insert: inserirLinha,
   remove: tirarLinha,
   update: atualizarLinha,
 } = useFieldArray<LinhaDeEstoque>('estoque')
 
 const tentou = computed(() => submitCount.value > 0)
 
+const edicao = computed(() => route.name === 'admin-produto-editar')
+
+function idDaRota() {
+  return String(route.params.id)
+}
+
+function naoEncontrado(erro: unknown) {
+  return erro instanceof ErroApi && erro.codigo === 'PRODUTO_NAO_ENCONTRADO'
+}
+
 const categorias = ref<Categoria[]>([])
-const estado = ref<'carregando' | 'erro' | 'pronta'>('carregando')
+const estado = ref<'carregando' | 'erro' | 'nao-encontrado' | 'pronta'>('carregando')
+let controladorDaCarga: AbortController | undefined
 let controladorDasCategorias: AbortController | undefined
 
-async function carregarCategorias({ silencioso = false } = {}) {
+async function carregar() {
+  controladorDaCarga?.abort()
   controladorDasCategorias?.abort()
-  controladorDasCategorias = new AbortController()
-  const { signal } = controladorDasCategorias
-  if (!silencioso) estado.value = 'carregando'
+  controladorDaCarga = new AbortController()
+  const { signal } = controladorDaCarga
+  const id = edicao.value ? idDaRota() : undefined
+  estado.value = 'carregando'
   try {
-    categorias.value = await listarCategorias(signal)
+    const [lista, produto] = await Promise.all([
+      listarCategorias(signal),
+      id ? detalharProduto(id, signal) : undefined,
+    ])
+    categorias.value = lista
+    preencher(produto)
     estado.value = 'pronta'
-  } catch {
-    if (!signal.aborted && !silencioso) estado.value = 'erro'
+  } catch (erro) {
+    if (signal.aborted) return
+    estado.value = naoEncontrado(erro) ? 'nao-encontrado' : 'erro'
   }
 }
 
-onMounted(() => carregarCategorias())
+async function recarregarCategorias() {
+  controladorDasCategorias?.abort()
+  controladorDasCategorias = new AbortController()
+  const lista = await listarCategorias(controladorDasCategorias.signal).catch(() => undefined)
+  if (lista) categorias.value = lista
+}
 
 function indiceDaCor(idLocal: string) {
   return values.cores.findIndex((cor) => cor.idLocal === idLocal)
@@ -165,6 +209,14 @@ function removerCor(idLocal: string) {
   modos.delete(idLocal)
   copias.delete(idLocal)
   comErrosVisiveis.delete(idLocal)
+}
+
+function pedirRemocaoDaCor(idLocal: string) {
+  if (coresVendidas.has(idLocal)) {
+    avisosDeVenda.add(idLocal)
+    return
+  }
+  removerCor(idLocal)
 }
 
 function descartarCor(idLocal: string) {
@@ -315,11 +367,71 @@ function mudarQuantidade(indice: number, posicao: number, quantidade: number | n
 }
 
 const processando = ref(false)
-const cadastrado = ref(false)
+const salvo = ref(false)
 const erroDoEnvio = ref<string>()
 
-async function tratarErroDoEnvio(erro: unknown, enviados: ValoresDoProduto) {
+function aplicarVenda(produto: ProdutoDetalhado) {
+  vendido.value = produto.vendido
+  if (produto.vendido && produto.temTamanho !== values.temTamanho) {
+    setFieldValue('temTamanho', produto.temTamanho, false)
+    values.estoque.forEach((linha, indice) => {
+      const salva = produto.cores.find((cor) => cor.id === linha.cor)
+      atualizarLinha(
+        indice,
+        salva
+          ? linhaDoDetalhe(salva, produto.temTamanho)
+          : { cor: linha.cor, quantidades: quantidadesZeradas(produto.temTamanho) },
+      )
+    })
+  }
+  produto.cores.forEach((cor, posicao) => {
+    if (!cor.vendida) return
+    coresVendidas.add(cor.id)
+    if (indiceDaCor(cor.id) !== -1) return
+    coresSalvas.add(cor.id)
+    avisosDeVenda.add(cor.id)
+    const seguintes = new Set(produto.cores.slice(posicao + 1).map((seguinte) => seguinte.id))
+    const cores = values.cores.map((atual) => atual.idLocal)
+    inserirCor(posicaoAntesDe(cores, seguintes), corDoDetalhe(cor))
+    if (indiceDaLinha(cor.id) !== -1) return
+    const linhas = values.estoque.map((linha) => linha.cor)
+    inserirLinha(posicaoAntesDe(linhas, seguintes), linhaDoDetalhe(cor, produto.temTamanho))
+  })
+}
+
+function posicaoAntesDe(ids: string[], seguintes: ReadonlySet<string>) {
+  const indice = ids.findIndex((id) => seguintes.has(id))
+  if (indice !== -1) return indice
+  const ultimaSalva = ids.findLastIndex((id) => coresSalvas.has(id))
+  return ultimaSalva + 1
+}
+
+async function tratarVendaNoMeio(erro: ErroApi, id: string) {
+  avisos.erro(erro.mensagem)
+  let produto: ProdutoDetalhado
+  try {
+    produto = await detalharProduto(id)
+  } catch (falha) {
+    if (!desmontado && idDaRota() === id && naoEncontrado(falha)) estado.value = 'nao-encontrado'
+    return
+  }
+  if (!desmontado && idDaRota() === id) aplicarVenda(produto)
+}
+
+async function tratarErroDoEnvio(erro: unknown, enviados: ValoresDoProduto, id?: string) {
   if (erro instanceof ErroApi && (erro.status === 401 || erro.status === 403)) return
+  if (id && naoEncontrado(erro)) {
+    estado.value = 'nao-encontrado'
+    return
+  }
+  if (
+    id &&
+    erro instanceof ErroApi &&
+    (erro.codigo === 'COR_VENDIDA' || erro.codigo === 'OPCAO_DE_TAMANHO_BLOQUEADA')
+  ) {
+    await tratarVendaNoMeio(erro, id)
+    return
+  }
   const aplicados = aplicarErrosDaApi(erro, (erros) =>
     setErrors(errosNoFormulario(erros, enviados, values)),
   )
@@ -328,7 +440,7 @@ async function tratarErroDoEnvio(erro: unknown, enviados: ValoresDoProduto) {
     return
   }
   if (erro instanceof ErroApi && erro.erros?.categorias) {
-    await carregarCategorias({ silencioso: true })
+    await recarregarCategorias()
     const existentes = new Set(categorias.value.map((categoria) => categoria.id))
     setFieldValue(
       'categorias',
@@ -338,23 +450,29 @@ async function tratarErroDoEnvio(erro: unknown, enviados: ValoresDoProduto) {
   }
 }
 
+function gravar(valores: ValoresDoProduto, id?: string) {
+  if (id) return editarProduto(id, montarCorpoDaEdicao(valores, coresSalvas))
+  return cadastrarProduto(montarCorpo(valores))
+}
+
 const enviar = handleSubmit(async (valores) => {
   if (values.cores.some((cor) => modoDe(cor) !== 'salva')) return
   const enviados = valores as ValoresDoProduto
+  const id = edicao.value ? idDaRota() : undefined
   let produto
   try {
-    produto = await cadastrarProduto(montarCorpo(enviados))
+    produto = await gravar(enviados, id)
   } catch (erro) {
-    if (!desmontado) await tratarErroDoEnvio(erro, enviados)
+    if (!desmontado && (!id || idDaRota() === id)) await tratarErroDoEnvio(erro, enviados, id)
     return
   }
-  cadastrado.value = true
-  avisos.sucesso('Produto cadastrado.')
+  salvo.value = true
+  avisos.sucesso(id ? 'Produto atualizado.' : 'Produto cadastrado.')
   if (!desmontado) await router.replace({ name: 'admin-produto', params: { id: produto.id } })
 })
 
-async function cadastrar() {
-  if (processando.value || cadastrado.value || envio.enviando.value) return
+async function salvar() {
+  if (processando.value || salvo.value || envio.enviando.value) return
   processando.value = true
   erroDoEnvio.value = undefined
   for (const cor of values.cores) comErrosVisiveis.add(cor.idLocal)
@@ -369,12 +487,42 @@ async function cadastrar() {
   }
 }
 
-function sair() {
+function irParaListagem() {
   router.push({ name: 'admin-produtos' })
 }
 
+function preencher(produto: ProdutoDetalhado | undefined) {
+  envio.descartarTudo()
+  for (const colecao of [modos, copias, comErrosVisiveis, coresVendidas, avisosDeVenda]) {
+    colecao.clear()
+  }
+  coresSalvas.clear()
+  tipoPendente.value = undefined
+  tamanhoPendente.value = undefined
+  erroDoEnvio.value = undefined
+  salvo.value = false
+  vendido.value = produto?.vendido ?? false
+  for (const cor of produto?.cores ?? []) {
+    coresSalvas.add(cor.id)
+    if (cor.vendida) coresVendidas.add(cor.id)
+  }
+  const valores = produto ? valoresDoDetalhe(produto) : structuredClone(valoresIniciais)
+  tipoAplicado.value = valores.tipo
+  resetForm({ values: valores })
+}
+
+watch(
+  () => [route.name, route.params.id],
+  () => {
+    if (route.name !== 'admin-produto-novo' && route.name !== 'admin-produto-editar') return
+    carregar()
+  },
+  { immediate: true },
+)
+
 onBeforeUnmount(() => {
   desmontado = true
+  controladorDaCarga?.abort()
   controladorDasCategorias?.abort()
   envio.descartarTudo()
 })
@@ -384,12 +532,12 @@ onBeforeUnmount(() => {
   <div class="flex flex-col gap-7.5">
     <div class="flex items-end justify-between gap-5">
       <div class="flex items-center gap-5">
-        <button type="button" aria-label="Voltar" class="shrink-0" @click="sair">
+        <button type="button" aria-label="Voltar" class="shrink-0" @click="irParaListagem">
           <IconeVoltar class="size-8" />
         </button>
-        <h1 class="text-32 font-bold">Cadastrar produto</h1>
+        <h1 class="text-32 font-bold">{{ edicao ? 'Editar produto' : 'Cadastrar produto' }}</h1>
       </div>
-      <SecaoTipo v-if="estado === 'pronta'" />
+      <SecaoTipo v-if="estado === 'pronta' && !edicao" />
     </div>
     <div
       v-if="estado === 'carregando'"
@@ -399,16 +547,12 @@ onBeforeUnmount(() => {
     </div>
     <div v-else-if="estado === 'erro'" class="flex flex-col items-start gap-3.75">
       <BaseMensagem class="w-full">{{ MENSAGEM_GERAL }}</BaseMensagem>
-      <BaseBotao
-        variante="secundario"
-        tamanho="compacto"
-        class="w-35"
-        @click="carregarCategorias()"
-      >
+      <BaseBotao variante="secundario" tamanho="compacto" class="w-35" @click="carregar()">
         Tentar novamente
       </BaseBotao>
     </div>
-    <form v-else class="flex flex-col gap-7.5" novalidate @submit.prevent="cadastrar">
+    <ProdutoNaoEncontrado v-else-if="estado === 'nao-encontrado'" class="mt-5" />
+    <form v-else class="flex flex-col gap-7.5" novalidate @submit.prevent="salvar">
       <SecaoInformacoes :categorias="categorias" />
       <SecaoCores
         :cores="values.cores"
@@ -421,11 +565,12 @@ onBeforeUnmount(() => {
         :mostrar-erros-de="(cor) => comErrosVisiveis.has(cor.idLocal)"
         :enviando-na-cor="(cor) => envio.enviandoNaCor(cor.idLocal)"
         :envio-de="(cor, campo) => envio.envioDe(cor.idLocal, campo)"
+        :aviso-de="(cor) => (avisosDeVenda.has(cor.idLocal) ? MENSAGEM_DE_COR_VENDIDA : undefined)"
         @adicionar="adicionarCor"
         @salvar="confirmarCor"
         @descartar="descartarCor"
         @editar="editarCor"
-        @remover="removerCor"
+        @remover="pedirRemocaoDaCor"
         @escolher="escolherImagem"
       />
       <SecaoEstoque
@@ -435,6 +580,7 @@ onBeforeUnmount(() => {
         :cores-do-estoque="coresDoEstoque"
         :erros="errors"
         :tentou="tentou"
+        :travada="vendido"
         @adicionar="adicionarLinha"
         @mudar-tamanho="mudarTamanho"
         @trocar-cor="trocarCorDaLinha"
@@ -444,17 +590,17 @@ onBeforeUnmount(() => {
       <div class="mt-7.5 flex flex-col items-center gap-5">
         <BaseMensagem v-if="erroDoEnvio" class="w-110 max-w-full">{{ erroDoEnvio }}</BaseMensagem>
         <div class="flex justify-center gap-25">
-          <BaseBotao variante="secundario" tamanho="compacto" class="w-30" @click="sair">
+          <BaseBotao variante="secundario" tamanho="compacto" class="w-30" @click="irParaListagem">
             Cancelar
           </BaseBotao>
           <BaseBotao
             tipo="submit"
             tamanho="compacto"
             class="w-30"
-            :carregando="processando || cadastrado"
+            :carregando="processando || salvo"
             :desabilitado="envio.enviando.value"
           >
-            Cadastrar
+            {{ edicao ? 'Salvar alterações' : 'Cadastrar' }}
           </BaseBotao>
         </div>
       </div>

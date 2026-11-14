@@ -178,7 +178,7 @@ export const rotas: RouteRecordRaw[] = [
       {
         path: 'produtos/:id/editar',
         name: 'admin-produto-editar',
-        component: PaginaProvisoria,
+        component: () => import('@/views/admin/produtos/PaginaFormularioProduto.vue'),
         meta: { acesso: 'admin', titulo: 'Editar produto' },
       },
       {

@@ -24,6 +24,7 @@ const props = defineProps<{
   mostrarErros: boolean
   enviando: boolean
   envioDe: (campo: CampoDeImagem) => EnvioDeImagem | undefined
+  aviso?: string
 }>()
 
 const emit = defineEmits<{
@@ -66,7 +67,7 @@ function estadoDoQuadro(
 }
 
 const mensagens = computed(() => {
-  const daCor = emEdicao.value ? [] : (['nome', 'hex'] as const)
+  const daCor = emEdicao.value ? [] : (['id', 'nome', 'hex'] as const)
   const foraDoTipo = CAMPOS_DE_IMAGEM.filter(
     (campo) => !quadros.value.some((quadro) => quadro.campo === campo),
   )
@@ -142,6 +143,7 @@ const amostra = computed(() =>
         </button>
       </div>
     </div>
+    <p v-if="aviso" class="text-12 text-erro">{{ aviso }}</p>
     <template v-if="emEdicao">
       <BaseCampoTexto
         :nome="caminho('nome')"
