@@ -264,6 +264,8 @@ function escolherImagem(arquivo: File) {
 const quantidade = ref<number | null>(0)
 const quantidadeNoLimite = ref<number | null>(99999)
 const quantidadeInvalida = ref<number | null>(120000)
+const quantidadeComLimite = ref<number | null>(2)
+const quantidadeEsgotada = ref<number | null>(0)
 
 const faixaDePreco = ref<[string, string]>(['29.90', '89.90'])
 const faixaConfirmada = ref<[string, string]>()
@@ -699,6 +701,29 @@ function mudarSituacao(produto: ItemProduto, ativo: boolean) {
       <BaseContador v-model="quantidadeNoLimite" rotulo="Estoque M" />
       <BaseContador v-model="quantidadeInvalida" rotulo="Estoque G" />
       <p>Quantidades: {{ quantidade }}, {{ quantidadeNoLimite }}, {{ quantidadeInvalida }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-contador-loja" class="flex flex-col items-start gap-5">
+      <h2 id="titulo-contador-loja" class="text-24 font-semibold">Contador da loja</h2>
+      <BaseContador v-model="quantidadeComLimite" rotulo="quantidade do tamanho G" :maximo="3" />
+      <BaseContador
+        v-model="quantidadeEsgotada"
+        rotulo="quantidade do tamanho G2, esgotado"
+        desabilitado
+      />
+      <p>Com limite: {{ quantidadeComLimite ?? 'vazio' }}</p>
+      <p>Esgotado: {{ quantidadeEsgotada }}</p>
+    </section>
+
+    <section aria-labelledby="titulo-aviso-provisorio" class="flex flex-col items-start gap-5">
+      <h2 id="titulo-aviso-provisorio" class="text-24 font-semibold">Aviso provisório</h2>
+      <BaseBotao
+        variante="secundario"
+        tamanho="compacto"
+        @click="avisos.informacao('Esta tela chega numa próxima fase.')"
+      >
+        Aviso provisório
+      </BaseBotao>
     </section>
 
     <section aria-labelledby="titulo-faixa-preco" class="flex flex-col gap-5">

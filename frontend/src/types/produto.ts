@@ -88,3 +88,36 @@ export type DadosDaEdicao = Omit<DadosDoProduto, 'tipo' | 'cores'> & {
 }
 
 export type Situacao = { id: string; ativo: boolean }
+
+export type ItemDaLoja = {
+  id: string
+  nome: string
+  preco: string
+  tipo: TipoProduto
+  imagem: string
+  cores: { nome: string; hex: string }[]
+  totalDeCores: number
+}
+
+export type ListagemDaLoja = Omit<ListagemProdutos, 'itens'> & { itens: ItemDaLoja[] }
+
+export type CorDaLoja = {
+  id: string
+  nome: string
+  hex: string
+  imagem: string
+  estoque: EntradaDeEstoque[]
+}
+
+export type ProdutoDaLoja = {
+  id: string
+  tipo: TipoProduto
+  nome: string
+  preco: string
+  descricao: string | null
+  temTamanho: boolean
+  categorias: Categoria[]
+  cores: CorDaLoja[]
+}
+
+export type EscolhaDoProduto = { cor: string; quantidades: EntradaDeEstoque[] }

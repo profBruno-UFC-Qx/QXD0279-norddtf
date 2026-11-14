@@ -8,40 +8,57 @@ import { somenteDigitos } from '@/utils/formatacao'
 const MINIMO = 0
 const MAXIMO = 99999
 
-const props = withDefaults(defineProps<{ rotulo: string; invalido?: boolean }>(), {
-  invalido: false,
-})
+const props = withDefaults(
+  defineProps<{ rotulo: string; invalido?: boolean; maximo?: number; desabilitado?: boolean }>(),
+  { invalido: false, desabilitado: false },
+)
 
 const quantidade = defineModel<number | null>({ required: true })
 
+const limite = computed(() => props.maximo ?? MAXIMO)
+
 const marcado = computed(() => {
   if (props.invalido) return true
-  return quantidade.value !== null && quantidade.value > MAXIMO
+  return quantidade.value !== null && quantidade.value > limite.value
 })
 
-const podeDiminuir = computed(() => quantidade.value !== null && quantidade.value > MINIMO)
-const podeAumentar = computed(() => quantidade.value === null || quantidade.value < MAXIMO)
+const podeDiminuir = computed(
+  () => !props.desabilitado && quantidade.value !== null && quantidade.value > MINIMO,
+)
+const podeAumentar = computed(
+  () => !props.desabilitado && (quantidade.value ?? MINIMO) < limite.value,
+)
 
 function diminuir() {
-  quantidade.value = Math.min((quantidade.value ?? MINIMO) - 1, MAXIMO)
+  quantidade.value = Math.min((quantidade.value ?? MINIMO) - 1, limite.value)
 }
 
 function aumentar() {
   quantidade.value = (quantidade.value ?? MINIMO) + 1
 }
 
+// Sem maximo explícito, o valor acima de 99999 fica no campo para o esquema do admin mostrar o erro.
+function digitado(texto: string) {
+  const digitos = somenteDigitos(texto)
+  if (digitos === '' || props.maximo === undefined) return digitos
+  return String(Math.min(Number(digitos), props.maximo))
+}
+
 function aoDigitar(evento: Event) {
   const alvo = evento.target as HTMLInputElement
-  const digitos = somenteDigitos(alvo.value)
-  if (alvo.value !== digitos) alvo.value = digitos
-  quantidade.value = digitos === '' ? null : Number(digitos)
+  const texto = digitado(alvo.value)
+  if (alvo.value !== texto) alvo.value = texto
+  quantidade.value = texto === '' ? null : Number(texto)
 }
 </script>
 
 <template>
   <span
-    class="inline-flex h-6.5 items-center rounded-padrao bg-branco-dtf ring-inset"
-    :class="marcado ? 'ring-2 ring-erro' : 'ring-1 ring-cinza-escuro/67'"
+    class="inline-flex h-6.5 items-center rounded-padrao ring-inset"
+    :class="[
+      marcado ? 'ring-2 ring-erro' : 'ring-1 ring-cinza-escuro/67',
+      desabilitado ? 'bg-cinza-claro' : 'bg-branco-dtf',
+    ]"
   >
     <button
       type="button"
@@ -58,7 +75,8 @@ function aoDigitar(evento: Event) {
       :value="quantidade ?? ''"
       :aria-label="rotulo"
       :aria-invalid="marcado || undefined"
-      class="h-6 w-7 bg-transparent text-center text-13 font-bold outline-offset-0"
+      :disabled="desabilitado"
+      class="h-6 w-7 bg-transparent text-center text-13 font-bold outline-offset-0 disabled:text-cinza-escuro"
       @input="aoDigitar"
     />
     <button

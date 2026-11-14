@@ -9,7 +9,7 @@ import type {
   Situacao,
 } from '@/types/produto'
 
-function parametrosDaListagem(filtros: FiltrosProdutos) {
+export function parametrosDaListagem(filtros: FiltrosProdutos) {
   const parametros = new URLSearchParams()
   if (filtros.busca) parametros.set('busca', filtros.busca)
   if (filtros.categorias.length) parametros.set('categorias', filtros.categorias.join(','))

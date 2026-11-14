@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-export type TipoAviso = 'sucesso' | 'erro'
+export type TipoAviso = 'sucesso' | 'erro' | 'informacao'
 
 export type Aviso = { id: number; tipo: TipoAviso; mensagem: string }
 
@@ -26,5 +26,9 @@ export const useAvisos = defineStore('avisos', () => {
     avisar('erro', mensagem)
   }
 
-  return { avisos, avisar, remover, sucesso, erro }
+  function informacao(mensagem: string) {
+    avisar('informacao', mensagem)
+  }
+
+  return { avisos, avisar, remover, sucesso, erro, informacao }
 })

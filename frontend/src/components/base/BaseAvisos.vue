@@ -3,6 +3,7 @@ import { computed, type Component } from 'vue'
 import { ToastDescription, ToastProvider, ToastRoot, ToastViewport } from 'reka-ui'
 
 import IconeErro from '@/components/icones/IconeErro.vue'
+import IconeInformacao from '@/components/icones/IconeInformacao.vue'
 import IconeSucesso from '@/components/icones/IconeSucesso.vue'
 import { useAvisos, type TipoAviso } from '@/stores/avisos'
 
@@ -11,6 +12,7 @@ const avisos = useAvisos()
 const visualPorTipo: Record<TipoAviso, { icone: Component; cor: string; borda: string }> = {
   sucesso: { icone: IconeSucesso, cor: 'text-sucesso', borda: 'ring-cinza-claro' },
   erro: { icone: IconeErro, cor: 'text-erro', borda: 'ring-erro' },
+  informacao: { icone: IconeInformacao, cor: 'text-preto-dtf', borda: 'ring-amarelo-dtf' },
 }
 
 const mensagemAnunciada = computed(() => avisos.avisos.at(-1)?.mensagem ?? '')
