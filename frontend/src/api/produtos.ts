@@ -25,7 +25,7 @@ export function listarProdutos(filtros: FiltrosProdutos, sinal?: AbortSignal) {
 }
 
 export function detalharProduto(id: string, sinal?: AbortSignal) {
-  return api.get<ProdutoDetalhado>(`/admin/produtos/${id}`, sinal)
+  return api.get<ProdutoDetalhado>(`/admin/produtos/${encodeURIComponent(id)}`, sinal)
 }
 
 export function cadastrarProduto(dados: DadosDoProduto) {
@@ -33,15 +33,15 @@ export function cadastrarProduto(dados: DadosDoProduto) {
 }
 
 export function editarProduto(id: string, dados: DadosDaEdicao) {
-  return api.put<ProdutoDetalhado>(`/admin/produtos/${id}`, dados)
+  return api.put<ProdutoDetalhado>(`/admin/produtos/${encodeURIComponent(id)}`, dados)
 }
 
 export function mudarSituacao(id: string, ativo: boolean) {
-  return api.patch<Situacao>(`/admin/produtos/${id}/situacao`, { ativo })
+  return api.patch<Situacao>(`/admin/produtos/${encodeURIComponent(id)}/situacao`, { ativo })
 }
 
 export function removerProduto(id: string) {
-  return api.delete<void>(`/admin/produtos/${id}`)
+  return api.delete<void>(`/admin/produtos/${encodeURIComponent(id)}`)
 }
 
 export function enviarImagem(arquivo: File, sinal?: AbortSignal) {
