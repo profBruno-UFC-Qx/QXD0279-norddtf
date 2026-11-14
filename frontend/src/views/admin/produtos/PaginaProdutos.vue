@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useForm } from 'vee-validate'
 
 import { listarCategorias } from '@/api/categorias'
 import { ErroApi, MENSAGEM_GERAL } from '@/api/ErroApi'
@@ -15,17 +14,19 @@ import BaseMensagem from '@/components/base/BaseMensagem.vue'
 import BasePaginacao from '@/components/base/BasePaginacao.vue'
 import IconeBusca from '@/components/icones/IconeBusca.vue'
 import IconeCabide from '@/components/icones/IconeCabide.vue'
+import { etiquetasDosFiltros } from '@/components/produtos/etiquetasDosFiltros'
+import {
+  escreverFiltros,
+  lerFiltros,
+  LIMITE_DA_BUSCA,
+  temFiltro,
+} from '@/components/produtos/filtrosDaUrl'
+import PainelFiltros from '@/components/produtos/PainelFiltros.vue'
+import { useBuscaComEspera } from '@/composables/useBuscaComEspera'
 import { useAvisos } from '@/stores/avisos'
 import type { Categoria } from '@/types/categoria'
 import type { FiltrosProdutos, ItemProduto, ListagemProdutos } from '@/types/produto'
-import { formatarMoeda } from '@/utils/formatacao'
 import CardProduto from './CardProduto.vue'
-import { escreverFiltros, lerFiltros, LIMITE_DA_BUSCA, temFiltro } from './filtrosDaUrl'
-import PainelFiltros from './PainelFiltros.vue'
-
-const ESPERA_DA_BUSCA = 400
-
-type Etiqueta = { chave: string; texto: string; sem: Partial<FiltrosProdutos> }
 
 const route = useRoute()
 const router = useRouter()
@@ -91,75 +92,19 @@ function irPara(mudanca: Partial<FiltrosProdutos>) {
   router.push({ query: escreverFiltros({ ...filtros.value, pagina: 1, ...mudanca }) })
 }
 
-const { values, setFieldValue } = useForm({ initialValues: { busca: filtros.value.busca } })
-let espera: ReturnType<typeof setTimeout> | undefined
-
-function buscar() {
-  clearTimeout(espera)
-  const busca = (values.busca ?? '').trim()
-  if (busca === filtros.value.busca) return
-  router.replace({ query: escreverFiltros({ ...filtros.value, busca, pagina: 1 }) })
-}
-
-watch(
-  () => values.busca,
-  () => {
-    clearTimeout(espera)
-    espera = setTimeout(buscar, ESPERA_DA_BUSCA)
-  },
-)
-
-watch(
+const { buscar } = useBuscaComEspera(
   () => filtros.value.busca,
-  (busca) => {
-    if ((values.busca ?? '').trim() !== busca) setFieldValue('busca', busca)
-  },
+  (busca) => router.replace({ query: escreverFiltros({ ...filtros.value, busca, pagina: 1 }) }),
 )
 
 onBeforeUnmount(() => {
   desmontado = true
   controlador?.abort()
-  clearTimeout(espera)
 })
 
-function textoDaFaixa({ precoMin, precoMax }: FiltrosProdutos) {
-  const faixa = listagem.value?.faixaDePreco
-  return [precoMin ?? faixa?.min, precoMax ?? faixa?.max]
-    .filter((preco) => preco !== undefined)
-    .map((preco) => formatarMoeda(preco))
-    .join(' a ')
-}
-
-const etiquetas = computed(() => {
-  const atuais = filtros.value
-  const nomes = new Map(categorias.value?.map((categoria) => [categoria.id, categoria.nome]))
-  const lista: Etiqueta[] = atuais.categorias.flatMap((id) => {
-    const nome = nomes.get(id)
-    if (!nome) return []
-    return [
-      {
-        chave: id,
-        texto: nome,
-        sem: { categorias: atuais.categorias.filter((outro) => outro !== id) },
-      },
-    ]
-  })
-  if (atuais.precoMin || atuais.precoMax) {
-    lista.push({
-      chave: 'preco',
-      texto: textoDaFaixa(atuais),
-      sem: { precoMin: undefined, precoMax: undefined },
-    })
-  }
-  atuais.tamanhos.forEach((tamanho) => {
-    lista.push({
-      chave: tamanho,
-      texto: `Tamanho ${tamanho}`,
-      sem: { tamanhos: atuais.tamanhos.filter((outro) => outro !== tamanho) },
-    })
-  })
-  return lista
-})
+const etiquetas = computed(() =>
+  etiquetasDosFiltros(filtros.value, categorias.value ?? [], listagem.value?.faixaDePreco),
+)
 
 const semProdutos = computed(() => listagem.value?.total === 0 && !temFiltro(filtros.value))
 
