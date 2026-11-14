@@ -11,7 +11,12 @@ export function schemaZod<T extends z.ZodType>(schema: T): TypedSchema<z.input<T
       if (resultado.success) return { value: resultado.data, errors: [] }
       const porCaminho = new Map<string, string[]>()
       for (const issue of resultado.error.issues) {
-        const caminho = issue.path.join('.')
+        const caminho = issue.path
+          .map((parte, indice) => {
+            if (typeof parte === 'number') return `[${parte}]`
+            return indice === 0 ? String(parte) : `.${String(parte)}`
+          })
+          .join('')
         porCaminho.set(caminho, [...(porCaminho.get(caminho) ?? []), issue.message])
       }
       return { errors: [...porCaminho].map(([path, errors]) => ({ path, errors })) }
