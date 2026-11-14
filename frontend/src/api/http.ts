@@ -54,11 +54,19 @@ function converterErro(status: number, corpo: unknown, segundosParaTentar?: numb
   return new ErroApi(status, MENSAGEM_GERAL, codigo, undefined, segundosParaTentar)
 }
 
+function prepararCorpo(corpo: unknown): BodyInit | undefined {
+  if (corpo === undefined) return undefined
+  if (corpo instanceof FormData) return corpo
+  return JSON.stringify(corpo)
+}
+
 export async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = {}): Promise<T> {
   const { metodo = 'GET', corpo, sinal } = opcoes
   const cabecalhos: Record<string, string> = { Accept: 'application/json' }
 
-  if (corpo !== undefined) cabecalhos['Content-Type'] = 'application/json'
+  if (corpo !== undefined && !(corpo instanceof FormData)) {
+    cabecalhos['Content-Type'] = 'application/json'
+  }
 
   let resposta: Response
   let texto: string
@@ -68,7 +76,7 @@ export async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = 
       method: metodo,
       headers: cabecalhos,
       credentials: 'include',
-      body: corpo === undefined ? undefined : JSON.stringify(corpo),
+      body: prepararCorpo(corpo),
       signal: sinal,
     })
     texto = await resposta.text()
@@ -106,4 +114,6 @@ export const api = {
     requisitar<T>(caminho, { metodo: 'PATCH', corpo, sinal }),
   delete: <T>(caminho: string, sinal?: AbortSignal) =>
     requisitar<T>(caminho, { metodo: 'DELETE', sinal }),
+  enviarArquivo: <T>(caminho: string, formData: FormData, sinal?: AbortSignal) =>
+    requisitar<T>(caminho, { metodo: 'POST', corpo: formData, sinal }),
 }
