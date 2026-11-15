@@ -4,21 +4,31 @@
 
 Pré-requisitos: Node 22.18 ou 24.12 em diante, pnpm 10 e Docker com o plugin Compose. O banco é um PostgreSQL 17 e as imagens de produto ficam num Garage, um storage compatível com S3. Os dois sobem pelo `docker-compose.yml` do `backend/`.
 
-No `backend/`:
+As variáveis do backend ficam no Infisical (projeto `norDTF`, ambiente `dev`), e os scripts do `package.json` as injetam com `infisical run`. Quem não tem acesso ao Infisical usa um `.env`, como explicado mais abaixo.
+
+No `backend/`, com acesso ao Infisical:
 
 1. `pnpm install`.
-2. Copie o `.env.example` para `.env` e preencha os valores. As variáveis `POSTGRES_*` precisam bater com o usuário, a senha e o banco do `DATABASE_URL`. `GARAGE_RPC_SECRET`, `S3_ACCESS_KEY_ID` e `S3_SECRET_ACCESS_KEY` são gerados na hora, com o comando que está no comentário de cada uma.
-3. `docker compose up -d db garage` sobe o banco e o storage.
-4. `pnpm garage:iniciar` prepara o Garage: define o layout do nó, importa a chave do `.env` e cria os buckets `S3_BUCKET` e `S3_BUCKET_TEST`. Pode ser rodado de novo sem efeito.
-5. `pnpm prisma db init` cria as tabelas.
-6. `pnpm seed` cria as contas e os materiais iniciais.
+2. `infisical login`, na região US. Não é preciso criar `.env`.
+3. `pnpm docker-compose up -d db garage` sobe o banco e o storage.
+4. `pnpm garage:iniciar` prepara o Garage: define o layout do nó, importa a chave de acesso e cria os buckets `S3_BUCKET` e `S3_BUCKET_TEST`. Pode ser rodado de novo sem efeito.
+5. `pnpm db:init` cria as tabelas.
+6. `pnpm seed` cria as contas, os materiais e os produtos de exemplo.
 7. `pnpm dev` sobe a API em `http://localhost:3333`.
 
-Os testes do backend (`pnpm test`) usam o banco do `TEST_DATABASE_URL` e o bucket `S3_BUCKET_TEST`, então precisam do banco e do Garage de pé.
+Sem acesso ao Infisical, copie o `.env.example` para `.env` e preencha os valores. As variáveis `POSTGRES_*` precisam bater com o usuário, a senha e o banco do `DATABASE_URL`. `GARAGE_RPC_SECRET`, `S3_ACCESS_KEY_ID` e `S3_SECRET_ACCESS_KEY` são gerados na hora, com o comando que está no comentário de cada uma. Depois rode os mesmos passos sem o Infisical:
 
-No `frontend/`, crie um `.env` com `VITE_API_URL="http://localhost:3333"` e `VITE_WHATSAPP_NUMERO="558894389721"`, rode `pnpm install` e `pnpm dev`. O app abre em `http://localhost:5173`. `VITE_WHATSAPP_NUMERO` é o WhatsApp da loja, só dígitos, com DDI e DDD, sem `+`, espaço nem hífen. Ela é opcional: sem ela, o link "Falar no WhatsApp" some da landing e do menu, e o resto funciona.
+1. `docker compose up -d db garage`.
+2. `sh docker/garage/iniciar.sh`, que lê o `.env` quando as variáveis não vêm do Infisical.
+3. `pnpm exec prisma db init`.
+4. `pnpm exec tsx src/shared/infra/prisma/seed.ts`.
+5. `pnpm exec tsx watch src/shared/infra/http/server.ts`.
 
-O script `docker-compose` do `package.json` do backend passa pelo Infisical e não é necessário: o `docker compose` direto lê as variáveis do `.env`. Suba sempre pelo nome do serviço (`db`, `garage`) para não recriar o que já existe.
+Os testes do backend usam o banco do `TEST_DATABASE_URL` e o bucket `S3_BUCKET_TEST`, então precisam do banco e do Garage de pé. Com o Infisical, `pnpm test`. Com o `.env`, `pnpm exec vitest run`.
+
+No `frontend/`, o `.env` já vem no repositório com `VITE_API_URL="http://localhost:3333"` e `VITE_WHATSAPP_NUMERO="558894389721"`. Rode `pnpm install` e `pnpm dev`. O app abre em `http://localhost:5173`. `VITE_WHATSAPP_NUMERO` é o WhatsApp da loja, só dígitos, com DDI e DDD, sem `+`, espaço nem hífen. Ela é opcional: sem ela, o link "Falar no WhatsApp" some da landing e do menu, e o resto funciona.
+
+Suba o compose sempre pelo nome do serviço (`db`, `garage`) para não recriar o que já existe.
 
 ## :key: Credenciais de acesso para teste
 
@@ -27,7 +37,7 @@ O script `docker-compose` do `package.json` do backend passa pelo Infisical e n�
 | Administrador | admin@nordtf.com | admin1234 |
 | Cliente | cliente@nordtf.com | cliente1234 |
 
-As duas contas são criadas pelo seed, que também cria os materiais DTF e DTF UV com o preço por m², a descrição e a etiqueta iniciais. Em `backend/`, com as variáveis `SEED_*` do `.env.example` copiadas para o `.env`, execute `pnpm seed`. O seed não altera conta nem material que já existe.
+As duas contas são criadas pelo seed, que também cria os materiais DTF e DTF UV com o preço por m², a descrição e a etiqueta iniciais, e sete produtos de exemplo com fotos, categorias e estoque. Um deles, o Moletom Canguru, fica sem estoque e por isso não aparece na loja. Em `backend/`, execute `pnpm seed` (ou, sem o Infisical, com as variáveis `SEED_*` do `.env.example` no `.env`, `pnpm exec tsx src/shared/infra/prisma/seed.ts`). O seed não altera conta, material nem produto que já existe.
 
 ## :robot: Uso de ferramentas de Inteligência Artificial
 
