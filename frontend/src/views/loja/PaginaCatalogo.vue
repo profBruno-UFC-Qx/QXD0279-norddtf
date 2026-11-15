@@ -7,7 +7,7 @@ import { MENSAGEM_GERAL } from '@/api/ErroApi'
 import { listarProdutosDaLoja } from '@/api/loja'
 import BaseBotao from '@/components/base/BaseBotao.vue'
 import BaseCampoTexto from '@/components/base/BaseCampoTexto.vue'
-import BaseCarregando from '@/components/base/BaseCarregando.vue'
+import BaseEstadoCarga from '@/components/base/BaseEstadoCarga.vue'
 import BaseEstadoVazio from '@/components/base/BaseEstadoVazio.vue'
 import BaseEtiqueta from '@/components/base/BaseEtiqueta.vue'
 import BaseMensagem from '@/components/base/BaseMensagem.vue'
@@ -161,18 +161,11 @@ const temMais = computed(() => {
         </li>
       </ul>
     </div>
-    <div
-      v-if="estado === 'carregando'"
-      class="flex h-50 items-center justify-center rounded-padrao ring-1 ring-cinza-escuro/67 ring-inset"
-    >
-      <BaseCarregando />
-    </div>
-    <div v-else-if="estado === 'erro'" class="flex flex-col items-start gap-3.75">
-      <BaseMensagem class="w-full">{{ MENSAGEM_GERAL }}</BaseMensagem>
-      <BaseBotao variante="secundario" tamanho="compacto" class="w-35" @click="carregar()">
-        Tentar novamente
-      </BaseBotao>
-    </div>
+    <BaseEstadoCarga
+      v-if="estado === 'carregando' || estado === 'erro'"
+      :estado="estado"
+      @tentar-novamente="carregar()"
+    />
     <BaseEstadoVazio
       v-else-if="lojaVazia"
       titulo="Nenhum produto à venda no momento."

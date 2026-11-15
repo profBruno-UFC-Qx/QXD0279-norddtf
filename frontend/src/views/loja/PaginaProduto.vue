@@ -2,12 +2,11 @@
 import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 
-import { ErroApi, MENSAGEM_GERAL } from '@/api/ErroApi'
+import { ErroApi } from '@/api/ErroApi'
 import { URL_API } from '@/api/http'
 import { detalharProdutoDaLoja } from '@/api/loja'
 import BaseBotao from '@/components/base/BaseBotao.vue'
-import BaseCarregando from '@/components/base/BaseCarregando.vue'
-import BaseMensagem from '@/components/base/BaseMensagem.vue'
+import BaseEstadoCarga from '@/components/base/BaseEstadoCarga.vue'
 import BaseTrilha from '@/components/base/BaseTrilha.vue'
 import IconePincel from '@/components/icones/IconePincel.vue'
 import IconeSacola from '@/components/icones/IconeSacola.vue'
@@ -130,18 +129,11 @@ async function agir() {
 <template>
   <div class="flex flex-col gap-7.5">
     <BaseTrilha :itens="trilha" />
-    <div
-      v-if="estado === 'carregando'"
-      class="flex h-50 items-center justify-center rounded-padrao ring-1 ring-cinza-escuro/67 ring-inset"
-    >
-      <BaseCarregando />
-    </div>
-    <div v-else-if="estado === 'erro'" class="flex flex-col items-start gap-3.75">
-      <BaseMensagem class="w-full">{{ MENSAGEM_GERAL }}</BaseMensagem>
-      <BaseBotao variante="secundario" tamanho="compacto" class="w-35" @click="carregar()">
-        Tentar novamente
-      </BaseBotao>
-    </div>
+    <BaseEstadoCarga
+      v-if="estado === 'carregando' || estado === 'erro'"
+      :estado="estado"
+      @tentar-novamente="carregar()"
+    />
     <ProdutoNaoEncontradoDaLoja v-else-if="estado === 'nao-encontrado'" />
     <div
       v-else-if="produto && acao"
