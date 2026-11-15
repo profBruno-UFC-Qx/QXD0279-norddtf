@@ -197,6 +197,10 @@ export class ProdutosRepository {
       });
   }
 
+  async buscarPorNome(nome: string) {
+    return db.orm.public.Produto.where({ nome }).select('id').first();
+  }
+
   async mudarSituacao(id: string, ativo: boolean) {
     return db.orm.public.Produto.where({ id }).select('id', 'ativo').update({ ativo });
   }
