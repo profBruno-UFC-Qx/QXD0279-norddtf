@@ -5,7 +5,7 @@ import type { Perfil } from '@/types/usuario'
 type ItemDoMenu = { rotulo: string; para: RouteLocationRaw }
 
 const produtos: ItemDoMenu = { rotulo: 'Produtos', para: { name: 'loja-produtos' } }
-const materiais: ItemDoMenu = { rotulo: 'Materiais', para: { name: 'loja-materiais' } }
+const materiais: ItemDoMenu = { rotulo: 'Materiais e folha DTF', para: { name: 'loja-materiais' } }
 const meusPedidos: ItemDoMenu = { rotulo: 'Meus pedidos', para: { name: 'loja-pedidos' } }
 
 export const itensPorPerfil: Record<Perfil, ItemDoMenu[]> = {
