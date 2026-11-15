@@ -13,8 +13,9 @@ import BaseEstadoVazio from '@/components/base/BaseEstadoVazio.vue'
 import BaseMensagem from '@/components/base/BaseMensagem.vue'
 import BaseModalFormulario from '@/components/base/BaseModalFormulario.vue'
 import { useAvisos } from '@/stores/avisos'
-import type { Material, TipoMaterial } from '@/types/material'
+import type { Material } from '@/types/material'
 import { centavosParaDecimal, decimalParaCentavos } from '@/utils/formatacao'
+import { NOMES_DOS_MATERIAIS } from '@/utils/materiais'
 import { aplicarErrosDaApi, schemaZod } from '@/utils/validacao'
 import CartaoMaterial from './CartaoMaterial.vue'
 
@@ -33,8 +34,6 @@ const esquemaMaterial = z.object({
     .min(1, { error: 'Informe a etiqueta.' })
     .max(40, { error: 'A etiqueta pode ter até 40 caracteres.' }),
 })
-
-const nomes: Record<TipoMaterial, string> = { DTF: 'DTF', DTF_UV: 'DTF UV' }
 
 const avisos = useAvisos()
 
@@ -67,7 +66,7 @@ const formularioAberto = ref(false)
 const emEdicao = ref<Material>()
 const erroDoEnvio = ref<string>()
 const tituloDoFormulario = computed(
-  () => `Editar material ${emEdicao.value ? nomes[emEdicao.value.tipo] : ''}`,
+  () => `Editar material ${emEdicao.value ? NOMES_DOS_MATERIAIS[emEdicao.value.tipo] : ''}`,
 )
 
 function abrirFormulario(material: Material) {
@@ -141,7 +140,7 @@ const enviar = handleSubmit(
         v-for="material in materiais"
         :key="material.tipo"
         :material="material"
-        :nome="nomes[material.tipo]"
+        :nome="NOMES_DOS_MATERIAIS[material.tipo]"
         @editar="abrirFormulario(material)"
       />
     </div>
