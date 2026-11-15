@@ -10,8 +10,11 @@ import {
   DialogTrigger,
 } from 'reka-ui'
 
+import IconeLinkExterno from '@/components/icones/IconeLinkExterno.vue'
 import IconeMenu from '@/components/icones/IconeMenu.vue'
+import IconeWhatsApp from '@/components/icones/IconeWhatsApp.vue'
 import { useSessao } from '@/stores/sessao'
+import { linkDoWhatsApp, ROTULO_DO_WHATSAPP } from '@/utils/whatsapp'
 import { itensPorPerfil } from './itensMenuLoja'
 import { useSair } from './useSair'
 
@@ -19,6 +22,7 @@ const sessao = useSessao()
 const route = useRoute()
 const aberto = ref(false)
 const { saindo, sair } = useSair()
+const whatsapp = linkDoWhatsApp()
 
 watch(
   [() => route.fullPath, () => sessao.perfil],
@@ -52,6 +56,23 @@ watch(
                 {{ item.rotulo }}
               </RouterLink>
             </li>
+            <template v-if="whatsapp">
+              <li aria-hidden="true" class="h-px bg-cinza-claro"></li>
+              <li>
+                <a
+                  :href="whatsapp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :aria-label="ROTULO_DO_WHATSAPP"
+                  class="flex h-12.5 items-center gap-2.5 rounded-padrao px-2.5 text-16 font-bold"
+                  @click="aberto = false"
+                >
+                  <IconeWhatsApp class="size-6 shrink-0" />
+                  <span class="flex-1">Falar no WhatsApp</span>
+                  <IconeLinkExterno class="size-4 shrink-0 text-cinza-dtf" />
+                </a>
+              </li>
+            </template>
             <li v-if="sessao.perfil !== 'visitante'">
               <button
                 type="button"

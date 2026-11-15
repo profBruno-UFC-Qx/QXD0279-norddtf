@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import logoBranco from '@/assets/logo-branco.webp'
+import IconeWhatsApp from '@/components/icones/IconeWhatsApp.vue'
+import { linkDoWhatsApp, ROTULO_DO_WHATSAPP } from '@/utils/whatsapp'
+
+const whatsapp = linkDoWhatsApp()
 </script>
 
 <template>
@@ -90,6 +94,18 @@ import logoBranco from '@/assets/logo-branco.webp'
                 class="text-14 text-branco-dtf/75 transition-colors hover:text-amarelo-dtf"
               >
                 Perguntas frequentes
+              </a>
+            </li>
+            <li v-if="whatsapp">
+              <a
+                :href="whatsapp"
+                target="_blank"
+                rel="noopener noreferrer"
+                :aria-label="ROTULO_DO_WHATSAPP"
+                class="inline-flex items-center gap-2 text-14 text-branco-dtf/75 transition-colors hover:text-amarelo-dtf"
+              >
+                <IconeWhatsApp class="size-4 shrink-0" />
+                Falar no WhatsApp
               </a>
             </li>
             <li>

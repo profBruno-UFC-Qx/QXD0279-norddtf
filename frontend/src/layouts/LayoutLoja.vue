@@ -6,8 +6,10 @@ import logoColorido from '@/assets/logo-colorido.webp'
 import BaseTrilha from '@/components/base/BaseTrilha.vue'
 import IconeSacola from '@/components/icones/IconeSacola.vue'
 import IconeUsuario from '@/components/icones/IconeUsuario.vue'
+import IconeWhatsApp from '@/components/icones/IconeWhatsApp.vue'
 import { useSessao } from '@/stores/sessao'
 import type { Perfil } from '@/types/usuario'
+import { linkDoWhatsApp, ROTULO_DO_WHATSAPP } from '@/utils/whatsapp'
 import { itensDoTopoPorPerfil } from './itensMenuLoja'
 import MenuLoja from './MenuLoja.vue'
 import { useSair } from './useSair'
@@ -21,6 +23,7 @@ const acessoDoUsuario: Record<Perfil, { rotulo: string; para: RouteLocationRaw }
 const sessao = useSessao()
 const route = useRoute()
 const { saindo, sair } = useSair()
+const whatsapp = linkDoWhatsApp()
 
 const acesso = computed(() => acessoDoUsuario[sessao.perfil])
 </script>
@@ -50,6 +53,17 @@ const acesso = computed(() => acessoDoUsuario[sessao.perfil])
         </nav>
       </div>
       <div class="flex items-center gap-2.5 lg:gap-5">
+        <a
+          v-if="whatsapp"
+          :href="whatsapp"
+          target="_blank"
+          rel="noopener noreferrer"
+          :aria-label="ROTULO_DO_WHATSAPP"
+          class="hidden size-10 items-center justify-center gap-2.5 rounded-padrao text-16 font-bold whitespace-nowrap ring-1 ring-cinza-escuro/67 ring-inset lg:flex xl:w-auto xl:px-3.75"
+        >
+          <IconeWhatsApp class="size-6 shrink-0" />
+          <span class="hidden xl:inline">Falar no WhatsApp</span>
+        </a>
         <RouterLink
           v-if="sessao.perfil !== 'admin'"
           :to="{ name: 'loja-sacola' }"

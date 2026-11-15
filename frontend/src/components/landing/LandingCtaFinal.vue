@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import IconeWhatsApp from '@/components/icones/IconeWhatsApp.vue'
+import { linkDoWhatsApp, ROTULO_DO_WHATSAPP } from '@/utils/whatsapp'
 import LandingBotaoLink from './LandingBotaoLink.vue'
+
+const whatsapp = linkDoWhatsApp()
 </script>
 
 <template>
@@ -46,6 +50,18 @@ import LandingBotaoLink from './LandingBotaoLink.vue'
         </LandingBotaoLink>
         <LandingBotaoLink :para="{ name: 'cadastro' }" variante="contornoClaro" tamanho="grande">
           <span class="uppercase tracking-[0.1em]">Criar conta</span>
+        </LandingBotaoLink>
+        <LandingBotaoLink
+          v-if="whatsapp"
+          :href="whatsapp"
+          target="_blank"
+          rel="noopener noreferrer"
+          :aria-label="ROTULO_DO_WHATSAPP"
+          variante="contornoClaro"
+          tamanho="grande"
+        >
+          <IconeWhatsApp class="size-5 shrink-0" />
+          <span class="uppercase tracking-[0.1em]">Falar no WhatsApp</span>
         </LandingBotaoLink>
       </div>
     </div>
