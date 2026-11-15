@@ -3,6 +3,12 @@ set -eu
 
 cd "$(dirname "$0")/../.."
 
+if [ -z "${S3_ACCESS_KEY_ID:-}" ] && [ -f ./.env ]; then
+  set -a
+  . ./.env
+  set +a
+fi
+
 garage() {
   docker compose exec -T garage /garage "$@"
 }
