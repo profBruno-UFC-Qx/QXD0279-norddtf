@@ -12,6 +12,8 @@ Aplicação web do NorDTF, em Vue 3 com Composition API, Vue Router, Pinia e Typ
 
 A URL da API vem de `VITE_API_URL`, definida em `.env` com `http://localhost:3333`. Para usar outro valor na sua máquina, crie um `.env.local`, que não é versionado. Toda variável `VITE_` vai para o bundle, então nenhum segredo entra aqui.
 
+`VITE_WHATSAPP_NUMERO` é o número do WhatsApp da loja, usado no link "Falar no WhatsApp" da landing e do menu. O `.env` traz o número de teste, `558894389721`. O valor é só dígitos, com DDI e DDD, sem `+`, espaço nem hífen. A variável é opcional: vazia ou fora desse formato, o link não aparece e o resto da loja funciona.
+
 ## Como rodar
 
 ```sh

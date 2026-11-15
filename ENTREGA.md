@@ -16,7 +16,7 @@ No `backend/`:
 
 Os testes do backend (`pnpm test`) usam o banco do `TEST_DATABASE_URL` e o bucket `S3_BUCKET_TEST`, então precisam do banco e do Garage de pé.
 
-No `frontend/`, crie um `.env` com `VITE_API_URL="http://localhost:3333"`, rode `pnpm install` e `pnpm dev`. O app abre em `http://localhost:5173`.
+No `frontend/`, crie um `.env` com `VITE_API_URL="http://localhost:3333"` e `VITE_WHATSAPP_NUMERO="558894389721"`, rode `pnpm install` e `pnpm dev`. O app abre em `http://localhost:5173`. `VITE_WHATSAPP_NUMERO` é o WhatsApp da loja, só dígitos, com DDI e DDD, sem `+`, espaço nem hífen. Ela é opcional: sem ela, o link "Falar no WhatsApp" some da landing e do menu, e o resto funciona.
 
 O script `docker-compose` do `package.json` do backend passa pelo Infisical e não é necessário: o `docker compose` direto lê as variáveis do `.env`. Suba sempre pelo nome do serviço (`db`, `garage`) para não recriar o que já existe.
 
