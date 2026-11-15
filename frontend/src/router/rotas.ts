@@ -55,8 +55,8 @@ export const rotas: RouteRecordRaw[] = [
       {
         path: 'materiais',
         name: 'loja-materiais',
-        component: PaginaProvisoria,
-        meta: { acesso: 'publico', titulo: 'Materiais', trilha: [{ rotulo: 'Materiais' }] },
+        component: () => import('@/views/loja/PaginaMateriais.vue'),
+        meta: { acesso: 'publico', titulo: 'Materiais e folha DTF' },
       },
       {
         path: 'produtos/:id/personalizar',
