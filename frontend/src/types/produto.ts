@@ -120,4 +120,4 @@ export type ProdutoDaLoja = {
   cores: CorDaLoja[]
 }
 
-export type EscolhaDoProduto = { cor: string; quantidades: EntradaDeEstoque[] }
+export type EscolhaDoProduto = { corId: string | null; quantidades: EntradaDeEstoque[] }
