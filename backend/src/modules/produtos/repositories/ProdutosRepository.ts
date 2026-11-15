@@ -84,11 +84,15 @@ export class ProdutosRepository {
     const consulta = filtrar(visiveis, filtros);
     const [itens, total, faixaDePreco] = await Promise.all([
       paginar(consulta, filtros.pagina)
-        .select('id', 'nome', 'preco', 'tipo')
+        .select('id', 'nome', 'preco', 'tipo', 'temTamanho')
+        .include('categorias', (categorias) =>
+          categorias.include('categoria', (categoria) => categoria.select('id', 'nome')),
+        )
         .include('cores', (cores) =>
           cores
             .where(temEstoque)
             .select('nome', 'hex', 'imagemApresentacao')
+            .include('variantes', (variantes) => variantes.select('tamanho', 'estoque'))
             .orderBy([(c) => c.posicao.asc(), (c) => c.criadoEm.asc()]),
         )
         .all(),

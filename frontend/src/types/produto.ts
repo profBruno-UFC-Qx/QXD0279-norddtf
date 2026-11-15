@@ -95,8 +95,10 @@ export type ItemDaLoja = {
   preco: string
   tipo: TipoProduto
   imagem: string
-  cores: { nome: string; hex: string }[]
+  categorias: Categoria[]
+  cores: { nome: string; hex: string; estoque: number }[]
   totalDeCores: number
+  tamanhos: Tamanho[]
 }
 
 export type ListagemDaLoja = Omit<ListagemProdutos, 'itens'> & { itens: ItemDaLoja[] }

@@ -28,8 +28,10 @@ interface ItemDaLoja {
   preco: string;
   tipo: string;
   imagem: string;
-  cores: { nome: string; hex: string }[];
+  categorias: { id: string; nome: string }[];
+  cores: { nome: string; hex: string; estoque: number }[];
   totalDeCores: number;
+  tamanhos: Tamanho[];
 }
 
 interface Listagem {
@@ -136,8 +138,10 @@ describe('GET /produtos', () => {
         preco: '45.00',
         tipo: 'PERSONALIZAVEL',
         imagem: `/imagens/${comEstoque!.imagemApresentacao}`,
-        cores: [{ nome: comEstoque!.nome, hex: comEstoque!.hex }],
+        categorias: [{ id: lote.id, nome: lote.nome }],
+        cores: [{ nome: comEstoque!.nome, hex: comEstoque!.hex, estoque: 41 }],
         totalDeCores: 1,
+        tamanhos: ['M', 'G', 'GG', 'G1', 'G2'],
       },
     ]);
   });
@@ -150,9 +154,25 @@ describe('GET /produtos', () => {
 
     const { itens } = await listar({ categorias: lote.id });
 
-    expect(itens[0]!.cores).toEqual(comEstoque.slice(0, 3).map(({ nome, hex }) => ({ nome, hex })));
+    expect(itens[0]!.cores).toEqual(
+      comEstoque.slice(0, 3).map(({ nome, hex }) => ({ nome, hex, estoque: 60 })),
+    );
     expect(itens[0]!.totalDeCores).toBe(5);
     expect(itens[0]!.imagem).toBe(`/imagens/${cores[0]!.imagemApresentacao}`);
+  });
+
+  it('lista apenas os tamanhos com estoque e não atribui tamanhos a produto tamanho único', async () => {
+    const lote = await criarCategoria();
+    const comTamanho = await criarProduto({
+      categorias: [lote.id],
+      cores: [{ P: 2, M: 0, G: 0, GG: 0, G1: 0, G2: 0 }],
+    });
+    const tamanhoUnico = await criarProduto({ categorias: [lote.id], cores: [5] });
+
+    const { itens } = await listar({ categorias: lote.id });
+
+    expect(itens.find((item) => item.id === comTamanho)!.tamanhos).toEqual(['P']);
+    expect(itens.find((item) => item.id === tamanhoUnico)!.tamanhos).toEqual([]);
   });
 
   it('o filtro de tamanho não traz quem só tem aquele tamanho zerado nem produto sem tamanho', async () => {
