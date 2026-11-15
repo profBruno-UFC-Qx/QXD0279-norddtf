@@ -3,10 +3,6 @@ set -eu
 
 cd "$(dirname "$0")/../.."
 
-set -a
-. ./.env
-set +a
-
 garage() {
   docker compose exec -T garage /garage "$@"
 }
