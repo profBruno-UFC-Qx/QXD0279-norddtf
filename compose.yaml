@@ -21,6 +21,7 @@ services:
     image: dxflrs/garage:v2.5.0
     environment:
       GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?defina GARAGE_RPC_SECRET no Infisical ou no .env}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?defina GARAGE_ADMIN_TOKEN no Infisical ou no .env}
     ports:
       - "3900:3900"
     volumes:
@@ -44,7 +45,9 @@ services:
         condition: service_healthy
       garage:
         condition: service_healthy
-    environment:
+      setup:
+        condition: service_completed_successfully
+    environment: &ambiente-da-api
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       TEST_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}_test
       S3_ENDPOINT: http://garage:3900
@@ -53,10 +56,10 @@ services:
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
       SESSION_SECRET: ${SESSION_SECRET:?defina SESSION_SECRET no Infisical ou no .env}
       FRONTEND_URL: ${FRONTEND_URL:?defina FRONTEND_URL no Infisical ou no .env}
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
-      SEED_ADMIN_SENHA: ${SEED_ADMIN_SENHA:-}
-      SEED_CLIENTE_EMAIL: ${SEED_CLIENTE_EMAIL:-}
-      SEED_CLIENTE_SENHA: ${SEED_CLIENTE_SENHA:-}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:?defina SEED_ADMIN_EMAIL no Infisical ou no .env}
+      SEED_ADMIN_SENHA: ${SEED_ADMIN_SENHA:?defina SEED_ADMIN_SENHA no Infisical ou no .env}
+      SEED_CLIENTE_EMAIL: ${SEED_CLIENTE_EMAIL:?defina SEED_CLIENTE_EMAIL no Infisical ou no .env}
+      SEED_CLIENTE_SENHA: ${SEED_CLIENTE_SENHA:?defina SEED_CLIENTE_SENHA no Infisical ou no .env}
       S3_REGION: ${S3_REGION:?defina S3_REGION no Infisical ou no .env}
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?defina S3_ACCESS_KEY_ID no Infisical ou no .env}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?defina S3_SECRET_ACCESS_KEY no Infisical ou no .env}
@@ -78,6 +81,21 @@ services:
           path: ./backend/package.json
         - action: rebuild
           path: ./backend/pnpm-lock.yaml
+
+  setup:
+    build:
+      context: ./backend
+      target: dev
+    pull_policy: build
+    command: ["sh", "docker/setup.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+      garage:
+        condition: service_healthy
+    environment:
+      <<: *ambiente-da-api
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?defina GARAGE_ADMIN_TOKEN no Infisical ou no .env}
 
   web:
     build:
