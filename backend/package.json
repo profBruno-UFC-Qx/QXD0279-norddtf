@@ -12,8 +12,7 @@
     "seed": "infisical run -- tsx src/shared/infra/prisma/seed.ts",
     "db:init": "infisical run -- prisma db init",
     "contract:emit": "prisma contract emit",
-    "docker-compose": "infisical run -- docker compose",
-    "garage:iniciar": "infisical run -- sh docker/garage/iniciar.sh"
+    "docker-compose": "infisical run -- docker compose"
   },
   "keywords": [],
   "author": "",
