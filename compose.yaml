@@ -62,6 +62,22 @@ services:
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?defina S3_SECRET_ACCESS_KEY no Infisical ou no .env}
       S3_BUCKET: ${S3_BUCKET:?defina S3_BUCKET no Infisical ou no .env}
       S3_BUCKET_TEST: ${S3_BUCKET_TEST:-}
+      CHOKIDAR_USEPOLLING: "true"
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/src
+          target: /app/src
+        - action: sync
+          path: ./backend/test
+          target: /app/test
+        - action: sync+restart
+          path: ./backend/prisma.config.ts
+          target: /app/prisma.config.ts
+        - action: rebuild
+          path: ./backend/package.json
+        - action: rebuild
+          path: ./backend/pnpm-lock.yaml
 
   web:
     build:
@@ -72,6 +88,24 @@ services:
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
       VITE_WHATSAPP_NUMERO: ${VITE_WHATSAPP_NUMERO:-}
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+        - action: sync
+          path: ./frontend/public
+          target: /app/public
+        - action: sync
+          path: ./frontend/index.html
+          target: /app/index.html
+        - action: sync+restart
+          path: ./frontend/vite.config.ts
+          target: /app/vite.config.ts
+        - action: rebuild
+          path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/pnpm-lock.yaml
 
 volumes:
   db_data:
