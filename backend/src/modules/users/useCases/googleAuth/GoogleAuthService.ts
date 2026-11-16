@@ -1,6 +1,6 @@
 import { Auth } from "googleapis";
-import { generateAuthState } from "../../../../shared/utils/generateAuthState";
-import { oauthScopes } from "./constants";
+import { generateAuthState } from "../../../../shared/utils/generateAuthState.js";
+import { oauthScopes } from "./constants.js";
 
 class GoogleAuthService {
     constructor(private readonly oauth2Client: Auth.OAuth2Client) {}

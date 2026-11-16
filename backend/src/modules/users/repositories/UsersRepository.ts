@@ -1,7 +1,7 @@
-import { db } from "../../../shared/infra/prisma/db";
+import { db } from "../../../shared/infra/prisma/db.js";
 import type { Models } from "../../../shared/infra/prisma/schema";
 import type { Scalars } from "@prisma/orm-postgres/family-contract/types";
-import { EmailJaCadastradoError } from "../errors/EmailJaCadastradoError";
+import { EmailJaCadastradoError } from "../errors/EmailJaCadastradoError.js";
 
 interface GoogleProfile {
     sub: string;
