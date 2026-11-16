@@ -11,8 +11,7 @@
     "dev": "infisical run -- tsx watch src/shared/infra/http/server.ts",
     "seed": "infisical run -- tsx src/shared/infra/prisma/seed.ts",
     "db:init": "infisical run -- prisma db init",
-    "contract:emit": "prisma contract emit",
-    "docker-compose": "infisical run -- docker compose"
+    "contract:emit": "prisma contract emit"
   },
   "keywords": [],
   "author": "",
