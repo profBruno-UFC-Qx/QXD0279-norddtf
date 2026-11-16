@@ -48,6 +48,14 @@
       "model": "ProdutoVariante",
       "namespace": "public"
     },
+    "sacolaItem": {
+      "model": "SacolaItem",
+      "namespace": "public"
+    },
+    "sacolaItemEstampa": {
+      "model": "SacolaItemEstampa",
+      "namespace": "public"
+    },
     "user": {
       "model": "User",
       "namespace": "public"
@@ -1459,6 +1467,301 @@
               "table": "produtoVariante"
             }
           },
+          "SacolaItem": {
+            "fields": {
+              "atualizadoEm": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "comprimentoCm": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "criadoEm": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "materialId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "precoUnitario": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "produtoVarianteId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantidade": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "selecionado": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "tipo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "TipoItem",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "estampas": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "sacolaItemId"
+                  ]
+                },
+                "to": {
+                  "model": "SacolaItemEstampa",
+                  "namespace": "public"
+                }
+              },
+              "material": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "materialId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Material",
+                  "namespace": "public"
+                }
+              },
+              "produtoVariante": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "produtoVarianteId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ProdutoVariante",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "atualizadoEm": {
+                  "column": "atualizadoEm"
+                },
+                "comprimentoCm": {
+                  "column": "comprimentoCm"
+                },
+                "criadoEm": {
+                  "column": "criadoEm"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "materialId": {
+                  "column": "materialId"
+                },
+                "precoUnitario": {
+                  "column": "precoUnitario"
+                },
+                "produtoVarianteId": {
+                  "column": "produtoVarianteId"
+                },
+                "quantidade": {
+                  "column": "quantidade"
+                },
+                "selecionado": {
+                  "column": "selecionado"
+                },
+                "tipo": {
+                  "column": "tipo"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "sacolaItem"
+            }
+          },
+          "SacolaItemEstampa": {
+            "fields": {
+              "alturaCm": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "arteClienteUrl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "larguraCm": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "posicao": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "PosicaoEstampa",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "quantidade": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "sacolaItemId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "sacolaItem": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "sacolaItemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "SacolaItem",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "alturaCm": {
+                  "column": "alturaCm"
+                },
+                "arteClienteUrl": {
+                  "column": "arteClienteUrl"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "larguraCm": {
+                  "column": "larguraCm"
+                },
+                "posicao": {
+                  "column": "posicao"
+                },
+                "quantidade": {
+                  "column": "quantidade"
+                },
+                "sacolaItemId": {
+                  "column": "sacolaItemId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "sacolaItemEstampa"
+            }
+          },
           "User": {
             "fields": {
               "atualizadoEm": {
@@ -1486,13 +1789,6 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "enderecoId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/uuid@1",
                   "kind": "scalar"
                 }
               },
@@ -1546,22 +1842,6 @@
               }
             },
             "relations": {
-              "endereco": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "enderecoId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Endereco",
-                  "namespace": "public"
-                }
-              },
               "pedidos": {
                 "cardinality": "1:N",
                 "on": {
@@ -1591,9 +1871,6 @@
                 },
                 "email": {
                   "column": "email"
-                },
-                "enderecoId": {
-                  "column": "enderecoId"
                 },
                 "id": {
                   "column": "id"
@@ -1759,22 +2036,19 @@
                   }
                 }
               ],
-              "indexes": [
-                {
-                  "columns": [
-                    "userId"
-                  ],
-                  "name": "endereco_userId_idx_a489d58a",
-                  "prefix": "endereco_userId_idx",
-                  "unique": false
-                }
-              ],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "userId"
+                  ]
+                }
+              ]
             },
             "item": {
               "checks": [
@@ -2616,6 +2890,258 @@
               },
               "uniques": []
             },
+            "sacolaItem": {
+              "checks": [
+                {
+                  "expression": "\"tipo\" IN ('PRODUTO', 'MATERIAL')",
+                  "name": "sacolaItem_tipo_check_32a3de8a",
+                  "prefix": "sacolaItem_tipo_check"
+                }
+              ],
+              "columns": {
+                "atualizadoEm": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "comprimentoCm": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "criadoEm": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "materialId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "precoUnitario": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "produtoVarianteId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "quantidade": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "selecionado": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "tipo": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "TipoItem",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "userId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "sacolaItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "produtoVarianteId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "sacolaItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "produtoVariante"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "materialId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "sacolaItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "material"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "materialId"
+                  ],
+                  "name": "sacolaItem_materialId_idx_e0f85a6d",
+                  "prefix": "sacolaItem_materialId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "produtoVarianteId"
+                  ],
+                  "name": "sacolaItem_produtoVarianteId_idx_0f4efd0f",
+                  "prefix": "sacolaItem_produtoVarianteId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "sacolaItem_userId_idx_a489d58a",
+                  "prefix": "sacolaItem_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "sacolaItemEstampa": {
+              "checks": [
+                {
+                  "expression": "\"posicao\" IN ('FRENTE', 'COSTAS')",
+                  "name": "sacolaItemEstampa_posicao_check_f58d6a04",
+                  "prefix": "sacolaItemEstampa_posicao_check"
+                }
+              ],
+              "columns": {
+                "alturaCm": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "arteClienteUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "larguraCm": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "posicao": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "PosicaoEstampa",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "quantidade": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 1
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "sacolaItemId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "sacolaItemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "sacolaItemEstampa"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "sacolaItem"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "sacolaItemId"
+                  ],
+                  "name": "sacolaItemEstampa_sacolaItemId_idx_773e97d8",
+                  "prefix": "sacolaItemEstampa_sacolaItemId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "user": {
               "checks": [
                 {
@@ -2648,11 +3174,6 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
-                },
-                "enderecoId": {
-                  "codecId": "pg/uuid@1",
-                  "nativeType": "uuid",
-                  "nullable": true
                 },
                 "id": {
                   "codecId": "pg/uuid@1",
@@ -2695,34 +3216,8 @@
                   }
                 }
               },
-              "foreignKeys": [
-                {
-                  "source": {
-                    "columns": [
-                      "enderecoId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "user"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "endereco"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "enderecoId"
-                  ],
-                  "name": "user_enderecoId_idx_a967c346",
-                  "prefix": "user_enderecoId_idx",
-                  "unique": false
-                }
-              ],
+              "foreignKeys": [],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -2812,10 +3307,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "62ac2154fe95f33d709e495e4187bdce491ef53b13817ffc1c299ad46711d8a0"
+    "storageHash": "6119d0c7d1cc143e109220bd60bc8930665c8cffa2cad0e8a6e707196954c076"
   },
   "execution": {
-    "executionHash": "4f3ceb3432708b4e97a33ad78a78c7a6b058a3ba60cb5d40cf4df6e2cf4909d4",
+    "executionHash": "d795fdac09a8795780beca36cee0175a74afe32ca504eb725f450587c6a348bb",
     "mutations": {
       "defaults": [
         {
@@ -3016,6 +3511,43 @@
             "column": "id",
             "namespace": "public",
             "table": "produtoVariante"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "atualizadoEm",
+            "namespace": "public",
+            "table": "sacolaItem"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "sacolaItem"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "sacolaItemEstampa"
           }
         },
         {

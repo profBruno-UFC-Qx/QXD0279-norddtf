@@ -81,7 +81,7 @@ export const rotas: RouteRecordRaw[] = [
       {
         path: 'sacola',
         name: 'loja-sacola',
-        component: PaginaProvisoria,
+        component: () => import('@/views/loja/PaginaSacola.vue'),
         meta: {
           acesso: 'cliente',
           titulo: 'Sacola',
@@ -121,7 +121,7 @@ export const rotas: RouteRecordRaw[] = [
       {
         path: 'perfil',
         name: 'loja-perfil',
-        component: PaginaProvisoria,
+        component: () => import('@/views/loja/PaginaPerfil.vue'),
         meta: {
           acesso: 'cliente',
           titulo: 'Meu perfil',

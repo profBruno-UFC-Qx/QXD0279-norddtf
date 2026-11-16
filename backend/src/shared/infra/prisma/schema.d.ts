@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'62ac2154fe95f33d709e495e4187bdce491ef53b13817ffc1c299ad46711d8a0'>;
+  StorageHashBase<'6119d0c7d1cc143e109220bd60bc8930665c8cffa2cad0e8a6e707196954c076'>;
 export type ExecutionHash =
-  ExecutionHashBase<'4f3ceb3432708b4e97a33ad78a78c7a6b058a3ba60cb5d40cf4df6e2cf4909d4'>;
+  ExecutionHashBase<'d795fdac09a8795780beca36cee0175a74afe32ca504eb725f450587c6a348bb'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -344,6 +344,28 @@ export type FieldOutputTypes = {
       readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
       readonly estoque: CodecTypes['pg/int4@1']['output'];
     };
+    readonly SacolaItem: {
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly userId: CodecTypes['pg/uuid@1']['output'];
+      readonly tipo: 'PRODUTO' | 'MATERIAL';
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['output'] | null;
+      readonly materialId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly comprimentoCm: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly precoUnitario: CodecTypes['pg/numeric@1']['output'];
+      readonly selecionado: CodecTypes['pg/bool@1']['output'];
+      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
+    readonly SacolaItemEstampa: {
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly sacolaItemId: CodecTypes['pg/uuid@1']['output'];
+      readonly arteClienteUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly posicao: 'FRENTE' | 'COSTAS' | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['output'];
+      readonly larguraCm: CodecTypes['pg/numeric@1']['output'];
+      readonly alturaCm: CodecTypes['pg/numeric@1']['output'];
+    };
     readonly User: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly sub: CodecTypes['pg/text@1']['output'] | null;
@@ -352,7 +374,6 @@ export type FieldOutputTypes = {
       readonly cpf: CodecTypes['pg/text@1']['output'] | null;
       readonly telefone: CodecTypes['pg/text@1']['output'] | null;
       readonly senha: CodecTypes['pg/text@1']['output'] | null;
-      readonly enderecoId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly tipoPerfil: 'ADMIN' | 'USER';
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -463,6 +484,28 @@ export type FieldInputTypes = {
       readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
       readonly estoque: CodecTypes['pg/int4@1']['input'];
     };
+    readonly SacolaItem: {
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly userId: CodecTypes['pg/uuid@1']['input'];
+      readonly tipo: 'PRODUTO' | 'MATERIAL';
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['input'] | null;
+      readonly materialId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly comprimentoCm: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly precoUnitario: CodecTypes['pg/numeric@1']['input'];
+      readonly selecionado: CodecTypes['pg/bool@1']['input'];
+      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
+    };
+    readonly SacolaItemEstampa: {
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly sacolaItemId: CodecTypes['pg/uuid@1']['input'];
+      readonly arteClienteUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly posicao: 'FRENTE' | 'COSTAS' | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['input'];
+      readonly larguraCm: CodecTypes['pg/numeric@1']['input'];
+      readonly alturaCm: CodecTypes['pg/numeric@1']['input'];
+    };
     readonly User: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly sub: CodecTypes['pg/text@1']['input'] | null;
@@ -471,7 +514,6 @@ export type FieldInputTypes = {
       readonly cpf: CodecTypes['pg/text@1']['input'] | null;
       readonly telefone: CodecTypes['pg/text@1']['input'] | null;
       readonly senha: CodecTypes['pg/text@1']['input'] | null;
-      readonly enderecoId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly tipoPerfil: 'ADMIN' | 'USER';
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -582,12 +624,33 @@ export type StorageColumnTypes = {
       readonly produtoCorId: CodecTypes['pg/uuid@1']['output'];
       readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
     };
+    readonly sacolaItem: {
+      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly comprimentoCm: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly materialId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly precoUnitario: CodecTypes['pg/numeric@1']['output'];
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['output'] | null;
+      readonly selecionado: CodecTypes['pg/bool@1']['output'];
+      readonly tipo: 'PRODUTO' | 'MATERIAL';
+      readonly userId: CodecTypes['pg/uuid@1']['output'];
+    };
+    readonly sacolaItemEstampa: {
+      readonly alturaCm: CodecTypes['pg/numeric@1']['output'];
+      readonly arteClienteUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly larguraCm: CodecTypes['pg/numeric@1']['output'];
+      readonly posicao: 'FRENTE' | 'COSTAS' | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['output'];
+      readonly sacolaItemId: CodecTypes['pg/uuid@1']['output'];
+    };
     readonly user: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly cpf: CodecTypes['pg/text@1']['output'] | null;
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
-      readonly enderecoId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly nome: CodecTypes['pg/text@1']['output'];
       readonly senha: CodecTypes['pg/text@1']['output'] | null;
@@ -701,12 +764,33 @@ export type StorageColumnInputTypes = {
       readonly produtoCorId: CodecTypes['pg/uuid@1']['input'];
       readonly tamanho: 'P' | 'M' | 'G' | 'GG' | 'G1' | 'G2' | null;
     };
+    readonly sacolaItem: {
+      readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly comprimentoCm: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly materialId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly precoUnitario: CodecTypes['pg/numeric@1']['input'];
+      readonly produtoVarianteId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['input'] | null;
+      readonly selecionado: CodecTypes['pg/bool@1']['input'];
+      readonly tipo: 'PRODUTO' | 'MATERIAL';
+      readonly userId: CodecTypes['pg/uuid@1']['input'];
+    };
+    readonly sacolaItemEstampa: {
+      readonly alturaCm: CodecTypes['pg/numeric@1']['input'];
+      readonly arteClienteUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly larguraCm: CodecTypes['pg/numeric@1']['input'];
+      readonly posicao: 'FRENTE' | 'COSTAS' | null;
+      readonly quantidade: CodecTypes['pg/int4@1']['input'];
+      readonly sacolaItemId: CodecTypes['pg/uuid@1']['input'];
+    };
     readonly user: {
       readonly atualizadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly cpf: CodecTypes['pg/text@1']['input'] | null;
       readonly criadoEm: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
-      readonly enderecoId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly nome: CodecTypes['pg/text@1']['input'];
       readonly senha: CodecTypes['pg/text@1']['input'] | null;
@@ -726,13 +810,11 @@ export namespace Models {
     cpf: CodecTypes['pg/text@1']['output'] | null;
     telefone: CodecTypes['pg/text@1']['output'] | null;
     senha: CodecTypes['pg/text@1']['output'] | null;
-    enderecoId: CodecTypes['pg/uuid@1']['output'] | null;
     tipoPerfil: 'ADMIN' | 'USER';
     criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
     atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
-    endereco: public_Endereco | null;
     pedidos: public_Pedido[];
-    readonly [RelationKeys]?: 'endereco' | 'pedidos';
+    readonly [RelationKeys]?: 'pedidos';
   };
   export type public_Endereco = {
     id: CodecTypes['pg/uuid@1']['output'];
@@ -867,6 +949,35 @@ export namespace Models {
     item: public_Item;
     readonly [RelationKeys]?: 'item';
   };
+  export type public_SacolaItem = {
+    id: CodecTypes['pg/uuid@1']['output'];
+    userId: CodecTypes['pg/uuid@1']['output'];
+    tipo: 'PRODUTO' | 'MATERIAL';
+    produtoVarianteId: CodecTypes['pg/uuid@1']['output'] | null;
+    quantidade: CodecTypes['pg/int4@1']['output'] | null;
+    materialId: CodecTypes['pg/uuid@1']['output'] | null;
+    comprimentoCm: CodecTypes['pg/numeric@1']['output'] | null;
+    precoUnitario: CodecTypes['pg/numeric@1']['output'];
+    selecionado: CodecTypes['pg/bool@1']['output'];
+    criadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+    atualizadoEm: CodecTypes['pg/timestamptz-string@1']['output'];
+    estampas: public_SacolaItemEstampa[];
+    material: public_Material | null;
+    produtoVariante: public_ProdutoVariante | null;
+    user: public_User;
+    readonly [RelationKeys]?: 'estampas' | 'material' | 'produtoVariante' | 'user';
+  };
+  export type public_SacolaItemEstampa = {
+    id: CodecTypes['pg/uuid@1']['output'];
+    sacolaItemId: CodecTypes['pg/uuid@1']['output'];
+    arteClienteUrl: CodecTypes['pg/text@1']['output'] | null;
+    posicao: 'FRENTE' | 'COSTAS' | null;
+    quantidade: CodecTypes['pg/int4@1']['output'];
+    larguraCm: CodecTypes['pg/numeric@1']['output'];
+    alturaCm: CodecTypes['pg/numeric@1']['output'];
+    sacolaItem: public_SacolaItem;
+    readonly [RelationKeys]?: 'sacolaItem';
+  };
 }
 
 export declare const models: {
@@ -883,6 +994,8 @@ export declare const models: {
     PedidoStatusHistorico: Models.public_PedidoStatusHistorico;
     Item: Models.public_Item;
     ItemEstampa: Models.public_ItemEstampa;
+    SacolaItem: Models.public_SacolaItem;
+    SacolaItemEstampa: Models.public_SacolaItemEstampa;
   };
 };
 
@@ -1003,15 +1116,8 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
-              indexes: readonly [
-                {
-                  readonly name: 'endereco_userId_idx_a489d58a';
-                  readonly prefix: 'endereco_userId_idx';
-                  readonly columns: readonly ['userId'];
-                  readonly unique: false;
-                },
-              ];
+              uniques: readonly [{ readonly columns: readonly ['userId'] }];
+              indexes: readonly [];
               foreignKeys: readonly [
                 {
                   readonly source: {
@@ -1635,6 +1741,197 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly sacolaItem: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly userId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly tipo: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly produtoVarianteId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly quantidade: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly materialId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly comprimentoCm: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: true;
+                };
+                readonly precoUnitario: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly selecionado: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly criadoEm: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly atualizadoEm: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'sacolaItem_userId_idx_a489d58a';
+                  readonly prefix: 'sacolaItem_userId_idx';
+                  readonly columns: readonly ['userId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'sacolaItem_produtoVarianteId_idx_0f4efd0f';
+                  readonly prefix: 'sacolaItem_produtoVarianteId_idx';
+                  readonly columns: readonly ['produtoVarianteId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'sacolaItem_materialId_idx_e0f85a6d';
+                  readonly prefix: 'sacolaItem_materialId_idx';
+                  readonly columns: readonly ['materialId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'sacolaItem';
+                    readonly columns: readonly ['userId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'sacolaItem';
+                    readonly columns: readonly ['produtoVarianteId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'produtoVariante';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'sacolaItem';
+                    readonly columns: readonly ['materialId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'material';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly sacolaItemEstampa: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly sacolaItemId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly arteClienteUrl: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly posicao: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly quantidade: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 1>;
+                  };
+                };
+                readonly larguraCm: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly alturaCm: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'sacolaItemEstampa_sacolaItemId_idx_773e97d8';
+                  readonly prefix: 'sacolaItemEstampa_sacolaItemId_idx';
+                  readonly columns: readonly ['sacolaItemId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'sacolaItemEstampa';
+                    readonly columns: readonly ['sacolaItemId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'sacolaItem';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly user: {
               columns: {
                 readonly id: {
@@ -1672,11 +1969,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
-                readonly enderecoId: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: true;
-                };
                 readonly tipoPerfil: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -1704,28 +1996,8 @@ type ContractBase = Omit<
                 { readonly columns: readonly ['email'] },
                 { readonly columns: readonly ['cpf'] },
               ];
-              indexes: readonly [
-                {
-                  readonly name: 'user_enderecoId_idx_a967c346';
-                  readonly prefix: 'user_enderecoId_idx';
-                  readonly columns: readonly ['enderecoId'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'user';
-                    readonly columns: readonly ['enderecoId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'endereco';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
+              indexes: readonly [];
+              foreignKeys: readonly [];
             };
           };
           readonly valueSet: {
@@ -1802,6 +2074,14 @@ type ContractBase = Omit<
     readonly itemEstampa: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ItemEstampa';
+    };
+    readonly sacolaItem: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'SacolaItem';
+    };
+    readonly sacolaItemEstampa: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'SacolaItemEstampa';
     };
   };
   readonly domain: {
@@ -2594,6 +2874,182 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly SacolaItem: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly tipo: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly produtoVarianteId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly quantidade: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly materialId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly comprimentoCm: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly precoUnitario: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly selecionado: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly criadoEm: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly atualizadoEm: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly estampas: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SacolaItemEstampa';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['sacolaItemId'];
+                };
+              };
+              readonly material: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Material';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['materialId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly produtoVariante: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProdutoVariante';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['produtoVarianteId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['userId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'sacolaItem';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly userId: { readonly column: 'userId' };
+                readonly tipo: { readonly column: 'tipo' };
+                readonly produtoVarianteId: { readonly column: 'produtoVarianteId' };
+                readonly quantidade: { readonly column: 'quantidade' };
+                readonly materialId: { readonly column: 'materialId' };
+                readonly comprimentoCm: { readonly column: 'comprimentoCm' };
+                readonly precoUnitario: { readonly column: 'precoUnitario' };
+                readonly selecionado: { readonly column: 'selecionado' };
+                readonly criadoEm: { readonly column: 'criadoEm' };
+                readonly atualizadoEm: { readonly column: 'atualizadoEm' };
+              };
+            };
+          };
+          readonly SacolaItemEstampa: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly sacolaItemId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly arteClienteUrl: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly posicao: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly quantidade: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly larguraCm: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly alturaCm: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+            };
+            readonly relations: {
+              readonly sacolaItem: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SacolaItem';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['sacolaItemId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'sacolaItemEstampa';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly sacolaItemId: { readonly column: 'sacolaItemId' };
+                readonly arteClienteUrl: { readonly column: 'arteClienteUrl' };
+                readonly posicao: { readonly column: 'posicao' };
+                readonly quantidade: { readonly column: 'quantidade' };
+                readonly larguraCm: { readonly column: 'larguraCm' };
+                readonly alturaCm: { readonly column: 'alturaCm' };
+              };
+            };
+          };
           readonly User: {
             readonly fields: {
               readonly id: {
@@ -2624,10 +3080,6 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly enderecoId: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
-              };
               readonly tipoPerfil: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -2648,18 +3100,6 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly endereco: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Endereco';
-                };
-                readonly cardinality: 'N:1';
-                readonly nullable: true;
-                readonly on: {
-                  readonly localFields: readonly ['enderecoId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
               readonly pedidos: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -2683,7 +3123,6 @@ type ContractBase = Omit<
                 readonly cpf: { readonly column: 'cpf' };
                 readonly telefone: { readonly column: 'telefone' };
                 readonly senha: { readonly column: 'senha' };
-                readonly enderecoId: { readonly column: 'enderecoId' };
                 readonly tipoPerfil: { readonly column: 'tipoPerfil' };
                 readonly criadoEm: { readonly column: 'criadoEm' };
                 readonly atualizadoEm: { readonly column: 'atualizadoEm' };
@@ -2907,6 +3346,31 @@ type ContractBase = Omit<
           readonly ref: {
             readonly namespace: 'public';
             readonly table: 'produtoVariante';
+            readonly column: 'id';
+          };
+          readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
+        },
+        {
+          readonly ref: {
+            readonly namespace: 'public';
+            readonly table: 'sacolaItem';
+            readonly column: 'atualizadoEm';
+          };
+          readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
+          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
+        },
+        {
+          readonly ref: {
+            readonly namespace: 'public';
+            readonly table: 'sacolaItem';
+            readonly column: 'id';
+          };
+          readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
+        },
+        {
+          readonly ref: {
+            readonly namespace: 'public';
+            readonly table: 'sacolaItemEstampa';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };

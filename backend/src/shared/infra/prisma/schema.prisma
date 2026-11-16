@@ -52,8 +52,6 @@ model User {
   cpf       String?  @unique
   telefone  String?
   senha     String?
-  enderecoId Uuid?
-  endereco  Endereco? @relation(fields: [enderecoId], references: [id])
   tipoPerfil TipoPerfil @default(USER)
   pedidos   Pedido[]
   criadoEm TimestamptzString @default(now())
@@ -62,7 +60,7 @@ model User {
 
 model Endereco {
   id        Uuid     @id @default(uuid())
-  userId    Uuid
+  userId    Uuid     @unique
   user      User     @relation(fields: [userId], references: [id])
   cep       String
   logradouro String
@@ -194,6 +192,35 @@ model ItemEstampa {
   id             Uuid     @id @default(uuid())
   itemId         Uuid
   item           Item     @relation(fields: [itemId], references: [id])
+  arteClienteUrl String?
+  posicao        PosicaoEstampa?
+  quantidade     Int      @default(1)
+  larguraCm      Decimal
+  alturaCm       Decimal
+}
+
+model SacolaItem {
+  id             Uuid     @id @default(uuid())
+  userId         Uuid
+  user           User     @relation(fields: [userId], references: [id])
+  tipo           TipoItem
+  produtoVarianteId Uuid?
+  produtoVariante   ProdutoVariante? @relation(fields: [produtoVarianteId], references: [id])
+  quantidade     Int?
+  materialId     Uuid?
+  material       Material? @relation(fields: [materialId], references: [id])
+  comprimentoCm  Decimal?
+  precoUnitario  Decimal
+  selecionado    Boolean  @default(true)
+  criadoEm TimestamptzString @default(now())
+  atualizadoEm temporal.updatedAtString()
+  estampas       SacolaItemEstampa[]
+}
+
+model SacolaItemEstampa {
+  id             Uuid     @id @default(uuid())
+  sacolaItemId   Uuid
+  sacolaItem     SacolaItem @relation(fields: [sacolaItemId], references: [id])
   arteClienteUrl String?
   posicao        PosicaoEstampa?
   quantidade     Int      @default(1)

@@ -52,6 +52,30 @@ class UsersRepository {
         return db.orm.public.User.first({ id });
     }
 
+    async findEnderecoByUserId(userId: string) {
+        return db.orm.public.Endereco.first({ userId });
+    }
+
+    async atualizarPerfil(id: string, nome: string, telefone: string | null) {
+        return db.orm.public.User.where({ id }).update({ nome, telefone });
+    }
+
+    async upsertEndereco(userId: string, dados: {
+        cep: string;
+        logradouro: string;
+        numero: string;
+        complemento: string | null;
+        bairro: string;
+        cidade: string;
+        estado: string;
+    }) {
+        const existente = await db.orm.public.Endereco.first({ userId });
+        if (existente) {
+            return db.orm.public.Endereco.where({ userId }).update(dados);
+        }
+        return db.orm.public.Endereco.create({ userId, ...dados });
+    }
+
     async findByEmail(email: string): Promise<UserRow | null> {
         return db.orm.public.User.where({ email }).first();
     }

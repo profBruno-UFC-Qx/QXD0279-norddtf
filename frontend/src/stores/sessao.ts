@@ -28,8 +28,11 @@ export const useSessao = defineStore('sessao', () => {
 
   async function buscarUsuario() {
     try {
-      const { id, nome, email, tipoPerfil } = await api.get<UsuarioSessao>('/me')
-      usuario.value = { id, nome, email, tipoPerfil }
+      const {
+        id, nome, email, tipoPerfil, telefone, endereco,
+        perfilCompleto, pendencias,
+      } = await api.get<UsuarioSessao>('/me')
+      usuario.value = { id, nome, email, tipoPerfil, telefone, endereco, perfilCompleto, pendencias }
     } catch (erro) {
       usuario.value = null
       if (erro instanceof ErroApi && (erro.status === 401 || erro.status === 404)) return
@@ -42,8 +45,14 @@ export const useSessao = defineStore('sessao', () => {
     return carga
   }
 
-  function definirUsuario({ id, nome, email, tipoPerfil }: UsuarioSessao) {
-    usuario.value = { id, nome, email, tipoPerfil }
+  async function recarregar(): Promise<void> {
+    const novaCarga = buscarUsuario()
+    carga = novaCarga
+    await novaCarga
+  }
+
+  function definirUsuario(usuarioAtual: UsuarioSessao) {
+    usuario.value = usuarioAtual
   }
 
   function limpar() {
@@ -82,6 +91,7 @@ export const useSessao = defineStore('sessao', () => {
     perfil,
     destinoPadrao,
     carregar,
+    recarregar,
     definirUsuario,
     limpar,
     entrar,
