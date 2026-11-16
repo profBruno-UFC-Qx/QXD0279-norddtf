@@ -13,6 +13,8 @@ const contasIniciais = [
   { papel: 'cliente', nome: 'Cliente de teste', tipoPerfil: 'USER', variavelEmail: 'SEED_CLIENTE_EMAIL', variavelSenha: 'SEED_CLIENTE_SENHA' },
 ] as const;
 
+type Papel = (typeof contasIniciais)[number]['papel'];
+
 function lerVariavel(nome: string, variaveis: Variaveis, schema: ZodType<string>, erros: string[]) {
   const valor = variaveis[nome];
   if (!valor) {
@@ -35,9 +37,16 @@ function lerConta(conta: (typeof contasIniciais)[number], variaveis: Variaveis, 
   return { ...conta, email, senha };
 }
 
-export async function criarContasIniciais(variaveis: Variaveis, usersRepository: UsersRepository): Promise<ResultadoDaConta[]> {
+export async function criarContasIniciais(
+  variaveis: Variaveis,
+  usersRepository: UsersRepository,
+  papeis: readonly Papel[] = ['admin', 'cliente'],
+): Promise<ResultadoDaConta[]> {
   const erros: string[] = [];
-  const contas = contasIniciais.map((conta) => lerConta(conta, variaveis, erros)).filter((conta) => conta !== null);
+  const contas = contasIniciais
+    .filter((conta) => papeis.includes(conta.papel))
+    .map((conta) => lerConta(conta, variaveis, erros))
+    .filter((conta) => conta !== null);
 
   if (erros.length > 0) {
     throw new VariaveisDoSeedInvalidasError(erros);

@@ -24,18 +24,22 @@ const mensagemPorSituacao: Record<ResultadoDaConta['situacao'], (conta: Resultad
   mantida: ({ papel, email }) => `Conta de ${papel} ${email} já existe e foi mantida sem alteração.`,
 };
 
+const producao = process.env['SETUP_MODO'] === 'prod';
+
 try {
   for (const material of await criarMateriais(new MateriaisRepository())) {
     console.log(mensagemPorSituacaoDoMaterial[material.situacao](material));
   }
 
-  const resultados = await criarContasIniciais(process.env, new UsersRepository());
+  const resultados = await criarContasIniciais(process.env, new UsersRepository(), producao ? ['admin'] : undefined);
   for (const conta of resultados) {
     console.log(mensagemPorSituacao[conta.situacao](conta));
   }
 
-  for (const produto of await criarProdutos(new ProdutosRepository(), new CategoriasRepository(), armazenamento)) {
-    console.log(mensagemPorSituacaoDoProduto[produto.situacao](produto));
+  if (!producao) {
+    for (const produto of await criarProdutos(new ProdutosRepository(), new CategoriasRepository(), armazenamento)) {
+      console.log(mensagemPorSituacaoDoProduto[produto.situacao](produto));
+    }
   }
 } catch (erro) {
   console.error(erro instanceof VariaveisDoSeedInvalidasError ? erro.message : erro);
