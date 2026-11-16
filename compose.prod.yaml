@@ -1,0 +1,37 @@
+name: nordtf-prod
+
+services:
+  db:
+    restart: unless-stopped
+    ports: !reset []
+
+  garage:
+    restart: unless-stopped
+    ports: !reset []
+
+  api:
+    build:
+      target: prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      COOKIE_SECURE: ${COOKIE_SECURE:-}
+    develop: !reset {}
+
+  setup:
+    build:
+      target: build
+    environment:
+      SETUP_MODO: prod
+
+  web:
+    build:
+      target: prod
+      args:
+        VITE_API_URL: ${VITE_API_URL:?defina VITE_API_URL no Infisical ou no .env}
+        VITE_WHATSAPP_NUMERO: ${VITE_WHATSAPP_NUMERO:-}
+    restart: unless-stopped
+    ports: !override
+      - "8080:80"
+    environment: !reset {}
+    develop: !reset {}

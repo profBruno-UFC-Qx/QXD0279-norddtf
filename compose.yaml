@@ -58,8 +58,10 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:?defina FRONTEND_URL no Infisical ou no .env}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:?defina SEED_ADMIN_EMAIL no Infisical ou no .env}
       SEED_ADMIN_SENHA: ${SEED_ADMIN_SENHA:?defina SEED_ADMIN_SENHA no Infisical ou no .env}
-      SEED_CLIENTE_EMAIL: ${SEED_CLIENTE_EMAIL:?defina SEED_CLIENTE_EMAIL no Infisical ou no .env}
-      SEED_CLIENTE_SENHA: ${SEED_CLIENTE_SENHA:?defina SEED_CLIENTE_SENHA no Infisical ou no .env}
+      # Without :? because Compose interpolates each file before merging, and compose.prod.yaml
+      # runs without the test account. In dev the seed fails with the missing variable's name.
+      SEED_CLIENTE_EMAIL: ${SEED_CLIENTE_EMAIL:-}
+      SEED_CLIENTE_SENHA: ${SEED_CLIENTE_SENHA:-}
       S3_REGION: ${S3_REGION:?defina S3_REGION no Infisical ou no .env}
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?defina S3_ACCESS_KEY_ID no Infisical ou no .env}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?defina S3_SECRET_ACCESS_KEY no Infisical ou no .env}
