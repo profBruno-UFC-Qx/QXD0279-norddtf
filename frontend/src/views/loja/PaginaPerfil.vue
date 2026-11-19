@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useSessao } from '@/stores/sessao'
@@ -173,6 +173,10 @@ async function salvar() {
     salvando.value = false
   }
 }
+
+onMounted(() => {
+  sessao.recarregar()
+})
 
 function pendenciasTexto() {
   const nomes: Record<string, string> = {
