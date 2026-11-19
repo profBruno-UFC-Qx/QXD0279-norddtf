@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import { app } from "./app.js";
 
-app.listen(3333, (res) => {
-  console.log('isso nao é vibecoding, servidor ta rodando na porta 3333');
+const porta = Number(process.env.PORT || 3333);
+
+app.listen(porta, (erro) => {
+  if (erro) throw erro;
+  console.log(`isso nao é vibecoding, servidor ta rodando na porta ${porta}`);
 });

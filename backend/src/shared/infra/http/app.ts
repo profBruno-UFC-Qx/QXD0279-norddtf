@@ -7,6 +7,10 @@ import cors from 'cors';
 
 const app: Express = express();
 
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
@@ -21,7 +25,7 @@ app.use(session({
     rolling: true,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
         sameSite: "lax",
         maxAge: 1000 * 60 * 15,
     },

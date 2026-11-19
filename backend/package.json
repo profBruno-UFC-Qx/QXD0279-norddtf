@@ -7,13 +7,11 @@
   "scripts": {
     "build": "tsc",
     "test": "infisical run -- vitest run",
-    "start": "pnpm build && infisical run -- node dist/shared/infra/http/server.js",
+    "start": "pnpm build && infisical run -- node dist/src/shared/infra/http/server.js",
     "dev": "infisical run -- tsx watch src/shared/infra/http/server.ts",
     "seed": "infisical run -- tsx src/shared/infra/prisma/seed.ts",
     "db:init": "infisical run -- prisma db init",
-    "contract:emit": "prisma contract emit",
-    "docker-compose": "infisical run -- docker compose",
-    "garage:iniciar": "infisical run -- sh docker/garage/iniciar.sh"
+    "contract:emit": "prisma contract emit"
   },
   "keywords": [],
   "author": "",

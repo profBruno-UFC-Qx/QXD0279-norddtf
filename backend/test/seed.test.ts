@@ -84,6 +84,17 @@ describe('seed das contas iniciais', () => {
     expect(await repository.findByEmail(env.SEED_CLIENTE_EMAIL)).toBeNull();
   });
 
+  it('cria só o admin quando pedido, sem exigir as variáveis do cliente', async () => {
+    const env = { ...variaveis(), SEED_CLIENTE_EMAIL: undefined, SEED_CLIENTE_SENHA: undefined };
+
+    const resultados = await criarContasIniciais(env, repository, ['admin']);
+
+    expect(resultados).toEqual([{ papel: 'admin', email: env.SEED_ADMIN_EMAIL, situacao: 'criada' }]);
+    const admin = await entrar(env.SEED_ADMIN_EMAIL, env.SEED_ADMIN_SENHA);
+    expect(admin.status).toBe(200);
+    expect(admin.body.tipoPerfil).toBe('ADMIN');
+  });
+
   it('falha com senha fora da regra do cadastro e não cria nenhuma conta', async () => {
     const env = { ...variaveis(), SEED_ADMIN_SENHA: 'semnumero' };
 

@@ -33,7 +33,7 @@ async function conferirBucket(s3: S3Client, bucket: string) {
   try {
     await s3.send(new HeadBucketCommand({ Bucket: bucket }));
   } catch (erro) {
-    throw new Error('Garage fora do ar ou sem o bucket de teste: suba com docker compose up -d garage e rode pnpm garage:iniciar.', { cause: erro });
+    throw new Error('Garage fora do ar ou sem o bucket de teste: suba o ambiente com docker compose up, que o serviço setup prepara o Garage e cria o bucket.', { cause: erro });
   }
 }
 
