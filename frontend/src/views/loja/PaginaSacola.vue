@@ -7,13 +7,13 @@ import { listarSacola, atualizarItemSacola, removerItemSacola } from '@/api/saco
 import { formatarMoeda } from '@/utils/formatacao'
 
 import BaseBotao from '@/components/base/BaseBotao.vue'
+import BaseTrilha from '@/components/base/BaseTrilha.vue'
 import BaseModalConfirmacao from '@/components/base/BaseModalConfirmacao.vue'
 
 const avisos = useAvisos()
 const router = useRouter()
 
 const itens = ref<ItemSacola[]>([])
-const total = ref(0)
 const carregando = ref(true)
 const salvando = ref(false)
 const itemParaRemover = ref<string | null>(null)
@@ -42,20 +42,19 @@ interface ItemSacola {
     larguraCm: number
     alturaCm: number
   }[]
-  valorTotal: number
+  valorTotal: number | null
 }
 
 async function carregarSacola() {
   carregando.value = true
   try {
-    const { itens: itensLista, total: totalValor } = await listarSacola()
+    const { itens: itensLista } = await listarSacola()
     itens.value = itensLista
-    total.value = totalValor
   } catch (erro: unknown) {
     if (erro && typeof erro === 'object' && 'status' in erro && (erro as { status: number }).status === 401) {
       router.push('/login')
     } else {
-      avisos.erro('Não foi possível carregar a sacola.')
+      avisos.erro('Não foi possível carregar a sacola. Tente novamente.')
     }
   } finally {
     carregando.value = false
@@ -63,8 +62,24 @@ async function carregarSacola() {
 }
 
 const itensSelecionados = computed(() => itens.value.filter((i: ItemSacola) => i.selecionado))
-const totalSelecionados = computed(() => itensSelecionados.value.reduce((s: number, i: ItemSacola) => s + i.valorTotal, 0))
-const quantidadeSelecionada = computed(() => itensSelecionados.value.reduce((s: number, i: ItemSacola) => s + (i.quantidade ?? 0), 0))
+function valorDoItem(item: ItemSacola): number | null {
+  if (Number.isFinite(item.precoUnitario) && item.quantidade !== null) {
+    return item.precoUnitario * item.quantidade
+  }
+  return typeof item.valorTotal === 'number' && Number.isFinite(item.valorTotal) ? item.valorTotal : null
+}
+
+function formatarValorDoItem(item: ItemSacola): string {
+  const valor = valorDoItem(item)
+  return valor === null ? 'Preço indisponível' : formatarMoeda(valor)
+}
+
+const totalSelecionados = computed(() =>
+  itensSelecionados.value.reduce((s: number, i: ItemSacola) => s + (valorDoItem(i) ?? 0), 0),
+)
+const quantidadeSelecionada = computed(() =>
+  itensSelecionados.value.reduce((s: number, i: ItemSacola) => s + (i.quantidade ?? 0), 0),
+)
 const algumSelecionado = computed(() => itensSelecionados.value.length > 0)
 const algumIndisponivel = computed(() => itens.value.some((i: ItemSacola) => !i.selecionado))
 
@@ -119,7 +134,6 @@ async function confirmarRemover() {
   try {
     await removerItemSacola(itemParaRemover.value)
     itens.value = itens.value.filter((i: ItemSacola) => i.id !== itemParaRemover.value)
-    total.value = itens.value.reduce((s: number, i: ItemSacola) => s + i.valorTotal, 0)
     avisos.sucesso('Item removido da sacola.')
   } catch {
     avisos.erro('Não foi possível remover o item.')
@@ -143,6 +157,13 @@ onMounted(() => {
 
 <template>
   <div class="max-w-2xl mx-auto px-5 py-10 md:px-7.5 lg:px-12.5">
+    <BaseTrilha
+      :itens="[
+        { rotulo: 'Produtos', para: { name: 'loja-produtos' } },
+        { rotulo: 'Sacola' },
+      ]"
+    />
+
     <h1 class="font-destaque text-32 font-black uppercase leading-[0.85] tracking-[-0.04em] mb-2">
       Sacola
     </h1>
@@ -239,7 +260,7 @@ onMounted(() => {
 
             <div class="text-right">
               <span class="text-14 font-bold text-preto-dtf block">
-                {{ formatarMoeda(item.valorTotal.toString()) }}
+                {{ formatarValorDoItem(item) }}
               </span>
               <button
                 type="button"

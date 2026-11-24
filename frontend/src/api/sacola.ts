@@ -22,7 +22,7 @@ export type ItemSacola = {
     larguraCm: number
     alturaCm: number
   }[]
-  valorTotal: number
+  valorTotal: number | null
 }
 
 export type SacolaSaida = {
